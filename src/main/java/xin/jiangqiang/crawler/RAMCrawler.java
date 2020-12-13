@@ -15,16 +15,13 @@ import xin.jiangqiang.reflect.CallMethodHelper;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.util.DocumentUtil;
 import xin.jiangqiang.util.RegExpUtil;
+import xin.jiangqiang.util.StringUtil;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 @Data
@@ -35,15 +32,27 @@ public class RAMCrawler {
     ExecutorService executor;
     Filter filter = new NextFilter();
     Record record = new RecordImpl();
+    //所有任务是否执行完毕
+    Boolean isEnd = false;
+    //结束前保存
+    private static List<Crawler> crawlers = Collections.synchronizedList(new LinkedList<>());
+    //初始时读取
+    private static List<Crawler> initCrawlers = Collections.synchronizedList(new LinkedList<>());
+
     /**
      * 当前活动线程数可能不准确,因此判断连续几秒内活动线程相等为准
      */
     private Integer[] activeCounts = new Integer[3];
 
     public final void start() throws IOException {
+        init();
         callMethodHelper = new CallMethodHelper(config);
         callMethodHelper.before();
         executor = Executors.newFixedThreadPool(config.getThreads());
+        for (Crawler crawler : initCrawlers) {
+            Runnable runnable = new Task(crawler);
+            executor.execute(runnable);
+        }
         for (Crawler tmpCrawler : crawler.getCrawlers()) {
             Runnable runnable = new Task(tmpCrawler);
             executor.execute(runnable);
@@ -58,6 +67,7 @@ public class RAMCrawler {
                 activeCounts[2] = ((ThreadPoolExecutor) executor).getActiveCount();
                 if (executor.isTerminated()) {
                     log.info("所有线程执行完毕");
+                    isEnd = true;
                     break;
                 }
                 if (activeCounts[0] == 0 && activeCounts[1] == 0 && activeCounts[2] == 0) {
@@ -70,10 +80,14 @@ public class RAMCrawler {
         callMethodHelper.after();
     }
 
-    @AllArgsConstructor
     @Data
     protected class Task implements Runnable {
         Crawler crawler;
+
+        public Task(Crawler crawler) {
+            this.crawler = crawler;
+            crawlers.add(crawler);
+        }
 
         @Override
         public void run() {
@@ -81,6 +95,10 @@ public class RAMCrawler {
             if (crawler.getDepth() <= config.getDepth()) {
                 Next next = new Next();
                 Page page = okHttpClientHelper.request(crawler);
+                if (page == null) {
+                    crawlers.remove(crawler);
+                    return;
+                }
                 //如果正正则或反正则列表有一个有值，就会抽取所有URL
                 if (config.getRegExs().size() != 0 || config.getReverseRegExs().size() != 0) {
                     //此处用于抓取所有URL
@@ -91,15 +109,21 @@ public class RAMCrawler {
                 }
                 //此处page是发送请求后新创建的，没有type的值，需要手动赋值
                 page.setType(crawler.getType());
+                next.setDepth(crawler.getDepth() + 1);
                 callMethodHelper.match(page, next);
                 callMethodHelper.deal(page, next);
+                //处理完成，加入成功结果集
+                record.addSucc(page.getUrl());
+                crawlers.remove(crawler);
+                //过滤下次爬取的URL
                 filter.filter(next, page);
-                next.setDepth(crawler.getDepth() + 1);
                 for (Crawler tmpCrawler : next.getCrawlers()) {
                     tmpCrawler.setDepth(next.getDepth());
                     Runnable runnable = new Task(tmpCrawler);
                     executor.execute(runnable);
                 }
+            } else {
+                crawlers.remove(crawler);
             }
         }
     }
@@ -162,5 +186,46 @@ public class RAMCrawler {
             }
         }
         return tmpUrls;
+    }
+
+    private void init() {
+        //注册结束前执行的线程逻辑
+        beforeEnd();
+        //保存路径不为空，则读取
+        if (config.getIsContinue() && StringUtil.isNotEmpty(config.getSavePath())) {
+            File f = new File(config.getSavePath());
+            try (
+                    //创建对象输入流
+                    FileInputStream fis = new FileInputStream(f);
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+            ) {
+                initCrawlers = (List<Crawler>) ois.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                initCrawlers = Collections.synchronizedList(new LinkedList<>());
+                log.error(e.getMessage());
+            }
+        }
+    }
+
+    private void beforeEnd() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("程序准备结束");
+            //保存路径不为空，则保存
+            if (crawlers.size() != 0 && StringUtil.isNotEmpty(config.getSavePath())) {
+                File f = new File(config.getSavePath());
+                try (
+                        //创建对象输出流
+                        FileOutputStream fos = new FileOutputStream(f);
+                        ObjectOutputStream oos = new ObjectOutputStream(fos);
+                ) {
+                    oos.writeObject(crawlers);
+                    log.info(crawlers.toString());
+                    log.info("保存爬取状态成功");
+                } catch (IOException e) {
+                    log.error(e.getMessage());
+                }
+            }
+            log.info("程序结束了");
+        }));
     }
 }

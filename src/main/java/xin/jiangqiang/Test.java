@@ -21,6 +21,7 @@ public class Test extends RAMCrawler {
 
     @Before
     public void before() {
+
     }
 
     @Match(value = "type1", code = "404")
@@ -60,18 +61,18 @@ public class Test extends RAMCrawler {
 //        crawler.addSeed("https://blog.jiangqiang.xin");
 //        crawler.addSeed("https://www.4399.com");
 //        crawler.addSeed("https://github.com/jiangqiang2020/J-crawler");
+        config.setSavePath("tmp.obj");
+        config.setIsContinue(false);
+
         test.setConfig(config);
         test.setCrawler(crawler);
         test.setFilter(new NextFilter());
         test.setRecord(new RecordImpl());
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    test.start();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        new Thread(() -> {
+            try {
+                test.start();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }).start();
         Record record = new RecordImpl();
@@ -84,6 +85,9 @@ public class Test extends RAMCrawler {
 //                System.err.println(err);
                 System.out.println("爬取成功的URL：   " + succ.size());
                 System.out.println("爬取失败的URL：   " + err.size());
+                if (test.getIsEnd()) {
+                    break;
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

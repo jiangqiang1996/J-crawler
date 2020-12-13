@@ -8,4 +8,8 @@ public class StringUtil {
         }
         return true;
     }
+
+    public static boolean isEmpty(String string) {
+        return !isNotEmpty(string);
+    }
 }

@@ -6,6 +6,7 @@ import xin.jiangqiang.config.Config;
 import xin.jiangqiang.entities.Crawler;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.management.Record;
+import xin.jiangqiang.util.StringUtil;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -22,6 +23,9 @@ public class OkHttpClientHelper {
 
     public Page request(Crawler crawler) {
         try {
+            if (StringUtil.isEmpty(crawler.getUrl())) {
+                return null;
+            }
             //判断是否成功爬取过该URL
             if (!record.hasUrl(crawler.getUrl())) {
                 OkHttpClient client = new OkHttpClient();
@@ -35,14 +39,14 @@ public class OkHttpClientHelper {
                 ResponseBody body = response.body();
                 byte[] content = Objects.requireNonNull(response.body()).bytes();
                 String html = new String(content, new Config().getCharset());
-                record.addSucc(crawler.getUrl());
+//                record.addSucc(crawler.getUrl());
                 return new Page(code, protocol, message, headers, body, response.request(), content, html);
             }
         } catch (IOException e) {
             log.error(e.getMessage());
             record.addErr(crawler.getUrl());
         }
-        return new Page();
+        return null;
     }
 
 }

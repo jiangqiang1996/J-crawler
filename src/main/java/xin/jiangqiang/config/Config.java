@@ -18,6 +18,10 @@ public class Config {
     List<String> defaultReverseRegExs = new ArrayList<>();
     //是否启用默认正则表达式过滤
     Boolean isUseDefault = true;
+    //结束时爬取状态保存路径，用于断点续爬
+    String savePath = "";
+    //是否继续
+    Boolean isContinue = true;
 
     {
         defaultReverseRegExs.add(".*\\.(js|css).*");

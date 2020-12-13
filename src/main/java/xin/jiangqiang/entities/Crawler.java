@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import xin.jiangqiang.util.StringUtil;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +15,7 @@ import java.util.Objects;
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Crawler {
+public class Crawler implements Serializable {
     //    protected List<String> seeds = new ArrayList<>();
     //深度
     protected Integer depth = 1;
