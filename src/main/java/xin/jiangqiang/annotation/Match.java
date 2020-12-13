@@ -9,4 +9,11 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Match {
     String value() default "";
+    String type() default "";
+
+
+    String code() default "";
+
+    String regEx() default "";
+
 }

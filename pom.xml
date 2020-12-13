@@ -86,10 +86,10 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-        <!--    <dependency>-->
-        <!--        <groupId>cn.edu.hfut.dmic.webcollector</groupId>-->
-        <!--        <artifactId>WebCollector</artifactId>-->
-        <!--        <version>2.73-alpha</version>-->
-        <!--    </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>cn.edu.hfut.dmic.webcollector</groupId>-->
+<!--                <artifactId>WebCollector</artifactId>-->
+<!--                <version>2.73-alpha</version>-->
+<!--            </dependency>-->
     </dependencies>
 </project>

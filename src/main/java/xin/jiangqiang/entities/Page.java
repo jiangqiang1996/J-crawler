@@ -10,9 +10,11 @@ import okhttp3.Request;
 import okhttp3.ResponseBody;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import xin.jiangqiang.util.StringUtil;
 
 @Data
 @Accessors(chain = true)
+@NoArgsConstructor
 public class Page extends Crawler {
     private Integer responseCode;
     private Protocol protocol;
@@ -33,7 +35,9 @@ public class Page extends Crawler {
         this.request = request;
         this.content = content;
         this.html = html;
-        this.document = Jsoup.parse(html);
+        if (StringUtil.isNotEmpty(html)) {
+            this.document = Jsoup.parse(html);
+        }
         this.setUrl(request.url().url().toString());
     }
 
