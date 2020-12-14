@@ -1,33 +1,123 @@
 package xin.jiangqiang.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
+import xin.jiangqiang.net.RequestMethod;
 import xin.jiangqiang.util.StringUtil;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+/**
+ * 此对象用于作为参数发起HTTP请求,同时构造新的Page对象
+ */
 @Data
 @Accessors(chain = true)
-@AllArgsConstructor
 @NoArgsConstructor
 public class Crawler implements Serializable {
-    //    protected List<String> seeds = new ArrayList<>();
     //深度
-    protected Integer depth = 1;
-    protected String url;//当前的URL
+    private Integer depth = 1;
+    private String url;//当前的URL
     //根据type执行不同逻辑
     private String type = "";
-    List<Crawler> crawlers = new ArrayList<>();//当前URL中提取出来的子爬虫
+    private List<Crawler> crawlers = new ArrayList<>();//当前URL中提取出来的子爬虫
+    //元数据，存储当前URL提交的参数等信息
 
-    //    public Crawler addSeed(String url) {
-//        seeds.add(url);
-//        return this;
-//    }
+    /**
+     * 1. 从crawler构造Page对象,发送请求之后是Page对象,请求前是Crawler对象
+     * 2. 将Page中的元数据复制到Next对象
+     *
+     * @param crawler
+     * @return
+     */
+    public Crawler initDataFromCrawler(Crawler crawler) {
+        this.depth = crawler.depth;
+//        this.url = crawler.url;
+        this.type = crawler.type;
+        //此处需要深拷贝
+        Map<String, String> lines = new HashMap<>(crawler.getLines());
+        this.setLines(lines);
+
+        Map<String, String> headers = new HashMap<>(crawler.getHeaders());
+        this.setHeaders(headers);
+
+        Map<String, String> bodys = new HashMap<>(crawler.getBodys());
+        this.setBodys(bodys);
+
+        Map<String, String> data = new HashMap<>(crawler.getData());
+        this.setData(data);
+        return this;
+    }
+
+    @Setter(AccessLevel.NONE)
+    private Map<String, Map<String, String>> metaData;
+
+    {//初始化存储元数据的对象，初始化请求头，请求体，请求行相关对象
+        metaData = new HashMap<>();
+        setHeaders(new HashMap<>());
+        setBodys(new HashMap<>());
+        setLines(new HashMap<>());
+        setData(new HashMap<>());
+    }
+
+    //设置其他数据信息（自定义数据）
+    public Crawler setData(Map<String, String> others) {
+        metaData.put("others", others);
+        return this;
+    }
+
+    //获取自定义数据
+    public Map<String, String> getData() {
+        return metaData.get("others");
+    }
+
+    //设置请求头
+    public Crawler setHeaders(Map<String, String> headers) {
+        metaData.put("headers", headers);
+        return this;
+    }
+
+    //获取请求头
+    public Map<String, String> getHeaders() {
+        return metaData.get("headers");
+    }
+
+    //设置请求体
+    public Crawler setBodys(Map<String, String> bodys) {
+        metaData.put("bodys", bodys);
+        return this;
+    }
+
+    //获取请求体
+    public Map<String, String> getBodys() {
+        return metaData.get("bodys");
+    }
+
+    //设置请求方法
+    public Crawler setMethod(RequestMethod method) {
+        Map<String, String> lines = getLines();
+        lines.put("method", method.getMethod());
+        setLines(lines);
+        return this;
+    }
+
+    //获取请求行
+    public String getMethod() {
+        String method = getLines().get("method");
+        return StringUtil.isNotEmpty(method) ? method : "GET";
+    }
+
+    //设置请求行
+    public Crawler setLines(Map<String, String> lines) {
+        metaData.put("lines", lines);
+        return this;
+    }
+
+    //获取请求行
+    public Map<String, String> getLines() {
+        return metaData.get("lines");
+    }
+
     public Crawler addSeed(String url) {
         if (StringUtil.isNotEmpty(url)) {
             Crawler crawler = new Crawler(url);

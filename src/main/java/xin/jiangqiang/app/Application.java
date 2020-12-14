@@ -1,6 +1,5 @@
-package xin.jiangqiang.crawler;
+package xin.jiangqiang.app;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import xin.jiangqiang.config.Config;
@@ -25,7 +24,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @Slf4j
 @Data
-public class RAMCrawler {
+public class Application {
     Config config;
     Crawler crawler;
     CallMethodHelper callMethodHelper;
@@ -95,7 +94,7 @@ public class RAMCrawler {
             if (crawler.getDepth() <= config.getDepth()) {
                 Next next = new Next();
                 Page page = okHttpClientHelper.request(crawler);
-                if (page == null) {
+                if (page == null) {//出错 直接返回
                     crawlers.remove(crawler);
                     return;
                 }
@@ -107,18 +106,24 @@ public class RAMCrawler {
                     urls = getMatchUrls(urls);
                     next.addSeeds(urls, "");
                 }
-                //此处page是发送请求后新创建的，没有type的值，需要手动赋值
-                page.setType(crawler.getType());
+                //获取元数据,深度,类型
+                next.initDataFromCrawler(page);
                 next.setDepth(crawler.getDepth() + 1);
+
                 callMethodHelper.match(page, next);
                 callMethodHelper.deal(page, next);
                 //处理完成，加入成功结果集
-                record.addSucc(page.getUrl());
+                String code = page.getResponseCode().toString();
+                if (code.startsWith("4") || code.startsWith("5")) {
+                    record.addErr(page.getUrl());
+                } else {
+                    record.addSucc(page.getUrl());
+                }
                 crawlers.remove(crawler);
                 //过滤下次爬取的URL
                 filter.filter(next, page);
                 for (Crawler tmpCrawler : next.getCrawlers()) {
-                    tmpCrawler.setDepth(next.getDepth());
+                    tmpCrawler.initDataFromCrawler(next);
                     Runnable runnable = new Task(tmpCrawler);
                     executor.execute(runnable);
                 }
@@ -149,36 +154,17 @@ public class RAMCrawler {
             String url = interator.next();
 
             for (String defaultReverseRegEx : defaultReverseRegExs) {
-//                Pattern pattern = Pattern.compile(defaultReverseRegEx);
-//                Matcher matcher = pattern.matcher(url);
-//                if (matcher.matches()) {
-//                    //匹配默认正则
-//                    continue OUT;
-//                }
                 if (RegExpUtil.isMatch(url, defaultReverseRegEx)) {
                     continue OUT;
                 }
             }
 
             for (String reverseRegEx : reverseRegExs) {
-//                Pattern pattern = Pattern.compile(reverseRegEx);
-//                Matcher matcher = pattern.matcher(url);
-//                if (matcher.matches()) {
-////                    interator.remove();
-//                    //如果匹配逆正则，则删除该URL，结束本次循环
-//                    continue OUT;
-//                }
                 if (RegExpUtil.isMatch(url, reverseRegEx)) {
                     continue OUT;
                 }
             }
             for (String regEx : regExs) {
-//                Pattern pattern = Pattern.compile(regEx);
-//                Matcher matcher = pattern.matcher(url);
-//                if (matcher.matches()) {
-//                    tmpUrls.add(url);
-//                    continue OUT;
-//                }
                 if (RegExpUtil.isMatch(url, regEx)) {
                     tmpUrls.add(url);
                     continue OUT;

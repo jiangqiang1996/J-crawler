@@ -3,21 +3,24 @@ package xin.jiangqiang;
 import lombok.extern.slf4j.Slf4j;
 import xin.jiangqiang.annotation.*;
 import xin.jiangqiang.config.Config;
-import xin.jiangqiang.crawler.RAMCrawler;
+import xin.jiangqiang.app.Application;
 import xin.jiangqiang.entities.Crawler;
 import xin.jiangqiang.entities.Next;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.filter.NextFilter;
 import xin.jiangqiang.management.Record;
 import xin.jiangqiang.management.RecordImpl;
+import xin.jiangqiang.net.RequestMethod;
 
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Slf4j
 @App
-public class Test extends RAMCrawler {
+public class Test extends Application {
 
     @Before
     public void before() {
@@ -42,6 +45,12 @@ public class Test extends RAMCrawler {
 //        next.addSeed("https://blog.csdn.net/wangmx1993328/article/details/81662001").setType("type1");
 //        next.addSeed("https://blog.csdn.net/ds986619036/article/details/89310472");
 //        log.info("url:" + page.getUrl() + " type:" + page.getType());
+
+//        System.out.println(page.getHtml());
+        System.out.println("____________");
+        System.out.println(next);
+//        System.out.println(page.getHtml());
+//        System.out.println(page);
     }
 
     @After
@@ -54,7 +63,16 @@ public class Test extends RAMCrawler {
         Config config = new Config();
         config.setPackageName("xin.jiangqiang");
         Crawler crawler = new Crawler();
-        crawler.addSeed("https://blog.jiangqiang.xin").setType("type2");
+        Map<String, String> lines = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
+        Map<String, String> bodys = new HashMap<>();
+
+//        crawler.addSeed("https://blog.jiangqiang.xin/api/admin/login").setLines(lines).setHeaders(headers)
+//                .setBodys(bodys).setMethod(RequestMethod.POST);
+
+        crawler.addSeed("https://blog.jiangqiang.xin").setLines(lines).setHeaders(headers)
+                .setBodys(bodys).setMethod(RequestMethod.GET);
+//        crawler.addSeed("https://blog.jiangqiang.xin").setType("type2");
 //        crawler.addSeed("https://mvnrepository.com").setType("type1");
         config.addRegEx("https://.*");
 //        config.addDefaultRegEx("https://.*");
@@ -63,6 +81,7 @@ public class Test extends RAMCrawler {
 //        crawler.addSeed("https://github.com/jiangqiang2020/J-crawler");
         config.setSavePath("tmp.obj");
         config.setIsContinue(false);
+        config.setDepth(2);
 
         test.setConfig(config);
         test.setCrawler(crawler);

@@ -11,7 +11,7 @@ import java.util.List;
 public class Config {
     Charset charset = Charset.defaultCharset();
     Integer threads = 50;
-    Integer depth = 2;
+    Integer depth = 4;
     String packageName;
     List<String> regExs = new ArrayList<>();
     List<String> reverseRegExs = new ArrayList<>();
