@@ -49,7 +49,7 @@ public class Test extends Application {
 //        System.out.println(page.getHtml());
         System.out.println("____________");
         System.out.println(next);
-//        System.out.println(page.getHtml());
+        System.out.println(page.getHtml());
 //        System.out.println(page);
     }
 
@@ -66,15 +66,19 @@ public class Test extends Application {
         Map<String, String> lines = new HashMap<>();
         Map<String, String> headers = new HashMap<>();
         Map<String, String> bodys = new HashMap<>();
+        headers.put("SUIXIN", "SUIXIN");
+        bodys.put("username", "蒋樯");
+        bodys.put("password", "19961226qwe");
+//        headers.put("Content-Type", "application/json");
+        headers.put("Content-Type", "application/x-www-form-urlencoded");
+        crawler.addSeed("https://blog.jiangqiang.xin/api/admin/login").setLines(lines).setHeaders(headers)
+                .setBodys(bodys).setMethod(RequestMethod.POST);
 
-//        crawler.addSeed("https://blog.jiangqiang.xin/api/admin/login").setLines(lines).setHeaders(headers)
+//        crawler.addSeed("http://blog.jiangqiang.xin").setLines(lines).setHeaders(headers)
 //                .setBodys(bodys).setMethod(RequestMethod.POST);
-
-        crawler.addSeed("https://blog.jiangqiang.xin").setLines(lines).setHeaders(headers)
-                .setBodys(bodys).setMethod(RequestMethod.GET);
 //        crawler.addSeed("https://blog.jiangqiang.xin").setType("type2");
 //        crawler.addSeed("https://mvnrepository.com").setType("type1");
-        config.addRegEx("https://.*");
+//        config.addRegEx("https://.*");
 //        config.addDefaultRegEx("https://.*");
 //        crawler.addSeed("https://blog.jiangqiang.xin");
 //        crawler.addSeed("https://www.4399.com");

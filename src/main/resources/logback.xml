@@ -46,7 +46,7 @@
     </appender>
     <root>
         <!-- 打印TRACE级别日志及以上级别日志 -->
-        <level value="INFO"/>
+        <level value="DEBUG"/>
         <!-- 控制台输出 -->
         <appender-ref ref="console"/>
         <!-- 文件输出 -->
