@@ -10,10 +10,10 @@ java爬虫框架
 6. 多线程爬取
 7. 支持爬取json接口
 8. 支持请求参数,支持多种提交方式,支持自定义header
+9. 支持HTTP代理
 
 注意:
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.
 不支持form-data
 
-暂时不支持但会尽快支持的功能：
-1. 暂时不支持代理
+持续更新中...

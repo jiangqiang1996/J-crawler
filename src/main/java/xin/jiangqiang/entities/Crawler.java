@@ -46,6 +46,10 @@ public class Crawler implements Serializable {
 
         Map<String, String> data = new HashMap<>(crawler.getData());
         this.setData(data);
+
+        Map<String, String> configs = new HashMap<>(crawler.getData());
+        this.setConfigs(configs);
+
         return this;
     }
 
@@ -58,6 +62,18 @@ public class Crawler implements Serializable {
         setBodys(new HashMap<>());
         setLines(new HashMap<>());
         setData(new HashMap<>());
+        setConfigs(new HashMap<>());
+    }
+
+    //设置请求配置（代理信息）
+    public Crawler setConfigs(Map<String, String> configs) {
+        metaData.put("configs", configs);
+        return this;
+    }
+
+    //获取请求配置（代理信息）
+    public Map<String, String> getConfigs() {
+        return metaData.get("configs");
     }
 
     //设置其他数据信息（自定义数据）
