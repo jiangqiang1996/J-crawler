@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Data
 public class Application {
     Config config;
-    Crawler crawler;
+    Crawler crawler = new Crawler();
     CallMethodHelper callMethodHelper;
     ExecutorService executor;
     Filter filter = new NextFilter();
@@ -38,12 +38,16 @@ public class Application {
     //初始时读取
     private static List<Crawler> initCrawlers = Collections.synchronizedList(new LinkedList<>());
 
+    public Application() {
+        config = new Config(getClass());
+    }
+
     /**
      * 当前活动线程数可能不准确,因此判断连续几秒内活动线程相等为准
      */
     private Integer[] activeCounts = new Integer[3];
 
-    public final void start() throws IOException {
+    public final void start() {
         init();
         callMethodHelper = new CallMethodHelper(config);
         callMethodHelper.before();

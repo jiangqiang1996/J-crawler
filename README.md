@@ -19,4 +19,6 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 持续更新中...
 
 已知问题:
-项目下写多个启动类时执行方法,并且多次使用@Deal注解时,永远会只找到第一个
+项目下写多个启动类时执行方法,并且多次使用@Deal注解时,永远会只找到第一个(已修复尚未测试)
+
+打算开始由简单到复杂更新一些爬虫例子,所有例子均放在xin.jiangqiang.test包下

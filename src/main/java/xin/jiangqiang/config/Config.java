@@ -1,6 +1,7 @@
 package xin.jiangqiang.config;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import xin.jiangqiang.util.StringUtil;
 
 import java.nio.charset.Charset;
@@ -8,11 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class Config {
     Charset charset = Charset.defaultCharset();
     Integer threads = 50;
     Integer depth = 4;
     String packageName;
+    Class<?> appClass;//项目启动类
     List<String> regExs = new ArrayList<>();
     List<String> reverseRegExs = new ArrayList<>();
     List<String> defaultReverseRegExs = new ArrayList<>();
@@ -25,6 +28,10 @@ public class Config {
 
     {
         defaultReverseRegExs.add(".*\\.(js|css).*");
+    }
+
+    public Config(Class<?> appClassName) {
+        this.appClass = appClassName;
     }
 
     /**

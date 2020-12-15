@@ -14,14 +14,13 @@ import java.lang.reflect.Method;
 public class ReflectHelper {
     private Config config;
 
-    public Object callMethod(Page page, String classString, Class<? extends Annotation> clazz, Object[] args) throws Exception {
+    public void callMethod(Page page, String classString, Class<? extends Annotation> clazz, Object[] args) throws Exception {
         Method[] methods = ReflectHelper.class.getClassLoader().loadClass(classString).getMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(clazz)) {
-                return method.invoke(Class.forName(classString).getDeclaredConstructor().newInstance(), args);
+                method.invoke(Class.forName(classString).getDeclaredConstructor().newInstance(), args);
             }
         }
-        return null;
     }
 
     /**
@@ -31,14 +30,13 @@ public class ReflectHelper {
      * @param classString 方法所属全类名
      * @param clazz       注解的class
      * @param args        参数
-     * @return
      * @throws Exception
      */
-    public Object callMatchMethod(Page page, String classString, Class<? extends Annotation> clazz, Object[] args) throws Exception {
+    public void callMatchMethod(Page page, String classString, Class<? extends Annotation> clazz, Object[] args) throws Exception {
         Method[] methods = ReflectHelper.class.getClassLoader().loadClass(classString).getMethods();
         for (Method method : methods) {
             /**
-             * 每一个方法只会执行一次，
+             * 保证每一个方法只会执行一次，
              * 满足正则表达式，响应码，或者类型匹配时均会执行
              */
             if (method.isAnnotationPresent(clazz)) {
@@ -59,6 +57,5 @@ public class ReflectHelper {
                 }
             }
         }
-        return null;
     }
 }

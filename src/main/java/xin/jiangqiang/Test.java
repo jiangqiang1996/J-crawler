@@ -1,6 +1,8 @@
 package xin.jiangqiang;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import xin.jiangqiang.annotation.*;
 import xin.jiangqiang.config.Config;
 import xin.jiangqiang.app.Application;
@@ -14,12 +16,10 @@ import xin.jiangqiang.net.RequestMethod;
 
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
-@App
+//@App
 public class Test extends Application {
 
     @Before
@@ -49,7 +49,8 @@ public class Test extends Application {
 //        System.out.println(page.getHtml());
         System.out.println("____________");
         System.out.println(next);
-        System.out.println(page.getHtml());
+//        System.out.println(page.getHtml());
+
 //        System.out.println(page);
     }
 
@@ -60,19 +61,30 @@ public class Test extends Application {
 
     public static void main(String[] args) throws IOException {
         Test test = new Test();
-        Config config = new Config();
-        config.setPackageName("xin.jiangqiang");
+
+        test.getConfig().setPackageName("xin.jiangqiang");
+
         Crawler crawler = new Crawler();
         Map<String, String> lines = new HashMap<>();
         Map<String, String> headers = new HashMap<>();
         Map<String, String> bodys = new HashMap<>();
-        headers.put("SUIXIN", "SUIXIN");
-        bodys.put("username", "蒋樯");
-        bodys.put("password", "19961226qwe");
+        Map<String, String> configs = new HashMap<>();
+
+//        headers.put("SUIXIN", "SUIXIN");
+//        bodys.put("username", "蒋樯");
+//        bodys.put("password", "19961226qwe");
 //        headers.put("Content-Type", "application/json");
-        headers.put("Content-Type", "application/x-www-form-urlencoded");
-        crawler.addSeed("https://blog.jiangqiang.xin/api/admin/login").setLines(lines).setHeaders(headers)
-                .setBodys(bodys).setMethod(RequestMethod.POST);
+////        headers.put("Content-Type", "application/x-www-form-urlencoded");
+//        crawler.addSeed("https://blog.jiangqiang.xin/api/admin/login").setLines(lines).setHeaders(headers)
+//                .setBodys(bodys).setMethod(RequestMethod.POST);
+
+        configs.put("IP", "14.18.49.22");
+        configs.put("port", "233");
+        configs.put("username", "123");
+        configs.put("password", "314");
+        //http://www.ip3366.net/?stype=1&page=1
+        crawler.addSeed("https://blog.jiangqiang.xin").setLines(lines).setHeaders(headers).setConfigs(configs)
+                .setBodys(bodys).setMethod(RequestMethod.GET);
 
 //        crawler.addSeed("http://blog.jiangqiang.xin").setLines(lines).setHeaders(headers)
 //                .setBodys(bodys).setMethod(RequestMethod.POST);
@@ -83,37 +95,30 @@ public class Test extends Application {
 //        crawler.addSeed("https://blog.jiangqiang.xin");
 //        crawler.addSeed("https://www.4399.com");
 //        crawler.addSeed("https://github.com/jiangqiang2020/J-crawler");
-        config.setSavePath("tmp.obj");
-        config.setIsContinue(false);
-        config.setDepth(2);
+        test.getConfig().setSavePath("tmp.obj");
+        test.getConfig().setIsContinue(false);
+        test.getConfig().setDepth(2);
 
-        test.setConfig(config);
         test.setCrawler(crawler);
         test.setFilter(new NextFilter());
         test.setRecord(new RecordImpl());
-        new Thread(() -> {
-            try {
-                test.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        new Thread(test::start).start();
         Record record = new RecordImpl();
-        while (true) {
-            try {
-                Thread.sleep(1000);
-                Set<String> succ = (Set<String>) record.getSucc();
-                Set<String> err = (Set<String>) record.getErr();
-//                System.out.println(succ);
-//                System.err.println(err);
-                System.out.println("爬取成功的URL：   " + succ.size());
-                System.out.println("爬取失败的URL：   " + err.size());
-                if (test.getIsEnd()) {
-                    break;
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        while (true) {
+//            try {
+//                Thread.sleep(1000);
+//                Set<String> succ = (Set<String>) record.getSucc();
+//                Set<String> err = (Set<String>) record.getErr();
+////                System.out.println(succ);
+////                System.err.println(err);
+//                System.out.println("爬取成功的URL：   " + succ.size());
+//                System.out.println("爬取失败的URL：   " + err.size());
+//                if (test.getIsEnd()) {
+//                    break;
+//                }
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 }
