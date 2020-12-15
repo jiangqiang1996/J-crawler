@@ -17,3 +17,6 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 不支持form-data
 
 持续更新中...
+
+已知问题:
+项目下写多个启动类时执行方法,并且多次使用@Deal注解时,永远会只找到第一个
