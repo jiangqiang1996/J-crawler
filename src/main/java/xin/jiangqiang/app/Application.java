@@ -13,6 +13,7 @@ import xin.jiangqiang.net.OkHttpClientHelper;
 import xin.jiangqiang.reflect.CallMethodHelper;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.util.DocumentUtil;
+import xin.jiangqiang.util.FileUtil;
 import xin.jiangqiang.util.RegExpUtil;
 import xin.jiangqiang.util.StringUtil;
 
@@ -190,8 +191,10 @@ public class Application {
                     ObjectInputStream ois = new ObjectInputStream(fis);
             ) {
                 initCrawlers = (List<Crawler>) ois.readObject();
+                log.debug("从文件获取的爬虫种子:\n" + initCrawlers.toString());
             } catch (IOException | ClassNotFoundException e) {
                 initCrawlers = Collections.synchronizedList(new LinkedList<>());
+                //路径设置后是保存时才创建，所以会爆找不到指定路径
                 log.error(e.getMessage());
             }
         }
@@ -202,6 +205,7 @@ public class Application {
             log.info("程序准备结束");
             //保存路径不为空，则保存
             if (crawlers.size() != 0 && StringUtil.isNotEmpty(config.getSavePath())) {
+                FileUtil.mkParentDirIfNot(config.getSavePath());
                 File f = new File(config.getSavePath());
                 try (
                         //创建对象输出流

@@ -14,16 +14,16 @@ public class Config {
     Charset charset = Charset.defaultCharset();
     Integer threads = 50;
     Integer depth = 4;
-    String packageName;
-    Class<?> appClass;//项目启动类
-    List<String> regExs = new ArrayList<>();
-    List<String> reverseRegExs = new ArrayList<>();
-    List<String> defaultReverseRegExs = new ArrayList<>();
-    //是否启用默认正则表达式过滤
+    String packageName;//最新版暂时没有使用此属性
+    Class<?> appClass;//项目启动类,决定了执行哪一个类下的@Befor,@Match等注解
+    List<String> regExs = new ArrayList<>();//满足此正则表达式列表的URL会被提取
+    List<String> reverseRegExs = new ArrayList<>();//满足此正则表达式列表的会被过滤,不作为种子进行下次爬取
+    List<String> defaultReverseRegExs = new ArrayList<>();//满足此正则表达式列表的也会被过滤,这是系统默认过滤规则,会过滤掉css,js
+    //是否启用默认正则表达式过滤,如果不启用则defaultReverseRegExs无效
     Boolean isUseDefault = true;
     //结束时爬取状态保存路径，用于断点续爬
     String savePath = "";
-    //是否继续
+    //是否继续上次爬取,保存路径为空时不会继续爬取
     Boolean isContinue = true;
 
     {
