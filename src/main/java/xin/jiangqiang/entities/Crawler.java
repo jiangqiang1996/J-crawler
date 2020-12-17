@@ -27,8 +27,8 @@ public class Crawler implements Serializable {
      * 1. 从crawler构造Page对象,发送请求之后是Page对象,请求前是Crawler对象
      * 2. 将Page中的元数据复制到Next对象
      *
-     * @param crawler
-     * @return
+     * @param crawler 种子对象，后续爬虫会继承他的设置
+     * @return 返回调用此方法的对象
      */
     public Crawler initDataFromCrawler(Crawler crawler) {
         this.depth = crawler.depth;

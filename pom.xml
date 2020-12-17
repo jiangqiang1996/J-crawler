@@ -6,7 +6,39 @@
 
     <groupId>xin.jiangqiang</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
+    <name>J-crawler</name>
+    <description>
+        java爬虫框架
+    </description>
+    <url>https://github.com/jiangqiang2020/J-crawler</url>
+    <!-- 开源签名证书 -->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/jiangqiang2020/J-crawler/issues</url>
+    </issueManagement>
+    <!-- 仓库信息 -->
+    <scm>
+        <connection>scm:git:https://github.com/jiangqiang2020/J-crawler.git</connection>
+        <developerConnection>scm:git:https://github.com/jiangqiang2020/J-crawler.git</developerConnection>
+        <url>https://github.com/jiangqiang2020/J-crawler</url>
+    </scm>
+    <!-- 开发人员信息 -->
+    <developers>
+        <developer>
+            <name>JiangQiang</name>
+            <email>jq1257403419@vip.qq.com</email>
+            <url>https://blog.jiangqiang.xin</url>
+        </developer>
+    </developers>
+
     <properties>
         <jsoup.version>1.13.1</jsoup.version>
         <okhttp.version>4.9.0</okhttp.version>
@@ -16,6 +48,7 @@
         <jackson.version>2.12.0</jackson.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -90,4 +123,77 @@
         </dependency>
 
     </dependencies>
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <!-- jdk1.8要加上，1.7要去掉，否则会报错 -->
+                            <additionalJOptions>
+                                <additionalJOption>-Xdoclint:none</additionalJOption>
+                            </additionalJOptions>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <repository>
+                    <!-- 这里的id必须要和全局配置中的release id 一致 -->
+                    <id>ossrh</id>
+                    <name>Nexus Release Repository</name>
+                    <!-- 这里就是在创建issue成功后，对方回复的release发布地址-->
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                </repository>
+                <snapshotRepository>
+                    <!-- 这里的id必须要和全局配置中的snapshot id 一致 -->
+                    <id>ossrh</id>
+                    <name>Nexus Snapshot Repository</name>
+                    <!-- 这里就是在创建issue成功后，对方回复的snapshot发布地址-->
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 </project>

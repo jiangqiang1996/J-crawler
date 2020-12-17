@@ -57,7 +57,7 @@ public class Config {
      * 添加默认正则表达式
      * 默认正则表达式没有正正则和逆正则之分
      *
-     * @param regEx
+     * @param regEx 满足该正则表达式的URL会被过滤
      */
     public void addDefaultRegEx(String regEx) {
         if (StringUtil.isNotEmpty(regEx)) {

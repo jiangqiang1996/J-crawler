@@ -16,9 +16,21 @@ java爬虫框架
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.
 不支持form-data
 
-持续更新中...
+使用方式：
+构建maven项目，引入下面依赖即可
+```XML
+<dependency>
+  <groupId>xin.jiangqiang</groupId>
+  <artifactId>J-crawler</artifactId>
+  <version>1.0</version>
+</dependency>
+```
+
+**注意：如果运行报错，请先注释掉pom.xml中profiles节点所有内容**
+
+框架使用示例均在xin.jiangqiang.test包下
 
 已知问题:
 项目下写多个启动类时执行方法,并且多次使用@Deal注解时,永远会只找到第一个(已修复尚未测试)
 
-框架使用示例均在xin.jiangqiang.test包下
+持续更新中...
