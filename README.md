@@ -17,7 +17,7 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 不支持form-data
 
 使用方式：
-构建maven项目，引入下面依赖即可
+方式一：构建maven项目，引入下面依赖即可
 ```XML
 <dependency>
   <groupId>xin.jiangqiang</groupId>
@@ -25,12 +25,18 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
   <version>1.0</version>
 </dependency>
 ```
-
-**注意：如果运行报错，请先注释掉pom.xml中profiles节点所有内容**
+方式二：拉取本框架代码，创建自己的包，然后在自己的包下编写启动类。
+如果有不满足你需求的地方，可以自己实现AbstractStarter类，不建议直接修改框架原有实现类的源码。
+**如果运行报错，请先注释掉pom.xml中profiles节点所有内容**
 
 框架使用示例均在xin.jiangqiang.sample包下
 
 已知问题:
-项目下写多个启动类时执行方法,并且多次使用@Deal注解时,永远会只找到第一个(已修复尚未测试)
+貌似去重功能没有生效，影响不大，暂时不改。
+
+开发计划：
+未来支持爬取js加载的页面，预计春节前会完成初版。
+
+欢迎参与维护并贡献代码。
 
 持续更新中...
