@@ -1,19 +1,15 @@
-package xin.jiangqiang.test;
+package xin.jiangqiang.sample;
 
 import lombok.extern.slf4j.Slf4j;
 import xin.jiangqiang.annotation.After;
 import xin.jiangqiang.annotation.Before;
 import xin.jiangqiang.annotation.Deal;
 import xin.jiangqiang.annotation.Match;
-import xin.jiangqiang.app.Application;
+import xin.jiangqiang.app.TradApplication;
 import xin.jiangqiang.entities.Next;
 import xin.jiangqiang.entities.Page;
-import xin.jiangqiang.net.RequestMethod;
-import xin.jiangqiang.util.FileUtil;
 
-import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +19,7 @@ import java.util.Map;
  * @date 2020/12/16 9:23
  */
 @Slf4j
-public class SaveApplicationTest extends Application {
+public class SaveTradApplicationTest extends TradApplication {
     @Before
     public void before() {
         log.info("before执行了");
@@ -65,7 +61,7 @@ public class SaveApplicationTest extends Application {
     }
 
     public static void main(String[] args) {
-        SaveApplicationTest saveApplicationTest = new SaveApplicationTest();
+        SaveTradApplicationTest saveApplicationTest = new SaveTradApplicationTest();
         Map<String, String> lines = new HashMap<>();
         Map<String, String> headers = new HashMap<>();
         Map<String, String> bodys = new HashMap<>();

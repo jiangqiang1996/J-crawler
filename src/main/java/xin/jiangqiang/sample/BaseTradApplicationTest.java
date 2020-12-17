@@ -1,10 +1,10 @@
-package xin.jiangqiang.test;
+package xin.jiangqiang.sample;
 
 import lombok.extern.slf4j.Slf4j;
 import xin.jiangqiang.annotation.After;
 import xin.jiangqiang.annotation.Before;
 import xin.jiangqiang.annotation.Deal;
-import xin.jiangqiang.app.Application;
+import xin.jiangqiang.app.TradApplication;
 import xin.jiangqiang.entities.Next;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.net.RequestMethod;
@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * 最基本的爬虫实例
  * 基本流程:
- * 1.首先需要继承Application类
+ * 1.首先需要继承AbstractStarter的子实现类
  * 2.然后创建本类实例
  * 3.加入爬虫种子
  * 4.配置对该种子请求时的请求行，请求头，请求体（参数），以及HTTP代理，以及其他自定义信息
@@ -39,7 +39,7 @@ import java.util.Map;
  * @date 2020/12/15 17:19
  */
 @Slf4j
-public class BaseApplicationTest extends Application {
+public class BaseTradApplicationTest extends TradApplication {
     @Before
     public void before() {
         log.info("before执行了");
@@ -56,7 +56,7 @@ public class BaseApplicationTest extends Application {
     }
 
     public static void main(String[] args) {
-        BaseApplicationTest baseApplicationTest = new BaseApplicationTest();
+        BaseTradApplicationTest baseApplicationTest = new BaseTradApplicationTest();
         Map<String, String> lines = new HashMap<>();
         Map<String, String> headers = new HashMap<>();
         Map<String, String> bodys = new HashMap<>();

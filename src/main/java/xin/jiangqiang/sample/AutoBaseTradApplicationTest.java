@@ -1,11 +1,11 @@
-package xin.jiangqiang.test;
+package xin.jiangqiang.sample;
 
 import lombok.extern.slf4j.Slf4j;
 import xin.jiangqiang.annotation.After;
 import xin.jiangqiang.annotation.Before;
 import xin.jiangqiang.annotation.Deal;
 import xin.jiangqiang.annotation.Match;
-import xin.jiangqiang.app.Application;
+import xin.jiangqiang.app.TradApplication;
 import xin.jiangqiang.entities.Next;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.net.RequestMethod;
@@ -23,7 +23,7 @@ import java.util.Map;
  * @date 2020/12/15 17:19
  */
 @Slf4j
-public class AutoBaseApplicationTest extends Application {
+public class AutoBaseTradApplicationTest extends TradApplication {
     @Before
     public void before() {
         log.info("before执行了");
@@ -62,7 +62,7 @@ public class AutoBaseApplicationTest extends Application {
     }
 
     public static void main(String[] args) {
-        AutoBaseApplicationTest autoBaseApplicationTest = new AutoBaseApplicationTest();
+        AutoBaseTradApplicationTest autoBaseApplicationTest = new AutoBaseTradApplicationTest();
         Map<String, String> lines = new HashMap<>();
         Map<String, String> headers = new HashMap<>();
         Map<String, String> bodys = new HashMap<>();
