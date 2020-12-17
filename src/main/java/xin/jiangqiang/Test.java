@@ -1,11 +1,8 @@
 package xin.jiangqiang;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import xin.jiangqiang.annotation.*;
-import xin.jiangqiang.config.Config;
-import xin.jiangqiang.app.Application;
+import xin.jiangqiang.app.TradApplication;
 import xin.jiangqiang.entities.Crawler;
 import xin.jiangqiang.entities.Next;
 import xin.jiangqiang.entities.Page;
@@ -20,7 +17,7 @@ import java.util.*;
 
 @Slf4j
 //@App
-public class Test extends Application {
+public class Test extends TradApplication {
 
     @Before
     public void before() {
