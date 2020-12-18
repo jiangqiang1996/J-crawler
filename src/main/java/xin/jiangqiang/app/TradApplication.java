@@ -54,7 +54,7 @@ public class TradApplication extends AbstractStarter {
                 //如果正正则或反正则列表有一个有值，就会抽取所有URL
                 if (config.getRegExs().size() != 0 || config.getReverseRegExs().size() != 0) {
                     //此处用于抓取所有URL
-                    List<String> urls = DocumentUtil.getAllUrl(page.getHtml());
+                    List<String> urls = DocumentUtil.getAllUrl(page.getHtml(), crawler.getUrl());
                     //使用正则表达式筛选URL
                     urls = getMatchUrls(urls);
                     next.addSeeds(urls, "");

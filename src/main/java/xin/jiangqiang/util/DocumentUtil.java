@@ -11,23 +11,35 @@ import java.util.List;
 import java.util.Set;
 
 public class DocumentUtil {
-    public static List<String> getAllUrl(String html) {
+    public static List<String> getAllUrl(String html, String baseUri) {
         if (!StringUtil.isNotEmpty(html)) {
             return new ArrayList<>();
         }
         Set<String> urls = new HashSet<>();
-        Document doc = Jsoup.parse(html);
+        if (baseUri == null) {
+            baseUri = "";
+        }
+        Document doc = Jsoup.parse(html, baseUri);
         Elements links = doc.select("a[href]");
         Elements media = doc.select("[src]");
         Elements imports = doc.select("link[href]");
         for (Element src : media) {
-            urls.add(src.attr("abs:src"));
+            String url = src.attr("abs:src");
+            if (!baseUri.contains(url)) {
+                urls.add(url);
+            }
         }
         for (Element link : imports) {
-            urls.add(link.attr("abs:href"));
+            String url = link.attr("abs:href");
+            if (!baseUri.contains(url)) {
+                urls.add(url);
+            }
         }
         for (Element link : links) {
-            urls.add(link.attr("abs:href"));
+            String url = link.attr("abs:href");
+            if (!baseUri.contains(url)) {
+                urls.add(url);
+            }
         }
         return new ArrayList<>(urls);
     }

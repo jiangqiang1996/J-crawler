@@ -1,6 +1,8 @@
 package xin.jiangqiang.util;
 
-import java.io.File;
+import xin.jiangqiang.entities.Page;
+
+import java.io.*;
 
 /**
  * @author jiangqiang
@@ -29,5 +31,28 @@ public class FileUtil {
         } else {
             return parentFile.mkdirs();
         }
+    }
+
+    /**
+     * 小文件对应的URL可以直接使用框架请求后，通过page对象中的content保存（也就是此方法保存）
+     * 如果是大文件，建议过滤掉框架自动的请求。单独使用相关工具类从网络中下载文件
+     *
+     * @param fileDirName 保存的目录名字
+     * @param page        当前爬虫对象
+     * @throws IOException 保存文件失败
+     */
+    public static void saveFile(String fileDirName, Page page) throws IOException {
+        File fileDir = new File(fileDirName);
+        if (!fileDir.exists()) {
+            boolean mkdirs = fileDir.mkdirs();
+        }
+        //通过URL截取文件名字
+        String[] strings = page.getUrl().split("/");
+        String fileName = strings[strings.length - 1];
+        File file = new File(fileDir, fileName);
+        OutputStream os = new FileOutputStream(file);
+        os.write(page.getContent());
+        os.flush();
+        os.close();
     }
 }
