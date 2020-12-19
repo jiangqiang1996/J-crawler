@@ -16,7 +16,8 @@ import xin.jiangqiang.config.Config;
 import xin.jiangqiang.entities.Crawler;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.management.Record;
-import xin.jiangqiang.selenium.webdriver.WebDr;
+import xin.jiangqiang.selenium.webdriver.WebHandler;
+import xin.jiangqiang.selenium.webdriver.WebHandler;
 import xin.jiangqiang.util.StringUtil;
 
 import java.time.Duration;
@@ -39,7 +40,7 @@ public abstract class AbstractSeleniumHelper implements SeleniumHelper {
     public AbstractSeleniumHelper() {
     }
 
-    public abstract Page request(WebDr dr, Crawler crawler);
+    public abstract Page request(WebHandler webHandler, Crawler crawler);
 
     @Override
     public final WebDriver getDriver(Crawler crawler) {

@@ -1,20 +1,17 @@
 package xin.jiangqiang.selenium;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
 import org.jsoup.Jsoup;
 import org.openqa.selenium.WebDriver;
 import xin.jiangqiang.config.Config;
 import xin.jiangqiang.entities.Crawler;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.management.Record;
-import xin.jiangqiang.selenium.webdriver.WebDr;
+import xin.jiangqiang.selenium.webdriver.WebHandler;
 import xin.jiangqiang.util.DriverUtil;
 import xin.jiangqiang.util.StringUtil;
 
 import java.time.Duration;
-import java.util.Map;
 
 /**
  * @author jiangqiang
@@ -22,12 +19,21 @@ import java.util.Map;
  */
 @Slf4j
 public class SeleniumHelperDefaultImpl extends AbstractSeleniumHelper {
-    public SeleniumHelperDefaultImpl(Config config, Record record) {
+    private static SeleniumHelper singleton = null;
+
+    public synchronized static SeleniumHelper getInstance(Config config, Record record) {
+        if (singleton == null) {
+            singleton = new SeleniumHelperDefaultImpl(config, record);
+        }
+        return singleton;
+    }
+
+    private SeleniumHelperDefaultImpl(Config config, Record record) {
         super(config, record);
     }
 
-    public Page request(WebDr dr, Crawler crawler) {
-        WebDriver driver = dr.getWebDriver();
+    public Page request(WebHandler webHandler, Crawler crawler) {
+        WebDriver driver = webHandler.getWebDriver();
         try {
             if (StringUtil.isEmpty(crawler.getUrl())) {
                 return null;
@@ -36,9 +42,10 @@ public class SeleniumHelperDefaultImpl extends AbstractSeleniumHelper {
             if (!record.hasUrl(crawler.getUrl())) {
                 log.info("url: " + crawler.getUrl());
                 driver.get(crawler.getUrl());
-                for (org.openqa.selenium.Cookie cookie : crawler.getCookies()) {
-                    driver.manage().addCookie(cookie);
-                }
+                //获取cookie,因为只有一个driver实例，因此没有必要
+//                for (org.openqa.selenium.Cookie cookie : crawler.getCookies()) {
+//                    driver.manage().addCookie(cookie);
+//                }
                 // 点击后要等待网页加载一段时间，然后才是最新的网页源码
                 driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(config.getDelaytime()));
                 Page page = new Page();
