@@ -25,6 +25,12 @@ public class Config {
     String savePath = "";
     //是否继续上次爬取,保存路径为空时不会继续爬取
     Boolean isContinue = true;
+    //下面是selenium专属配置
+    String driverPath;//驱动路径
+    String binaryPath;//浏览器可执行文件路径
+    String browserType = "chrome";//浏览器类型
+    Integer delaytime = 2;//单位:秒,使用selenium时,需要等待js解析完成,否则拿不到单页面项目的最终页面,可以根据机器适当延长
+    Boolean isHeadLess = true;//默认使用无界面浏览器模式，如果调试时建议设置false，只有edge，火狐，谷歌浏览器有无头模式
 
     {
         defaultReverseRegExs.add(".*\\.(js|css).*");

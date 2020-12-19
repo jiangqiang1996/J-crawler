@@ -51,7 +51,7 @@ public class Page extends Crawler {
             //内容为json
             log.debug(contentType);
         } else if (StringUtil.isNotEmpty(html) && contentType.contains("text/html")) {
-            this.document = Jsoup.parse(html);
+            this.document = Jsoup.parse(html, getUrl());
         } else if (contentType.contains("image")) {
             log.debug(contentType);
         } else if ("".equals(contentType)) {

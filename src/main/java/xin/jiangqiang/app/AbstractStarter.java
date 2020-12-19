@@ -69,10 +69,9 @@ public abstract class AbstractStarter implements Starter {
             }
         }
         callMethodHelper = new CallMethodHelper(config);
-        callMethodHelper.before();
     }
 
-    private void beforeEnd() {
+    protected void beforeEnd() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("程序准备结束");
             //保存路径不为空，则保存
@@ -91,12 +90,14 @@ public abstract class AbstractStarter implements Starter {
                     log.error(e.getMessage());
                 }
             }
+            clearResource();
             log.info("程序结束了");
         }));
     }
 
     public final void start() {
         init();
+        callMethodHelper.before();//初始化完成后执行before方法
         run();
         close();
     }
@@ -123,9 +124,13 @@ public abstract class AbstractStarter implements Starter {
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                log.info(e.getMessage());
             }
         }
         callMethodHelper.after();
+    }
+
+    public void clearResource() {
     }
 
     abstract void run();
