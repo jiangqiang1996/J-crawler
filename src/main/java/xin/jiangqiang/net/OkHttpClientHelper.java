@@ -126,7 +126,9 @@ public class OkHttpClientHelper {
 
         //请求行中获取请求方式
         String method = lines.get("method");
-
+        if (StringUtil.isEmpty(method)) {
+            method = "GET";
+        }
         //添加请求头
         Set<Map.Entry<String, String>> headerEntrySet = headers.entrySet();
         for (Map.Entry<String, String> entry : headerEntrySet) {

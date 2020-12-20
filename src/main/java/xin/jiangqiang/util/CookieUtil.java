@@ -60,6 +60,7 @@ public class CookieUtil {
                 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)
         ) {
             driver.get(url);
+            Thread.sleep(3000);
             Set<Cookie> cookies = (Set<Cookie>) objectInputStream.readObject();
             driver.manage().deleteAllCookies();
             for (Cookie cookie : cookies) {

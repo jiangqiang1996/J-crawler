@@ -1,11 +1,17 @@
 package xin.jiangqiang.util;
 
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import xin.jiangqiang.net.OkHttpClientHelper;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author jiangqiang
@@ -35,6 +41,32 @@ public class HttpUtil {
         } catch (IOException e) {
             log.info(e.getMessage());
             return "";
+        }
+    }
+
+    public static Response request(String url, Map<String, String> proxyConfigs, Map<String, String> lines, Map<String, String> headers, Map<String, String> bodys) {
+        try {
+            if (proxyConfigs == null) {
+                proxyConfigs = new HashMap<>();
+            }
+            if (lines == null) {
+                lines = new HashMap<>();
+            }
+            if (headers == null) {
+                headers = new HashMap<>();
+            }
+            if (bodys == null) {
+                bodys = new HashMap<>();
+            }
+            OkHttpClientHelper okHttpClientHelper = new OkHttpClientHelper(null, null);
+            OkHttpClient client = okHttpClientHelper.processOkHttpClient(proxyConfigs);
+            Request request = okHttpClientHelper.processRequest(url, lines, headers, bodys);
+            Response response = client.newCall(request).execute();
+            Integer code = response.code();
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
