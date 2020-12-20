@@ -1,8 +1,10 @@
 package xin.jiangqiang.util;
 
+import org.apache.commons.io.FileUtils;
 import xin.jiangqiang.entities.Page;
 
 import java.io.*;
+import java.net.URL;
 
 /**
  * @author jiangqiang
@@ -54,5 +56,23 @@ public class FileUtil {
         os.write(page.getContent());
         os.flush();
         os.close();
+    }
+
+    public static boolean saveFileFromURL(String fileDirName, String url) {
+        try {
+            File fileDir = new File(fileDirName);
+            if (!fileDir.exists()) {
+                boolean mkdirs = fileDir.mkdirs();
+            }
+            //通过URL截取文件名字
+            String[] strings = url.split("/");
+            String fileName = strings[strings.length - 1];
+            File file = new File(fileDir, fileName);
+            FileUtils.copyURLToFile(new URL(url), file);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+
     }
 }

@@ -39,6 +39,8 @@ public class SeleniumApplication extends AbstractStarter {
         //使用seleniumHelper来创建一个驱动，并且创建多个标签页进行维护
         webHandlerManager = WebHandlerManager.getInstance(config, seleniumHelper, crawler);
         init(webHandlerManager, crawler);
+        //重置状态，此处是单线程，必须重置，否则后面拿不到
+        webHandlerManager.resetAllWebHandler();
     }
 
     /**
@@ -71,7 +73,7 @@ public class SeleniumApplication extends AbstractStarter {
         }
         for (Crawler tmpCrawler : crawler.getCrawlers()) {
             //快速继承init方法中放的一些数据
-            tmpCrawler.initDataFromCrawler(crawler);
+//            tmpCrawler.initDataFromCrawler(crawler);
             Runnable runnable = new Task(tmpCrawler);
             executor.execute(runnable);
         }

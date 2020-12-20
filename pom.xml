@@ -47,6 +47,7 @@
         <logback.version>1.2.3</logback.version>
         <jackson.version>2.12.0</jackson.version>
         <selenium-java.version>4.0.0-alpha-7</selenium-java.version>
+        <commons-io.version>2.8.0</commons-io.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -101,6 +102,12 @@
                 <artifactId>selenium-java</artifactId>
                 <version>${selenium-java.version}</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -133,6 +140,11 @@
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
     </dependencies>
     <profiles>
         <profile>

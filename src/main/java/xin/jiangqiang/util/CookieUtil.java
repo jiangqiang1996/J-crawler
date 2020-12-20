@@ -1,81 +1,74 @@
 package xin.jiangqiang.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 
 import java.io.*;
 import java.util.Date;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
  * @author jiangqiang
  * @date 2020/12/19 16:07
  */
+@Slf4j
 public class CookieUtil {
     /**
      * 保存cookie到文件，保存成功返回true
      *
-     * @param driver
-     * @return 是否成功
+     * @param driver   从driver获取cookie保存到文件
+     * @param filePath 文件保存路径
+     * @return 成功返回true
      */
     public static boolean saveCookie(WebDriver driver, String filePath) {
-        File cookieFile = new File(filePath);
-        if (cookieFile.exists()) {
-            cookieFile.delete();
+        File file = new File(filePath);
+        if (file.exists()) {//文件存在则先删除
+            file.delete();
+        } else {
+            FileUtil.mkParentDirIfNot(filePath);
         }
         try (
-                FileWriter fileWriter = new FileWriter(cookieFile);
-                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)
         ) {
-            cookieFile.createNewFile();
-            for (Cookie cookie : driver.manage().getCookies()) {
-                bufferedWriter.write(
-                        cookie.getName() + ";" +
-                                cookie.getValue() + ";" +
-                                cookie.getDomain() + ";" +
-                                cookie.getPath() + ";" +
-                                cookie.getExpiry() + ";" +
-                                cookie.isSecure()
-                );
-                bufferedWriter.newLine();
-            }
-            bufferedWriter.flush();
+            Set<Cookie> cookies = driver.manage().getCookies();
+            objectOutputStream.writeObject(cookies);
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
+            log.info(e.getMessage());
             return false;
         }
     }
 
-    public static void getCookies(WebDriver webDriver) {
-        BufferedReader bufferedReader;
-        webDriver.get("https://passport.csdn.net/account/login?from=http://my.csdn.net/my/mycsdn");
-        try {
-            File cookieFile = new File("csdn.cookie.txt");
-            FileReader fileReader = new FileReader(cookieFile);
-            bufferedReader = new BufferedReader(fileReader);
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                StringTokenizer stringTokenizer = new StringTokenizer(line, ";");
-                while (stringTokenizer.hasMoreTokens()) {
-                    String name = stringTokenizer.nextToken();
-                    String value = stringTokenizer.nextToken();
-                    String domain = stringTokenizer.nextToken();
-                    String path = stringTokenizer.nextToken();
-                    Date expiry = null;
-                    String dt;
-
-                    if (!(dt = stringTokenizer.nextToken()).equals("null")) {
-                        expiry = new Date(dt);
-                    }
-                    boolean isSecure = new Boolean(stringTokenizer.nextToken()).booleanValue();
-                    Cookie cookie = new Cookie(name, value, domain, path, expiry, isSecure);
-                    webDriver.manage().addCookie(cookie);
-                }
-            }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    /**
+     * 从文件获取cookie添加到driver
+     *
+     * @param driver   需要设置cookie的driver
+     * @param filePath 文件保存路径
+     * @param url      cookie对应的域名
+     * @return 成功返回true
+     */
+    public static boolean getCookie(WebDriver driver, String filePath, String url) {
+        File file = new File(filePath);
+        if (!file.exists()) {//文件不存在直接返回false
+            return false;
         }
-        webDriver.get("http://blog.csdn.net/");
+        try (
+                FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)
+        ) {
+            driver.get(url);
+            Set<Cookie> cookies = (Set<Cookie>) objectInputStream.readObject();
+            driver.manage().deleteAllCookies();
+            for (Cookie cookie : cookies) {
+                driver.manage().addCookie(cookie);
+            }
+            return true;
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return false;
+        }
     }
 }
