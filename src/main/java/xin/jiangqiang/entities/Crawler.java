@@ -2,6 +2,7 @@ package xin.jiangqiang.entities;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.openqa.selenium.Cookie;
 import xin.jiangqiang.net.RequestMethod;
 import xin.jiangqiang.util.StringUtil;
 
@@ -22,6 +23,14 @@ public class Crawler implements Serializable {
     private String type = "";
     private List<Crawler> crawlers = new ArrayList<>();//当前URL中提取出来的子爬虫
     //元数据，存储当前URL提交的参数等信息
+    //为了支持Selenium新增字段，某版本更新后cookie并没有使用上
+    private Set<Cookie> cookies = new HashSet<>();
+
+    //新增cookie
+    public Crawler addCookies(Cookie cookie) {
+        cookies.add(cookie);
+        return this;
+    }
 
     /**
      * 1. 从crawler构造Page对象,发送请求之后是Page对象,请求前是Crawler对象
@@ -33,7 +42,9 @@ public class Crawler implements Serializable {
     public Crawler initDataFromCrawler(Crawler crawler) {
         this.depth = crawler.depth;
 //        this.url = crawler.url;
-        this.type = crawler.type;
+        if (StringUtil.isEmpty(this.type)) {
+            this.type = crawler.type;
+        }
         //此处需要深拷贝
         Map<String, String> lines = new HashMap<>(crawler.getLines());
         this.setLines(lines);
@@ -49,7 +60,8 @@ public class Crawler implements Serializable {
 
         Map<String, String> configs = new HashMap<>(crawler.getData());
         this.setConfigs(configs);
-
+        //继承上一代的cookie
+        this.getCookies().addAll(crawler.getCookies());
         return this;
     }
 

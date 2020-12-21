@@ -8,4 +8,9 @@ package xin.jiangqiang.app;
  */
 public interface Starter {
     void start();
+
+    /**
+     * 程序没有正常执行完时会执行此方法
+     */
+    void clearResource();
 }

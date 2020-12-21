@@ -51,6 +51,11 @@ public class CallMethodHelper {
 //        }
 //    }
 
+    /**
+     * @param page 获取type和match的type值比较
+     * @param cla  执行该类上注解对应的方法
+     * @param args 方法的参数
+     */
     public void callMatchMethod(Page page, Class<? extends Annotation> cla, Object... args) {
         ReflectHelper reflectHelper = new ReflectHelper(config);
         try {

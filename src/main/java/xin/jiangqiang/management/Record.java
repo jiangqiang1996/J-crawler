@@ -1,10 +1,5 @@
 package xin.jiangqiang.management;
 
-import xin.jiangqiang.entities.Crawler;
-
-import java.util.List;
-import java.util.Set;
-
 /**
  * 存储所有种子
  * 运行结束时保存
