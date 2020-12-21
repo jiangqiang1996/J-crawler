@@ -37,7 +37,7 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 框架使用示例均在xin.jiangqiang.sample包下
 
 已知问题:
-貌似去重功能没有生效，影响不大，暂时不改。
+去重功能只能去掉同一批次的重复URL
 
 开发计划：
 暂时是修复bug，提高并发效率。

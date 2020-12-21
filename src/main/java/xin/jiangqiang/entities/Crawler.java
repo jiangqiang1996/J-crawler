@@ -24,9 +24,11 @@ public class Crawler implements Serializable {
     private List<Crawler> crawlers = new ArrayList<>();//当前URL中提取出来的子爬虫
     //元数据，存储当前URL提交的参数等信息
     //为了支持Selenium新增字段，某版本更新后cookie并没有使用上
+    @Deprecated
     private Set<Cookie> cookies = new HashSet<>();
 
     //新增cookie
+    @Deprecated
     public Crawler addCookies(Cookie cookie) {
         cookies.add(cookie);
         return this;

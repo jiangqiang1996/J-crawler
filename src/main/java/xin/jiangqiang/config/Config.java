@@ -14,7 +14,6 @@ public class Config {
     Charset charset = Charset.defaultCharset();
     Integer threads = 50;
     Integer depth = 4;
-    String packageName;//最新版暂时没有使用此属性
     Class<?> appClass;//项目启动类,决定了执行哪一个类下的@Befor,@Match等注解
     List<String> regExs = new ArrayList<>();//满足此正则表达式列表的URL会被提取
     List<String> reverseRegExs = new ArrayList<>();//满足此正则表达式列表的会被过滤,不作为种子进行下次爬取
