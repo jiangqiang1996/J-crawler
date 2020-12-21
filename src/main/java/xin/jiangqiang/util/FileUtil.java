@@ -115,7 +115,4 @@ public class FileUtil {
         }
     }
 
-    public static void main(String[] args) {
-        FileUtil.saveFileFromURL("D:\\tmp\\20201219\\", "https://i.pximg.net/c/250x250_80_a2/img-master/img/2020/11/27/20/37/17/85939449_p0_square1200.jpg");
-    }
 }
