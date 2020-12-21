@@ -17,7 +17,7 @@ java爬虫框架
 
 注意:
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.
-不支持form-data，完整功能可以去selenium分支上拉取代码体验，主分支目前尚未实现10-12特性。
+不支持form-data。
 
 使用方式：
 方式一：构建maven项目，引入下面依赖即可
@@ -28,6 +28,8 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
   <version>1.0</version>
 </dependency>
 ```
+注意：maven仓库是老版本，不支持爬取js加载的页面，想体验最新特性请直接拉取代码。
+
 方式二：拉取本框架代码，创建自己的包，然后在自己的包下编写启动类。
 如果有不满足你需求的地方，可以自己实现AbstractStarter类，不建议直接修改框架原有实现类的源码。
 **如果运行报错，请先注释掉pom.xml中profiles节点所有内容**
@@ -38,8 +40,11 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 貌似去重功能没有生效，影响不大，暂时不改。
 
 开发计划：
-打算在latest分支上使用puppeteer重构selenium部分代码，想体验新特性可以去分支拉取代码，bug比较多，暂时没时间改。
+暂时是修复bug，提高并发效率。
 
 欢迎参与维护并贡献代码。
 
 持续更新中...
+如有疑问，欢迎去我个人[博客](https://blog.jiangqiang.xin)留言
+
+##本项目仅学习使用，切勿用在非法用途。否则后果自负，技术无罪。##
