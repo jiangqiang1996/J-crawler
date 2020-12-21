@@ -11,10 +11,13 @@ java爬虫框架
 7. 支持爬取json接口
 8. 支持请求参数,支持多种提交方式,支持自定义header
 9. 支持HTTP代理
+10. 支持爬取js加载的网站
+11. 支持模拟登录
+12. 支持下载防盗链的图片
 
 注意:
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.
-不支持form-data
+不支持form-data，完整功能可以去selenium分支上拉取代码体验，主分支目前尚未实现10-12特性。
 
 使用方式：
 方式一：构建maven项目，引入下面依赖即可
@@ -35,7 +38,7 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 貌似去重功能没有生效，影响不大，暂时不改。
 
 开发计划：
-未来支持爬取js加载的页面，预计春节前会完成初版。
+打算在latest分支上使用puppeteer重构selenium部分代码，想体验新特性可以去分支拉取代码，bug比较多，暂时没时间改。
 
 欢迎参与维护并贡献代码。
 
