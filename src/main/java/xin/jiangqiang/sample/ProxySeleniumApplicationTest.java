@@ -133,12 +133,28 @@ public class ProxySeleniumApplicationTest extends SeleniumApplication {
             headers.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3861.400 QQBrowser/10.7.4313.400");
             FileUtil.saveFileFromURL("D:\\tmp\\20201219\\content", url, proxyConfigs, null, headers, null);//这里是内容图片
         }
+        //抓取a标签上的URL
+        Elements hrefs = page.getDocument().select("a.sc-1qpw8k9-3.ckeRFU.gtm-expand-full-size-illust[href]");
+        for (Element href : hrefs) {
+            String url = href.attr("abs:href");
+            System.out.println(url);
+
+            Map<String, String> proxyConfigs = new HashMap<>();
+            //根据自己情况修改
+            proxyConfigs.put("IP", "127.0.0.1");
+            proxyConfigs.put("port", "8001");
+
+            Map<String, String> headers = new HashMap<>();
+            headers.put("referer", page.getUrl());
+            headers.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3861.400 QQBrowser/10.7.4313.400");
+            FileUtil.saveFileFromURL("D:\\tmp\\20201219\\content", url, proxyConfigs, null, headers, null);//这里是内容图片
+        }
     }
 
     @Deal
     public void deal(Page page, Next next) {
 //        System.out.println(page.getHtml());
-
+        System.out.println();
 
 //        List<String> urls = DocumentUtil.getAllUrl(page.getHtml(), page.getUrl());//手动抽取所有URL，实际上直接在main方法中使用正则表达式更好
 //        for (String url : urls) {

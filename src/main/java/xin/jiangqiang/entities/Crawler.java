@@ -42,7 +42,9 @@ public class Crawler implements Serializable {
     public Crawler initDataFromCrawler(Crawler crawler) {
         this.depth = crawler.depth;
 //        this.url = crawler.url;
-        this.type = crawler.type;
+        if (StringUtil.isEmpty(this.type)) {
+            this.type = crawler.type;
+        }
         //此处需要深拷贝
         Map<String, String> lines = new HashMap<>(crawler.getLines());
         this.setLines(lines);

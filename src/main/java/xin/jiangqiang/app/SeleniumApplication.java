@@ -95,7 +95,6 @@ public class SeleniumApplication extends AbstractStarter {
                 //获取一个可以使用的标签页
                 WebHandler webHandler = webHandlerManager.getWebHandler();
                 Page page = seleniumHelper.request(webHandler, crawler);
-                webHandlerManager.resetWebHandler(webHandler);
                 if (page == null) {//出错 直接返回
                     crawlers.remove(crawler);
                     return;
@@ -108,8 +107,9 @@ public class SeleniumApplication extends AbstractStarter {
                     urls = getMatchUrls(urls);
                     next.addSeeds(urls, "");
                 }
-                //获取元数据,深度,类型,cookie
+                //子爬虫继承本级爬虫的元数据,深度,类型,cookie
                 next.initDataFromCrawler(page);
+                //深度已经+1
                 next.setDepth(crawler.getDepth() + 1);
 
                 callMethodHelper.match(page, next);
@@ -121,11 +121,12 @@ public class SeleniumApplication extends AbstractStarter {
 //                } else {
 //                    record.addSucc(page.getUrl());
 //                }
+                webHandlerManager.resetWebHandler(webHandler);
                 crawlers.remove(crawler);
                 //过滤下次爬取的URL
                 filter.filter(next, page);
                 for (Crawler tmpCrawler : next.getCrawlers()) {
-                    tmpCrawler.initDataFromCrawler(next);
+                    tmpCrawler.initDataFromCrawler(next);//此处可能会覆盖当前爬虫的设置
                     Runnable runnable = new Task(tmpCrawler);
                     executor.execute(runnable);
                 }
