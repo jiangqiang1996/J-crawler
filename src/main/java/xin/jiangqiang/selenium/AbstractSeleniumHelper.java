@@ -15,8 +15,7 @@ import org.openqa.selenium.opera.OperaOptions;
 import xin.jiangqiang.config.Config;
 import xin.jiangqiang.entities.Crawler;
 import xin.jiangqiang.entities.Page;
-import xin.jiangqiang.management.Record;
-import xin.jiangqiang.selenium.webdriver.WebHandler;
+import xin.jiangqiang.manage.Recorder;
 import xin.jiangqiang.selenium.webdriver.WebHandler;
 import xin.jiangqiang.util.StringUtil;
 
@@ -30,9 +29,9 @@ import java.util.Map;
  */
 public abstract class AbstractSeleniumHelper implements SeleniumHelper {
     Config config;
-    Record record;
+    Recorder record;
 
-    public AbstractSeleniumHelper(Config config, Record record) {
+    public AbstractSeleniumHelper(Config config, Recorder recorder) {
         this.config = config;
         this.record = record;
     }

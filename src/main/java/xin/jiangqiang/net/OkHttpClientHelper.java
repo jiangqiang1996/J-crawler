@@ -8,25 +8,22 @@ import okhttp3.*;
 import xin.jiangqiang.config.Config;
 import xin.jiangqiang.entities.Crawler;
 import xin.jiangqiang.entities.Page;
-import xin.jiangqiang.management.Record;
+import xin.jiangqiang.manage.Recorder;
 import xin.jiangqiang.util.StringUtil;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 @Slf4j
 public class OkHttpClientHelper {
-    Config config;//暂时没用上
-    Record record;
+    Recorder recorder;
 
-    public OkHttpClientHelper(Config config, Record record) {
-        this.config = config;
-        this.record = record;
+    public OkHttpClientHelper(Recorder recorder) {
+        this.recorder = recorder;
     }
 
     public Page request(Crawler crawler) {
@@ -34,36 +31,29 @@ public class OkHttpClientHelper {
             if (StringUtil.isEmpty(crawler.getUrl())) {
                 return null;
             }
-            //判断是否成功爬取过该URL
-            if (!record.hasUrl(crawler.getUrl())) {
-                OkHttpClient client = processOkHttpClient(crawler.getConfigs());
+            OkHttpClient client = processOkHttpClient(crawler.getConfigs());
 //                OkHttpClient client = new OkHttpClient();
-                log.info("url: " + crawler.getUrl());
-                Request request = getRequest(crawler);
-                if (request == null) {
-                    return null;
-                }
-                //同步请求，可以优化为异步请求
-                //todo
-                Response response = client.newCall(request).execute();
-                Integer code = response.code();
-                Protocol protocol = response.protocol();
-                String message = response.message();
-                Headers headers = response.headers();
-                ResponseBody body = response.body();
-                byte[] content = Objects.requireNonNull(response.body()).bytes();
-                //content可能为图片等资源时,不应该转字符串,只不过不影响后续操作
-                String html = new String(content, new Config().getCharset());
-                Page page = new Page(code, protocol, message, headers, body, response.request(), content, html);
-                page.initDataFromCrawler(crawler);
-                return page;
+            log.info("url: " + crawler.getUrl());
+            Request request = getRequest(crawler);
+            if (request == null) {
+                return null;
             }
+            Response response = client.newCall(request).execute();
+            Integer code = response.code();
+            Protocol protocol = response.protocol();
+            String message = response.message();
+            Headers headers = response.headers();
+            ResponseBody body = response.body();
+            byte[] content = Objects.requireNonNull(response.body()).bytes();
+            //content可能为图片等资源时,不应该转字符串,只不过不影响后续操作
+            String html = new String(content, new Config().getCharset());
+            return new Page(crawler, code, body, response.request(), content, html);
         } catch (IOException e) {
             log.error(e.getMessage());
             //爬取错误 记录,一旦出错会返回null
-            record.addErr(crawler.getUrl());
+            recorder.addErr(crawler);
+            return null;
         }
-        return null;
     }
 
     private Request getRequest(Crawler crawler) throws JsonProcessingException {

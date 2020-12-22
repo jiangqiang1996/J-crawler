@@ -2,41 +2,42 @@ package xin.jiangqiang.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.apache.commons.beanutils.BeanUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import xin.jiangqiang.util.StringUtil;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 /**
  * 请求结束后的爬虫,此对象用于提取数据
  */
+@EqualsAndHashCode(callSuper = true)
 @Slf4j
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
 public class Page extends Crawler {
     private Integer responseCode;
-    private Protocol protocol;
-    private String message;
-    private Headers responseHeaders;
-    private ResponseBody responseBody;
-    private Request request;
     private byte[] content;
     private String html;
     private Document document;
 
-    public Page(Integer responseCode, Protocol protocol, String message, Headers headers, ResponseBody body, Request request, byte[] content, String html) {
+    public Page(Crawler crawler, Integer responseCode, ResponseBody body, Request request, byte[] content, String html) {
+        try {
+            BeanUtils.copyProperties(this, crawler);//继承公共参数
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.warn("继承公共参数失败，可能会对程序逻辑有影响，请检查，错误信息：" + e.getMessage());
+        }
+        this.setUrl(request.url().url().toString());
         this.responseCode = responseCode;
-        this.protocol = protocol;
-        this.message = message;
-        this.responseHeaders = headers;
-        this.responseBody = body;
-        this.request = request;
         if (content == null) {
             content = new byte[0];
         }
@@ -59,7 +60,7 @@ public class Page extends Crawler {
             //使用postman对上述网站发GET请求获取到的是js字符串
             log.info("URL:" + request.url().url().toString() + "的contenType为空");
         }
-        this.setUrl(request.url().url().toString());
+
     }
 
 }

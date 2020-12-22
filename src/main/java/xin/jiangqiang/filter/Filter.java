@@ -1,9 +1,10 @@
 package xin.jiangqiang.filter;
 
-import xin.jiangqiang.entities.Next;
+import xin.jiangqiang.config.Config;
+import xin.jiangqiang.entities.Crawler;
 import xin.jiangqiang.entities.Page;
 
 public interface Filter {
 
-    void filter(Next next, Page page);
+    void filter(Crawler crawler);
 }

@@ -25,7 +25,7 @@ public class TestProxy {
 
     public static Boolean test(Map<String, String> proxyConfigs) {
         try {
-            OkHttpClientHelper okHttpClientHelper = new OkHttpClientHelper(null, null);
+            OkHttpClientHelper okHttpClientHelper = new OkHttpClientHelper(null);
             OkHttpClient client = okHttpClientHelper.processOkHttpClient(proxyConfigs);
             //请求行
             Map<String, String> lines = new HashMap<>();

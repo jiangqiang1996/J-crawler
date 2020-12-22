@@ -2,37 +2,32 @@ package xin.jiangqiang.entities;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.Request;
+import okhttp3.ResponseBody;
+import org.apache.commons.beanutils.BeanUtils;
 import org.openqa.selenium.Cookie;
 import xin.jiangqiang.net.RequestMethod;
 import xin.jiangqiang.util.StringUtil;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
- * 此对象用于作为参数发起HTTP请求,同时构造新的Page对象
+ * 定义公共属性和元数据
  */
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
+@Slf4j
 public class Crawler implements Serializable {
     //深度
-    private Integer depth = 1;
+    private Integer depth = 0;
     private String url;//当前的URL
     //根据type执行不同逻辑
     private String type = "";
     private List<Crawler> crawlers = new ArrayList<>();//当前URL中提取出来的子爬虫
-    //元数据，存储当前URL提交的参数等信息
-    //为了支持Selenium新增字段，某版本更新后cookie并没有使用上
-    @Deprecated
-    private Set<Cookie> cookies = new HashSet<>();
-
-    //新增cookie
-    @Deprecated
-    public Crawler addCookies(Cookie cookie) {
-        cookies.add(cookie);
-        return this;
-    }
 
     /**
      * 1. 从crawler构造Page对象,发送请求之后是Page对象,请求前是Crawler对象
@@ -41,6 +36,7 @@ public class Crawler implements Serializable {
      * @param crawler 种子对象，后续爬虫会继承他的设置
      * @return 返回调用此方法的对象
      */
+    //todo
     public Crawler initDataFromCrawler(Crawler crawler) {
         this.depth = crawler.depth;
 //        this.url = crawler.url;
@@ -62,8 +58,6 @@ public class Crawler implements Serializable {
 
         Map<String, String> configs = new HashMap<>(crawler.getData());
         this.setConfigs(configs);
-        //继承上一代的cookie
-        this.getCookies().addAll(crawler.getCookies());
         return this;
     }
 
@@ -148,15 +142,39 @@ public class Crawler implements Serializable {
         return metaData.get("lines");
     }
 
+    public Crawler(Crawler crawler) {
+        try {//this是新创建的子爬虫
+            BeanUtils.copyProperties(this, crawler);//继承公共参数
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.warn("继承公共参数失败，可能会对程序逻辑有影响，请检查，错误信息：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 创建时子类爬虫深度会自动+1
+     *
+     * @param url url
+     * @return 返回子爬虫
+     */
     public Crawler addSeed(String url) {
         if (StringUtil.isNotEmpty(url)) {
-            Crawler crawler = new Crawler(url);
+            //this是当前爬虫
+            Crawler crawler = new Crawler(this);
+            crawler.setUrl(url);
+            crawler.setType(this.getType() + 1);
             crawlers.add(crawler);
             return crawler;
         }
         return null;
     }
 
+    /**
+     * 批量创建子爬虫，批量设置子类类型
+     *
+     * @param urls url列表
+     * @param type 类型
+     */
     public void addSeeds(List<String> urls, String type) {
         for (String url : urls) {
             if (StringUtil.isNotEmpty(url)) {

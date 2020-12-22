@@ -5,7 +5,6 @@ import xin.jiangqiang.annotation.After;
 import xin.jiangqiang.annotation.Before;
 import xin.jiangqiang.annotation.Deal;
 import xin.jiangqiang.app.TradApplication;
-import xin.jiangqiang.entities.Next;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.net.RequestMethod;
 
@@ -20,7 +19,7 @@ import java.util.Map;
  * 3.加入爬虫种子
  * 4.配置对该种子请求时的请求行，请求头，请求体（参数），以及HTTP代理，以及其他自定义信息
  * 5.调用start方法
- * 6.对爬取结果进行处理，主要包括将数据流保存为图片等静态资源，从html中获取文本信息存入数据库，从html中获取URL存入next，为下次爬取做准备
+ * 6.对爬取结果进行处理，主要包括将数据流保存为图片等静态资源，从html中获取文本信息存入数据库，从html中获取URL存入page，为下次爬取做准备
  * <p>
  * 执行本程序可以看见完整的生命周期：(三个生命周期均使用注解支持，注解只能使用在Application的子类中)
  * 我们需要关注的只有三个：
@@ -46,7 +45,7 @@ public class BaseTradApplicationTest extends TradApplication {
     }
 
     @Deal
-    public void deal(Page page, Next next) {
+    public void deal(Page page) {
         log.info("deal执行了");
     }
 

@@ -14,7 +14,15 @@ import java.lang.reflect.Method;
 public class ReflectHelper {
     private Config config;
 
-    public void callMethod(Page page, String classString, Class<? extends Annotation> clazz, Object[] args) throws Exception {
+    /**
+     * 执行match注解修饰的方法
+     *
+     * @param classString 方法所属全类名
+     * @param clazz       注解的class
+     * @param args        参数
+     * @throws Exception
+     */
+    public void callMethod(String classString, Class<? extends Annotation> clazz, Object[] args) throws Exception {
         Method[] methods = ReflectHelper.class.getClassLoader().loadClass(classString).getMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(clazz)) {
@@ -26,7 +34,7 @@ public class ReflectHelper {
     /**
      * 执行match注解修饰的方法
      *
-     * @param page        参数
+     * @param page        爬虫对象
      * @param classString 方法所属全类名
      * @param clazz       注解的class
      * @param args        参数

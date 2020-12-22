@@ -15,7 +15,6 @@ import xin.jiangqiang.annotation.Deal;
 import xin.jiangqiang.annotation.Match;
 import xin.jiangqiang.app.SeleniumApplication;
 import xin.jiangqiang.entities.Crawler;
-import xin.jiangqiang.entities.Next;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.selenium.webdriver.WebHandler;
 import xin.jiangqiang.selenium.webdriver.WebHandlerManager;
@@ -85,10 +84,9 @@ public class ProxySeleniumApplicationTest extends SeleniumApplication {
      * 提取详情页的URL
      *
      * @param page
-     * @param next
      */
     @Match("list")
-    public void matchList(Page page, Next next) {
+    public void matchList(Page page) {
         //抓取rp5asc-10 leQnFG类的img标签的URL
         Elements imgs = page.getDocument().select("img.rp5asc-10.leQnFG[src]");
         for (Element img : imgs) {
@@ -111,12 +109,12 @@ public class ProxySeleniumApplicationTest extends SeleniumApplication {
         Elements hrefs = page.getDocument().select("a.rp5asc-16.kdmVAX.sc-AxjAm.MksUu[href]");
         for (Element href : hrefs) {
             String url = href.attr("abs:href");
-            next.addSeed(url).setType("content");
+            page.addSeed(url).setType("content");
         }
     }
 
     @Match("content")
-    public void matchContent(Page page, Next next) {
+    public void matchContent(Page page) {
         //抓取img标签的URL
         Elements imgs = page.getDocument().select("img.sc-1qpw8k9-1.fvHoJ[src]");
         for (Element img : imgs) {
@@ -152,7 +150,7 @@ public class ProxySeleniumApplicationTest extends SeleniumApplication {
     }
 
     @Deal
-    public void deal(Page page, Next next) {
+    public void deal(Page page) {
 //        System.out.println(page.getHtml());
         System.out.println();
 
@@ -164,7 +162,7 @@ public class ProxySeleniumApplicationTest extends SeleniumApplication {
 //            if (contentType.startsWith("image")) {
 //                FileUtil.saveFileFromURL("D:/tmp/20201219", url);
 //            } else {
-//                next.addSeeds(urls, "content");
+//                page.addSeeds(urls, "content");
 //            }
 //        }
     }
@@ -179,7 +177,7 @@ public class ProxySeleniumApplicationTest extends SeleniumApplication {
 //        test.setWebDriverBuilder(new WebDriverManagement(test.getConfig()));
         Map<String, String> configs = new HashMap<>();
         test.getConfig().setDriverPath("D:\\tmp\\driver\\chromedriver_win32\\chromedriver.exe");
-//        test.getConfig().addRegEx("https://.*");//满足正则表达式的所有URL将会自动提取到deal生命周期的Next对象
+//        test.getConfig().addRegEx("https://.*");//满足正则表达式的所有URL将会自动提取存储到deal生命周期的page对象的crawlers属性
         test.getConfig().setThreads(3);//使用selenium时不能太大
         test.getCrawler().addSeed("https://www.pixiv.net/tags/%E3%82%AA%E3%83%AA%E3%82%AD%E3%83%A3%E3%83%A9/illustrations")
                 .setType("list");

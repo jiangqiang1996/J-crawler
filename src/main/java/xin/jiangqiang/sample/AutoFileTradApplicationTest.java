@@ -6,7 +6,6 @@ import xin.jiangqiang.annotation.Before;
 import xin.jiangqiang.annotation.Deal;
 import xin.jiangqiang.annotation.Match;
 import xin.jiangqiang.app.TradApplication;
-import xin.jiangqiang.entities.Next;
 import xin.jiangqiang.entities.Page;
 import xin.jiangqiang.net.RequestMethod;
 import xin.jiangqiang.util.FileUtil;
@@ -26,7 +25,7 @@ import java.util.Map;
 public class AutoFileTradApplicationTest extends TradApplication {
 
     @Deal
-    public void deal(Page page, Next next) {
+    public void deal(Page page) {
         try {
             FileUtil.saveFile("D:\\tmp\\1.0", page);
         } catch (IOException e) {
