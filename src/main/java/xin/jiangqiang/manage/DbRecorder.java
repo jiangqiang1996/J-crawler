@@ -31,4 +31,19 @@ public class DbRecorder extends AbstractRecorder {
     public void addErr(Crawler crawler) {
 
     }
+
+    @Override
+    public Integer count() {
+        return null;
+    }
+
+    @Override
+    public Integer countSucc() {
+        return null;
+    }
+
+    @Override
+    public Integer countErr() {
+        return null;
+    }
 }

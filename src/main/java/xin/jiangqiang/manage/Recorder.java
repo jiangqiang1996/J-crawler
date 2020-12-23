@@ -11,14 +11,14 @@ import java.util.List;
 public interface Recorder {
     /**
      * 存储未爬取的爬虫
-     *
+     * 需要去重处理
      * @param crawler 需要存储的爬虫
      */
     void add(Crawler crawler);
 
     /**
      * 存储未爬取的爬虫
-     *
+     * 需要去重处理
      * @param crawlers 需要存储的爬虫列表
      */
     void addAll(List<Crawler> crawlers);
@@ -76,4 +76,19 @@ public interface Recorder {
      * @return 爬取失败的爬虫列表
      */
     List<Crawler> getErr();
+
+    /**
+     * @return 查询未爬取的种子条数
+     */
+    Integer count();
+
+    /**
+     * @return 查询成功条数
+     */
+    Integer countSucc();
+
+    /**
+     * @return 查询失败条数
+     */
+    Integer countErr();
 }

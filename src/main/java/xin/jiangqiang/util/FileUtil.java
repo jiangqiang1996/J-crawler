@@ -26,9 +26,6 @@ public class FileUtil {
      */
     public static boolean mkParentDirIfNot(String filePath) {
         File file = new File(filePath);
-        System.out.println(file.getParentFile());
-        System.out.println(file.getAbsolutePath());
-        System.out.println(file.getAbsoluteFile().getParentFile());
         File parentFile = file.getParentFile();
         if (parentFile == null) {
             return true;//给定路径没有父级目录，不需要创建

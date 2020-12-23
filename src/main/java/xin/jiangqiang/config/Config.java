@@ -13,17 +13,18 @@ import java.util.List;
 public class Config {
     Charset charset = Charset.defaultCharset();
     Integer threads = 50;
-    Integer depth = 4;
+    Integer depth = 4;//注意，如果上一次爬取的最大深度为4，程序意外终止后，修改最大深度为2，继续上次爬取保存的结果继续爬取，那么无论如何至少会爬取一次。
     Class<?> appClass;//项目启动类,决定了执行哪一个类下的@Befor,@Match等注解
     List<String> regExs = new ArrayList<>();//满足此正则表达式列表的URL会被提取
     List<String> reverseRegExs = new ArrayList<>();//满足此正则表达式列表的会被过滤,不作为种子进行下次爬取
     List<String> defaultReverseRegExs = new ArrayList<>();//满足此正则表达式列表的也会被过滤,这是系统默认过滤规则,会过滤掉css,js
     //是否启用默认正则表达式过滤,如果不启用则defaultReverseRegExs无效
     Boolean isUseDefault = true;
-    //结束时爬取状态保存路径，用于断点续爬
-    String savePath = "";
-    //是否继续上次爬取,保存路径为空时不会继续爬取
-    Boolean isContinue = true;
+
+    //下面两个属性只对内存记录器有效，对数据库记录器无效
+    String savePath = "";//结束时没有爬取的种子会保存到此路径，用于断点续爬。路径不能为空，且未爬取的种子数不能为0，才会保存
+    Boolean isContinue = false;//是否继续上次爬取，保存路径为空或此属性值为false时均不会继续爬取
+
     //下面是selenium专属配置
     String driverPath;//驱动路径
     String binaryPath;//浏览器可执行文件路径

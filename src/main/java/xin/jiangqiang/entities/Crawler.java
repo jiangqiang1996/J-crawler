@@ -162,7 +162,7 @@ public class Crawler implements Serializable {
             //this是当前爬虫
             Crawler crawler = new Crawler(this);
             crawler.setUrl(url);
-            crawler.setType(this.getType() + 1);
+            crawler.setDepth(this.getDepth() + 1);
             crawlers.add(crawler);
             return crawler;
         }
@@ -204,4 +204,5 @@ public class Crawler implements Serializable {
     public int hashCode() {
         return Objects.hash(url);
     }
+
 }

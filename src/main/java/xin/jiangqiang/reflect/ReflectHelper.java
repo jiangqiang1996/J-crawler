@@ -49,6 +49,11 @@ public class ReflectHelper {
              */
             if (method.isAnnotationPresent(clazz)) {
                 Match match = (Match) method.getAnnotation(clazz);
+                //match上的各种属性值和type全部为空则执行，并跳出当前循环
+                if (StringUtil.isEmpty(match.code(), match.value(), match.regEx(), match.type(), page.getType())) {
+                    method.invoke(Class.forName(classString).getDeclaredConstructor().newInstance(), args);
+                    continue;
+                }
                 //响应码匹配
                 if (StringUtil.isNotEmpty(match.code()) && Integer.valueOf(match.code()).equals(page.getResponseCode())) {
                     method.invoke(Class.forName(classString).getDeclaredConstructor().newInstance(), args);
@@ -60,7 +65,8 @@ public class ReflectHelper {
                     continue;
                 }
                 //类型匹配时执行
-                if (match.value().equals(page.getType()) || match.type().equals(page.getType())) {
+                if ((StringUtil.isNotEmpty(match.value()) && match.value().equals(page.getType())) ||
+                        (StringUtil.isNotEmpty(match.type()) && match.type().equals(page.getType()))) {
                     method.invoke(Class.forName(classString).getDeclaredConstructor().newInstance(), args);
                 }
             }
