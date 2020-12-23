@@ -3,15 +3,10 @@ package xin.jiangqiang.entities;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Request;
-import okhttp3.ResponseBody;
-import org.apache.commons.beanutils.BeanUtils;
-import org.openqa.selenium.Cookie;
 import xin.jiangqiang.net.RequestMethod;
 import xin.jiangqiang.util.StringUtil;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -39,7 +34,7 @@ public class Crawler implements Serializable {
     //todo
     public Crawler initDataFromCrawler(Crawler crawler) {
         this.depth = crawler.depth;
-//        this.url = crawler.url;
+        this.url = crawler.url;
         if (StringUtil.isEmpty(this.type)) {
             this.type = crawler.type;
         }
@@ -142,15 +137,6 @@ public class Crawler implements Serializable {
         return metaData.get("lines");
     }
 
-    public Crawler(Crawler crawler) {
-        try {//this是新创建的子爬虫
-            BeanUtils.copyProperties(this, crawler);//继承公共参数
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.warn("继承公共参数失败，可能会对程序逻辑有影响，请检查，错误信息：" + e.getMessage());
-        }
-    }
-
     /**
      * 创建时子类爬虫深度会自动+1
      *
@@ -159,8 +145,10 @@ public class Crawler implements Serializable {
      */
     public Crawler addSeed(String url) {
         if (StringUtil.isNotEmpty(url)) {
-            //this是当前爬虫
-            Crawler crawler = new Crawler(this);
+            //this是当前爬虫，crawler是子爬虫
+
+            Crawler crawler = new Crawler();
+            crawler.initDataFromCrawler(this);
             crawler.setUrl(url);
             crawler.setDepth(this.getDepth() + 1);
             crawlers.add(crawler);

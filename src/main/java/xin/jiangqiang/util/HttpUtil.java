@@ -58,7 +58,7 @@ public class HttpUtil {
             if (bodys == null) {
                 bodys = new HashMap<>();
             }
-            OkHttpClientHelper okHttpClientHelper = new OkHttpClientHelper(null);
+            OkHttpClientHelper okHttpClientHelper = new OkHttpClientHelper(null,null);
             OkHttpClient client = okHttpClientHelper.processOkHttpClient(proxyConfigs);
             Request request = okHttpClientHelper.processRequest(url, lines, headers, bodys);
             Response response = client.newCall(request).execute();

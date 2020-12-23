@@ -46,7 +46,7 @@ public class AutoFileTradApplicationTest extends TradApplication {
         Map<String, String> configs = new HashMap<>();
         test.getConfig().addRegEx("https://.*");//满足正则表达式的所有URL将会自动提取到deal生命周期的Next对象
         test.getConfig().setIsUseDefault(true);//启用默认内置正则表达式过滤，默认会过滤css，js的url
-        test.getConfig().setDepth(4);//设置爬取深度，默认就是4，第一个种子URL为1，从种子里面获取的URL为2，从深度为2的URL中获取的URL为3，超过4就不会爬取了
+        test.getConfig().setDepth(2);//设置爬取深度，默认就是4，第一个种子URL为1，从种子里面获取的URL为2，从深度为2的URL中获取的URL为3，超过4就不会爬取了
         test.getCrawler().addSeed("https://repo1.maven.org/maven2/xin/jiangqiang/J-crawler/1.0/").setType("home").setLines(lines).setHeaders(headers)
                 .setBodys(bodys).setConfigs(configs).setMethod(RequestMethod.GET);
         test.start();

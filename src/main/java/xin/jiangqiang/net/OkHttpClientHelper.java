@@ -8,6 +8,7 @@ import okhttp3.*;
 import xin.jiangqiang.config.Config;
 import xin.jiangqiang.entities.Crawler;
 import xin.jiangqiang.entities.Page;
+import xin.jiangqiang.manage.RAMRecorder;
 import xin.jiangqiang.manage.Recorder;
 import xin.jiangqiang.util.StringUtil;
 
@@ -21,9 +22,17 @@ import java.util.Set;
 @Slf4j
 public class OkHttpClientHelper {
     Recorder recorder;
+    Config config;
 
-    public OkHttpClientHelper(Recorder recorder) {
+    public OkHttpClientHelper(Recorder recorder, Config config) {
         this.recorder = recorder;
+        if (config == null) {
+            this.config = new Config();
+        }
+        if (recorder == null) {
+            this.recorder = new RAMRecorder();
+        }
+        this.config = config;
     }
 
     public Page request(Crawler crawler) {
@@ -40,14 +49,16 @@ public class OkHttpClientHelper {
             }
             Response response = client.newCall(request).execute();
             Integer code = response.code();
-            Protocol protocol = response.protocol();
-            String message = response.message();
-            Headers headers = response.headers();
             ResponseBody body = response.body();
             byte[] content = Objects.requireNonNull(response.body()).bytes();
-            //content可能为图片等资源时,不应该转字符串,只不过不影响后续操作
-            String html = new String(content, new Config().getCharset());
-            return new Page(crawler, code, body, response.request(), content, html);
+            String contentType = "";
+            if (body != null) {
+                MediaType mediaType = body.contentType();
+                if (mediaType != null) {
+                    contentType = mediaType.toString();
+                }
+            }
+            return Page.getPage(crawler, code, contentType, content, config.getCharset());
         } catch (IOException e) {
             log.error(e.getMessage());
             //爬取错误 记录,一旦出错会返回null

@@ -34,7 +34,7 @@ public class TradApplication extends AbstractStarter {
 
         @Override
         public void run() {
-            OkHttpClientHelper okHttpClientHelper = new OkHttpClientHelper(recorder);
+            OkHttpClientHelper okHttpClientHelper = new OkHttpClientHelper(recorder, config);
             Page page = okHttpClientHelper.request(crawler);
             if (page == null) {//出错 直接返回
                 return;

@@ -73,7 +73,7 @@ public class FileUtil {
      * 图片如果有身份校验，则不能使用此方法
      *
      * @param fileDirName
-     * @param url
+     * @param url         资源地址
      * @return
      */
     @Deprecated
@@ -95,6 +95,17 @@ public class FileUtil {
         }
     }
 
+    /**
+     * 有身份校验或防盗链时使用此方法，
+     *
+     * @param fileDirName  保存目录
+     * @param url          资源地址
+     * @param proxyConfigs 代理配置
+     * @param lines        请求行
+     * @param headers      请求头
+     * @param bodys        请求参数
+     * @return 成功返回true
+     */
     public static boolean saveFileFromURL(String fileDirName, String url, Map<String, String> proxyConfigs, Map<String, String> lines, Map<String, String> headers, Map<String, String> bodys) {
         Response response = HttpUtil.request(url, proxyConfigs, lines, headers, bodys);
         if (response == null) {
