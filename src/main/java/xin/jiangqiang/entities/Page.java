@@ -22,10 +22,11 @@ import java.nio.charset.Charset;
 @Accessors(chain = true)
 @NoArgsConstructor
 public class Page extends Crawler {
-    private Integer responseCode = null;
-    private byte[] content = new byte[0];
     private String html = "";
     private Document document = null;
+    //selenium模式时，下面三个属性没有值
+    private Integer responseCode = null;
+    private byte[] content = new byte[0];
     private String contentType = "";
 
     /**
