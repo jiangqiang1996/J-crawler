@@ -32,10 +32,9 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 <dependency>
   <groupId>xin.jiangqiang</groupId>
   <artifactId>J-crawler</artifactId>
-  <version>1.0</version>
+  <version>2.0</version>
 </dependency>
 ```
-注意：maven仓库是老版本，不支持爬取js加载的页面，想体验最新特性请直接拉取代码。
 
 方式二：拉取本框架代码，创建自己的包，然后在自己的包下编写启动类。
 如果有不满足你需求的地方，可以自己实现AbstractStarter类，不建议直接修改框架原有实现类的源码。
