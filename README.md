@@ -43,6 +43,6 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 框架使用示例均在xin.jiangqiang.sample包下
 
 持续更新中...
-如有疑问或bug，欢迎去我个人[博客](https://blog.jiangqiang.xin)留言
+如有疑问或bug，欢迎去我个人[博客](https://www.qianyi.xin)留言
 
 **本项目仅学习使用，切勿用在非法用途。否则后果自负，技术无罪。**
