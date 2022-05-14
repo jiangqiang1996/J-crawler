@@ -11,7 +11,7 @@
     <description>
         java爬虫框架
     </description>
-    <url>https://github.com/jiangqiang2020/J-crawler</url>
+    <url>https://github.com/jiangqiang1996/J-crawler</url>
     <!-- 开源签名证书 -->
     <licenses>
         <license>
@@ -22,20 +22,20 @@
     </licenses>
     <issueManagement>
         <system>github</system>
-        <url>https://github.com/jiangqiang2020/J-crawler/issues</url>
+        <url>https://github.com/jiangqiang1996/J-crawler/issues</url>
     </issueManagement>
     <!-- 仓库信息 -->
     <scm>
-        <connection>scm:git:https://github.com/jiangqiang2020/J-crawler.git</connection>
-        <developerConnection>scm:git:https://github.com/jiangqiang2020/J-crawler.git</developerConnection>
-        <url>https://github.com/jiangqiang2020/J-crawler</url>
+        <connection>scm:git:https://github.com/jiangqiang1996/J-crawler.git</connection>
+        <developerConnection>scm:git:https://github.com/jiangqiang1996/J-crawler.git</developerConnection>
+        <url>https://github.com/jiangqiang1996/J-crawler</url>
     </scm>
     <!-- 开发人员信息 -->
     <developers>
         <developer>
             <name>JiangQiang</name>
             <email>jq1257403419@vip.qq.com</email>
-            <url>https://blog.jiangqiang.xin</url>
+            <url>https://www.qianyi.xin</url>
         </developer>
     </developers>
 
@@ -185,19 +185,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!--                    <plugin>-->
-                    <!--                        <groupId>org.apache.maven.plugins</groupId>-->
-                    <!--                        <artifactId>maven-gpg-plugin</artifactId>-->
-                    <!--                        <version>1.6</version>-->
-                    <!--                        <executions>-->
-                    <!--                            <execution>-->
-                    <!--                                <phase>verify</phase>-->
-                    <!--                                <goals>-->
-                    <!--                                    <goal>sign</goal>-->
-                    <!--                                </goals>-->
-                    <!--                            </execution>-->
-                    <!--                        </executions>-->
-                    <!--                    </plugin>-->
                 </plugins>
             </build>
             <distributionManagement>
