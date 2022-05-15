@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import lombok.*;
 import xin.jiangqiang.core.app.Starter;
 import xin.jiangqiang.core.filter.Filter;
+import xin.jiangqiang.core.interfaces.HttpConfig;
 import xin.jiangqiang.core.recoder.Recorder;
 
 import java.nio.charset.Charset;
@@ -15,7 +16,7 @@ import java.util.Map;
 @Setter
 @Getter
 @NoArgsConstructor
-public class Config {
+public class Config implements HttpConfig<Config> {
     private Charset charset = Charset.defaultCharset();
     private Integer threads = 50;
     private Integer depth = 4;//注意，如果上一次爬取的最大深度为4，程序意外终止后，修改最大深度为2，继续上次爬取保存的结果继续爬取，那么无论如何至少会爬取一次。
@@ -50,27 +51,30 @@ public class Config {
         return httpParams.computeIfAbsent("lines", k -> new HashMap<>());
     }
 
-    public void addLines(String key, String value) {
+    public Config addLines(String key, String value) {
         Map<String, String> lines = getLines();
         lines.put(key, value);
+        return this;
     }
 
     public Map<String, String> getHeaders() {
         return httpParams.computeIfAbsent("headers", k -> new HashMap<>());
     }
 
-    public void addHeaders(String key, String value) {
+    public Config addHeaders(String key, String value) {
         Map<String, String> headers = getHeaders();
         headers.put(key, value);
+        return this;
     }
 
     public Map<String, String> getBodys() {
         return httpParams.computeIfAbsent("bodys", k -> new HashMap<>());
     }
 
-    public void addBodys(String key, String value) {
+    public Config addBodys(String key, String value) {
         Map<String, String> bodys = getBodys();
         bodys.put(key, value);
+        return this;
     }
 
     /**

@@ -1,11 +1,13 @@
 package xin.jiangqiang.core.entities;
 
+import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.StrUtil;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import xin.jiangqiang.common.BeanUtil;
-import xin.jiangqiang.core.net.RequestMethod;
+import xin.jiangqiang.core.config.Config;
+import xin.jiangqiang.core.interfaces.HttpConfig;
 
 import java.io.Serializable;
 import java.util.*;
@@ -17,16 +19,20 @@ import java.util.*;
  */
 @Data
 @Accessors(chain = true)
-@NoArgsConstructor
 @Slf4j
-public class Crawler implements Serializable {
+public class Crawler implements Serializable, HttpConfig<Crawler> {
     //深度
     private Integer depth = 0;
     private String url;//当前的URL
     //根据type执行不同逻辑，对应@Match注解的value
     private String type = "";//对爬虫进行分类，方便后面使用@Match进行分类处理
     private Set<Crawler> crawlers = new HashSet<>();//当前URL中提取出来的子爬虫
+
     @Setter(AccessLevel.NONE)
+    private Map<String, String> httpConfig = new HashMap<>(); //http请求网络代理参数设置
+    private Boolean useProxy = false;//请求客户端是否使用代理
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     private Map<String, Map<String, String>> metaData = new HashMap<>();
 
     /**
@@ -42,7 +48,7 @@ public class Crawler implements Serializable {
         if (StrUtil.isEmpty(this.type)) {
             this.type = crawler.type;
         }
-        this.metaData = BeanUtil.clone(crawler.getMetaData());
+        this.metaData = BeanUtil.clone(crawler.metaData);
         return this;
     }
 
@@ -79,6 +85,11 @@ public class Crawler implements Serializable {
 
     public Crawler(String url) {
         this.url = url;
+        initFromGlobConfig(Singleton.get(Config.class));
+    }
+
+    public Crawler() {
+        initFromGlobConfig(Singleton.get(Config.class));
     }
 
     /**
@@ -90,6 +101,16 @@ public class Crawler implements Serializable {
     public Crawler(String url, String type) {
         this.url = url;
         this.type = type;
+        initFromGlobConfig(Singleton.get(Config.class));
+    }
+
+    public Crawler initFromGlobConfig(HttpConfig<?> config) {
+        this.useProxy = config.getUseProxy();
+        this.httpConfig = BeanUtil.clone(config.getHttpConfig());
+        this.metaData.put("lines", config.getLines());
+        this.metaData.put("headers", config.getHeaders());
+        this.metaData.put("bodys", config.getBodys());
+        return this;
     }
 
     @Override
@@ -104,4 +125,55 @@ public class Crawler implements Serializable {
     public int hashCode() {
         return Objects.hash(url);
     }
+
+    public Map<String, String> getLines() {
+        return metaData.computeIfAbsent("lines", k -> new HashMap<>());
+    }
+
+    public Crawler addLines(String key, String value) {
+        Map<String, String> lines = getLines();
+        lines.put(key, value);
+        return this;
+    }
+
+    public Map<String, String> getHeaders() {
+        return metaData.computeIfAbsent("headers", k -> new HashMap<>());
+    }
+
+    public Crawler addHeaders(String key, String value) {
+        Map<String, String> headers = getHeaders();
+        headers.put(key, value);
+        return this;
+    }
+
+    public Map<String, String> getBodys() {
+        return metaData.computeIfAbsent("bodys", k -> new HashMap<>());
+    }
+
+    public Crawler addBodys(String key, String value) {
+        Map<String, String> bodys = getBodys();
+        bodys.put(key, value);
+        return this;
+    }
+
+    /**
+     * 设置参数
+     *
+     * @param key
+     * @param map
+     */
+    public void setMetaData(String key, Map<String, String> map) {
+        metaData.put(key, map);
+    }
+
+    /**
+     * 获取参数
+     *
+     * @param key
+     * @return
+     */
+    public Map<String, String> setMetaData(String key) {
+        return metaData.get(key);
+    }
+
 }

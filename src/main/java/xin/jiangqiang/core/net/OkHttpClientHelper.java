@@ -1,16 +1,14 @@
 package xin.jiangqiang.core.net;
 
-import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import xin.jiangqiang.core.config.Config;
-import xin.jiangqiang.core.entities.Crawler;
-import xin.jiangqiang.core.recoder.Recorder;
 
-import java.io.IOException;
+import xin.jiangqiang.core.entities.Crawler;
+import xin.jiangqiang.core.interfaces.HttpConfig;
+
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Map;
@@ -19,21 +17,19 @@ import java.util.Set;
 
 @Slf4j
 public class OkHttpClientHelper {
-    Config config = Singleton.get(Config.class);
-    Recorder recorder = Singleton.get(config.getRecorderClass());
 
     public Call request(Crawler crawler) {
         if (StrUtil.isEmpty(crawler.getUrl())) {
             return null;
         }
         OkHttpClient client;
-        if (config.getUseProxy()) {
-            client = processOkHttpClient(config.getHttpConfig());
+        if (((HttpConfig<?>) crawler).getUseProxy()) {
+            client = processOkHttpClient(((HttpConfig<?>) crawler).getHttpConfig());
         } else {
             client = new OkHttpClient.Builder().addInterceptor(new CommonInterCeptor()).build();//拦截器;
         }
         log.info("url: " + crawler.getUrl());
-        Request request = processRequest(crawler.getUrl(), config.getLines(), config.getHeaders(), config.getBodys());
+        Request request = processRequest(crawler.getUrl(), ((HttpConfig<?>) crawler).getLines(), ((HttpConfig<?>) crawler).getHeaders(), ((HttpConfig<?>) crawler).getBodys());
         if (request == null) {
             return null;
         }
