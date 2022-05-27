@@ -2,10 +2,10 @@ package xin.jiangqiang.core.entities;
 
 import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import xin.jiangqiang.common.BeanUtil;
 import xin.jiangqiang.core.config.Config;
 import xin.jiangqiang.core.interfaces.HttpConfig;
 
@@ -48,8 +48,7 @@ public class Crawler implements Serializable, HttpConfig<Crawler> {
         if (StrUtil.isEmpty(this.type)) {
             this.type = crawler.type;
         }
-        String metaDataStr = JSONUtil.toJsonStr(crawler.metaData);
-        this.metaData = JSONUtil.parseObj(metaDataStr).toBean(Map.class);
+        this.metaData = BeanUtil.cloneObj(crawler.metaData);
         return this;
     }
 
@@ -107,8 +106,7 @@ public class Crawler implements Serializable, HttpConfig<Crawler> {
 
     public Crawler initFromGlobConfig(HttpConfig<?> config) {
         this.useProxy = config.getUseProxy();
-        String configStr = JSONUtil.toJsonStr(config.getHttpConfig());
-        this.httpConfig = JSONUtil.parseObj(configStr).toBean(Map.class);
+        this.httpConfig = BeanUtil.cloneObj(config.getHttpConfig());
         this.metaData.put("lines", config.getLines());
         this.metaData.put("headers", config.getHeaders());
         this.metaData.put("bodys", config.getBodys());
