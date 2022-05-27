@@ -97,7 +97,7 @@ public abstract class AbstractStarter implements Starter {
             activeCounts[1] = ((ThreadPoolExecutor) executor).getActiveCount();
             ThreadUtil.safeSleep(1000);
             activeCounts[2] = ((ThreadPoolExecutor) executor).getActiveCount();
-            log.info(Arrays.toString(activeCounts));
+            log.debug(Arrays.toString(activeCounts));
             if (executor.isTerminated()) {
                 log.info("所有线程执行完毕");
                 isEnd = true;

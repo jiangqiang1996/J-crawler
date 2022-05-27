@@ -77,7 +77,7 @@ public class OkHttpClientHelper {
                     return null;
                 } else if (contentType.contains("application/json")) {//JSON提交
                     MediaType mediaType = MediaType.parse("application/json;charset=utf-8");
-                    RequestBody requestBody = RequestBody.Companion.create(JSONUtil.toJsonStr(bodys), mediaType);
+                    RequestBody requestBody = RequestBody.Companion.create(JSONUtil.toJsonPrettyStr(bodys), mediaType);
                     builder.method(method, requestBody);
                 } else if (contentType.equals("application/x-www-form-urlencoded")) {//表单提交
                     FormBody.Builder formBodyBuilder = new FormBody.Builder();
