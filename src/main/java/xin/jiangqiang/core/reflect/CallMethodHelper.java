@@ -1,9 +1,8 @@
-package xin.jiangqiang.reflect;
+package xin.jiangqiang.core.reflect;
 
 import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.ClassLoaderUtil;
 import cn.hutool.core.util.StrUtil;
-import lombok.AllArgsConstructor;
 import xin.jiangqiang.common.RegExpUtil;
 import xin.jiangqiang.common.StringUtil;
 import xin.jiangqiang.core.config.Config;
@@ -13,7 +12,6 @@ import xin.jiangqiang.core.annotation.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-@AllArgsConstructor
 public class CallMethodHelper {
 
     public void before() {

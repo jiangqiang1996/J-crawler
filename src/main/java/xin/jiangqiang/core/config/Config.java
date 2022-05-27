@@ -19,29 +19,64 @@ import java.util.Map;
 public class Config implements HttpConfig<Config> {
     private Charset charset = Charset.defaultCharset();
     private Integer threads = 50;
-    private Integer depth = 4;//注意，如果上一次爬取的最大深度为4，程序意外终止后，修改最大深度为2，继续上次爬取保存的结果继续爬取，那么无论如何至少会爬取一次。
-    private Class<? extends Starter> appClass;//项目启动类,决定了执行哪一个类下的@Befor,@Match等注解
-    private Class<? extends Recorder> recorderClass;//
+    /**
+     * 注意，如果上一次爬取的最大深度为4，程序意外终止后，修改最大深度为2，继续上次爬取保存的结果继续爬取，那么无论如何至少会爬取一次。
+     */
+    private Integer depth = 4;
+    /**
+     * 项目启动类,决定了执行哪一个类下的@Befor,@Match等注解
+     */
+    private Class<? extends Starter> appClass;
+    private Class<? extends Recorder> recorderClass;
     private Class<? extends Filter> filterClass;
-    private List<String> regExs = new ArrayList<>();//满足此正则表达式列表的URL会被提取
-    private List<String> reverseRegExs = new ArrayList<>();//满足此正则表达式列表的会被过滤,不作为种子进行下次爬取
-    private List<String> defaultReverseRegExs = new ArrayList<>();//满足此正则表达式列表的也会被过滤,这是系统默认过滤规则,会过滤掉css,js
+    /**
+     * 满足此正则表达式列表的URL会被提取
+     */
+    private List<String> regExs = new ArrayList<>();
+    /**
+     * 满足此正则表达式列表的会被过滤,不作为种子进行下次爬取
+     */
+    private List<String> reverseRegExs = new ArrayList<>();
+    /**
+     * 满足此正则表达式列表的也会被过滤,这是系统默认过滤规则,会过滤掉css,js
+     */
+    private List<String> defaultReverseRegExs = new ArrayList<>();
 
-    //是否启用默认正则表达式过滤,如果不启用则defaultReverseRegExs无效
+
+    /**
+     * 是否启用默认正则表达式过滤,如果不启用则defaultReverseRegExs无效
+     */
     private Boolean isUseDefault = true;
 
-    //下面两个属性只对内存记录器有效，对数据库记录器无效
-    private String savePath = "";//结束时没有爬取的种子会保存到此路径，用于断点续爬。路径不能为空，且未爬取的种子数不能为0，才会保存
-    private Boolean isContinue = true;//是否继续上次爬取，保存路径为空或此属性值为false时均不会继续爬取
+    /**
+     * 下面两个属性只对内存记录器有效，对数据库记录器无效
+     * 结束时没有爬取的种子会保存到此路径，用于断点续爬。路径不能为空，且未爬取的种子数不能为0，才会保存
+     */
+    private String savePath = "";
+    /**
+     * 是否继续上次爬取，保存路径为空或此属性值为false时均不会继续爬取
+     */
+    private Boolean isContinue = true;
 
 
-    @Setter(AccessLevel.NONE)
-    private final Map<String, String> httpConfig = new HashMap<>(); //http请求代理参数设置
-    @Setter(AccessLevel.NONE)
-    private final Map<String, Map<String, String>> httpParams = new HashMap<>(); //http请求参数设置
+    /**
+     * http请求代理参数设置
+     */
+    private final Map<String, String> httpConfig = new HashMap<>();
 
-    private Boolean useProxy = false;//请求客户端是否使用代理
-    private Boolean async = true;//使用okhttp时是否使用异步方式发请求，使用异步方式在任务都完毕之后需要等待一分钟才会结束程序
+    /**
+     * http请求参数设置
+     */
+    private final Map<String, Map<String, String>> httpParams = new HashMap<>();
+
+    /**
+     * 请求客户端是否使用代理
+     */
+    private Boolean useProxy = false;
+    /**
+     * 使用okhttp时是否使用异步方式发请求，使用异步方式在任务都完毕之后需要等待一分钟才会结束程序
+     */
+    private Boolean async = true;
 
     {
         defaultReverseRegExs.add(".*\\.(js|css).*");

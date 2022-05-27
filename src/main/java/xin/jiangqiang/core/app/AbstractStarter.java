@@ -12,7 +12,7 @@ import xin.jiangqiang.core.config.Config;
 import xin.jiangqiang.core.entities.Crawler;
 import xin.jiangqiang.core.filter.Filter;
 import xin.jiangqiang.core.recoder.Recorder;
-import xin.jiangqiang.reflect.CallMethodHelper;
+import xin.jiangqiang.core.reflect.CallMethodHelper;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -26,14 +26,26 @@ import java.util.concurrent.ThreadPoolExecutor;
 public abstract class AbstractStarter implements Starter {
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
-    protected final Integer[] activeCounts = new Integer[3];//当前活动线程数可能不准确,因此判断连续几秒内活动线程相等为准
+    /**
+     * 当前活动线程数可能不准确,因此判断连续几秒内活动线程相等为准
+     */
+    protected final Integer[] activeCounts = new Integer[3];
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
-    protected ExecutorService executor;//线程池
+    /**
+     * 线程池
+     */
+    protected ExecutorService executor;
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
-    protected Boolean isEnd = false;//所有任务是否执行完毕,好像暂时没用上
-    protected final CallMethodHelper callMethodHelper = Singleton.get(CallMethodHelper.class);//调用反射方法的工具
+    /**
+     * 所有任务是否执行完毕
+     */
+    protected Boolean isEnd = false;
+    /**
+     * 调用反射方法的工具
+     */
+    protected final CallMethodHelper callMethodHelper = Singleton.get(CallMethodHelper.class);
     protected Recorder recorder;
     protected Filter filter;
     private final Config config = Singleton.get(Config.class);
@@ -55,10 +67,23 @@ public abstract class AbstractStarter implements Starter {
         if (ObjectUtil.isNull(config.getAppClass())) {
             throw new RuntimeException("config.appClass不能为空");
         }
-        beforeEnd();//注册一个线程维护程序，用于程序结束时清理资源和持久化保存。
-        callMethodHelper.before();//配置初始爬取地址，或者从持久化数据中读取爬取地址，实现续爬功能
-        run();//爬取before方法中设置的爬虫，分配线程爬取recorder中的实例，启动爬虫任务
-        finish();//爬虫任务执行完成后执行关闭线程的操作
+        /**
+         * 注册一个线程维护程序，用于程序结束时清理资源和持久化保存。
+         */
+        beforeEnd();
+        /**
+         * 配置身份验证信息
+         * 配置初始爬取地址，或者从持久化数据中读取爬取地址，实现续爬功能
+         */
+        callMethodHelper.before();
+        /**
+         * 爬取before方法中设置的爬虫，分配线程爬取recorder中的实例，启动爬虫任务
+         */
+        run();
+        /**
+         * 爬虫任务执行完成后执行关闭线程的操作
+         */
+        finish();
 
     }
 
@@ -72,12 +97,16 @@ public abstract class AbstractStarter implements Starter {
             activeCounts[1] = ((ThreadPoolExecutor) executor).getActiveCount();
             ThreadUtil.safeSleep(1000);
             activeCounts[2] = ((ThreadPoolExecutor) executor).getActiveCount();
+            log.info(Arrays.toString(activeCounts));
             if (executor.isTerminated()) {
                 log.info("所有线程执行完毕");
                 isEnd = true;
                 break;
             }
-            if (activeCounts[0] == 0 && activeCounts[1] == 0 && activeCounts[2] == 0) {//连续三秒活动线程为0
+            /**
+             * 连续三秒活动线程为0
+             */
+            if (activeCounts[0] == 0 && activeCounts[1] == 0 && activeCounts[2] == 0) {
                 log.info("线程池清理完毕");
                 executor.shutdown();
             }
@@ -87,6 +116,12 @@ public abstract class AbstractStarter implements Starter {
     }
 
 
+    /**
+     * 获取一个线程业务逻辑
+     *
+     * @param crawler 爬虫种子
+     * @return Runnable
+     */
     public abstract Runnable getTask(Crawler crawler);
 
     private void run() {
@@ -94,7 +129,10 @@ public abstract class AbstractStarter implements Starter {
         new Thread(() -> {
             while (true) {
                 Crawler crawler = recorder.getOne();
-                if (crawler != null) {//如果为空,则释放资源,等待爬虫线程解析到新的子爬虫
+                /**
+                 * 如果为空,则释放资源,等待爬虫线程解析到新的子爬虫
+                 */
+                if (crawler != null) {
                     executor.execute(getTask(crawler));
                     continue;
                 }
@@ -112,8 +150,11 @@ public abstract class AbstractStarter implements Starter {
 
     }
 
-    //程序结束前执行的线程逻辑
-    private void beforeEnd() {//程序正常退出前执行，用于多线程处理后清理资源以及保存任务
+    /**
+     * 程序结束前执行的线程逻辑
+     * 程序正常退出前执行，用于多线程处理后清理资源以及保存任务
+     */
+    private void beforeEnd() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("程序准备结束");
             saveAndClearResource();
