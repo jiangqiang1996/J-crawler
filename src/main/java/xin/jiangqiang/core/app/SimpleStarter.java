@@ -91,8 +91,8 @@ public class SimpleStarter extends AbstractStarter {
                 urls = getMatchUrls(urls);
                 page.addSeeds(urls, "");
             }
-            callMethodHelper.match(page);
             callMethodHelper.deal(page);
+            callMethodHelper.match(page);
             //处理完成，加入成功结果集
             String tmpCode = page.getResponseCode().toString();
             if (tmpCode.startsWith("2")) {

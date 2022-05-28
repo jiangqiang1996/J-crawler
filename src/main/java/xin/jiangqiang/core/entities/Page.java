@@ -63,7 +63,7 @@ public class Page extends Crawler {
         } else if ("".equals(page.getContentType())) {
             //经过测试,对https://beian.miit.gov.cn/发送请求时的contentType为空
             //使用postman对上述网站发GET请求获取到的是js字符串
-            log.info("URL:" + page.getUrl() + "的contenType为空");
+            log.debug("URL:" + page.getUrl() + "的contenType为空");
         } else if (page.getContentType().contains("text/html")) {
             String html = new String(content, charset);
             page.setHtml(html);

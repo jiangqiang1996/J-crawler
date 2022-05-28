@@ -28,7 +28,7 @@ public class OkHttpClientHelper {
         } else {
             client = new OkHttpClient.Builder().addInterceptor(new CommonInterCeptor()).build();//拦截器;
         }
-        log.info("url: " + crawler.getUrl());
+        log.debug("url: " + crawler.getUrl());
         Request request = processRequest(crawler.getUrl(), ((HttpConfig<?>) crawler).getLines(), ((HttpConfig<?>) crawler).getHeaders(), ((HttpConfig<?>) crawler).getBodys());
         if (request == null) {
             return null;
