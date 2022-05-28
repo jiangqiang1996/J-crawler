@@ -7,16 +7,16 @@ import xin.jiangqiang.core.filter.Filter;
 import xin.jiangqiang.core.interfaces.HttpConfig;
 import xin.jiangqiang.core.recoder.Recorder;
 
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Setter
-@Getter
 @NoArgsConstructor
-public class Config implements HttpConfig<Config> {
+@Data
+public class Config implements HttpConfig<Config>, Serializable {
     private Charset charset = Charset.defaultCharset();
     private Integer threads = 50;
     /**
@@ -32,14 +32,17 @@ public class Config implements HttpConfig<Config> {
     /**
      * 满足此正则表达式列表的URL会被提取
      */
+    @Setter(AccessLevel.NONE)
     private List<String> regExs = new ArrayList<>();
     /**
      * 满足此正则表达式列表的会被过滤,不作为种子进行下次爬取
      */
+    @Setter(AccessLevel.NONE)
     private List<String> reverseRegExs = new ArrayList<>();
     /**
      * 满足此正则表达式列表的也会被过滤,这是系统默认过滤规则,会过滤掉css,js
      */
+    @Setter(AccessLevel.NONE)
     private List<String> defaultReverseRegExs = new ArrayList<>();
 
 
