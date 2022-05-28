@@ -33,7 +33,7 @@ public class Crawler implements Serializable, HttpConfig<Crawler> {
     private Boolean useProxy = false;//请求客户端是否使用代理
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
-    private Map<String, Map<String, String>> metaData = new HashMap<>();
+    private Map<String, Map<String, String>> metaData = new HashMap<>();//lines headers bodys dataMap 会继承父爬虫的数据，但是修改子爬虫数据不会影响父级爬虫
 
     /**
      * 1. 从crawler构造Page对象,发送请求之后是Page对象,请求前是Crawler对象
@@ -172,8 +172,40 @@ public class Crawler implements Serializable, HttpConfig<Crawler> {
      * @param key
      * @return
      */
-    public Map<String, String> setMetaData(String key) {
+    public Map<String, String> getMetaData(String key) {
         return metaData.get(key);
     }
 
+    public Map<String, String> getDataMap() {
+        return metaData.computeIfAbsent("dataMap", k -> new HashMap<>());
+    }
+
+    /**
+     * 存储数据，此集合中的数据会继承父级种子，但是修改子爬虫数据不会影响父爬虫数据
+     *
+     * @param dataMap
+     * @return
+     */
+    public Crawler setDataMap(Map<String, String> dataMap) {
+        metaData.put("dataMap", dataMap);
+        return this;
+    }
+
+    /**
+     * 快捷的从dataMap中操作数据
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    public Crawler setData(String key, String value) {
+        Map<String, String> dataMap = getDataMap();
+        dataMap.put(key, value);
+        return this;
+    }
+
+    public String getData(String key) {
+        Map<String, String> dataMap = getDataMap();
+        return dataMap.get(key);
+    }
 }

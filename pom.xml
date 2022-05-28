@@ -41,6 +41,7 @@
 
     <properties>
         <jsoup.version>1.13.1</jsoup.version>
+        <JsoupXpath.version>2.5.1</JsoupXpath.version>
         <okhttp.version>4.9.0</okhttp.version>
         <lombok.version>1.18.16</lombok.version>
         <logback.version>1.2.3</logback.version>
@@ -62,6 +63,12 @@
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/cn.wanghaomiao/JsoupXpath -->
+            <dependency>
+                <groupId>cn.wanghaomiao</groupId>
+                <artifactId>JsoupXpath</artifactId>
+                <version>${JsoupXpath.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
             <dependency>
@@ -97,6 +104,10 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.wanghaomiao</groupId>
+            <artifactId>JsoupXpath</artifactId>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
