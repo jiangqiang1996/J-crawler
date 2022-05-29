@@ -6,7 +6,7 @@
 
     <groupId>xin.jiangqiang</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.2</version>
     <name>J-crawler</name>
     <description>
         java爬虫框架
