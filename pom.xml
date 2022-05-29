@@ -6,7 +6,7 @@
 
     <groupId>xin.jiangqiang</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>3.0</version>
+    <version>3.0.1</version>
     <name>J-crawler</name>
     <description>
         java爬虫框架
@@ -40,13 +40,13 @@
     </developers>
 
     <properties>
-        <jsoup.version>1.13.1</jsoup.version>
+        <jsoup.version>1.15.1</jsoup.version>
         <JsoupXpath.version>2.5.1</JsoupXpath.version>
-        <okhttp.version>4.9.0</okhttp.version>
-        <lombok.version>1.18.16</lombok.version>
-        <logback.version>1.2.3</logback.version>
-        <hutool.version>5.8.0.M3</hutool.version>
-        <playwright.version>1.17.0</playwright.version>
+        <okhttp.version>4.9.3</okhttp.version>
+        <lombok.version>1.18.24</lombok.version>
+        <logback.version>1.3.0-alpha16</logback.version>
+        <hutool.version>5.8.2</hutool.version>
+        <playwright.version>1.22.0</playwright.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -33,7 +33,7 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 <dependency>
     <groupId>xin.jiangqiang</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>3.0</version>
+    <version>3.0.1</version>
 </dependency>
 ```
 
