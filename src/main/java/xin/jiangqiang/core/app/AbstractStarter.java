@@ -125,7 +125,7 @@ public abstract class AbstractStarter implements Starter {
     public abstract Runnable getTask(Crawler crawler);
 
     private void run() {
-        executor = ThreadUtil.newExecutor(0, config.getThreads(), 1000);
+        executor = ThreadUtil.newExecutor(config.getThreads() / 2, config.getThreads(), 1000);
         new Thread(() -> {
             while (true) {
                 Crawler crawler = recorder.getOne();

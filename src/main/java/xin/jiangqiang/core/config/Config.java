@@ -18,7 +18,7 @@ import java.util.Map;
 @Data
 public class Config implements HttpConfig<Config>, Serializable {
     private Charset charset = Charset.defaultCharset();
-    private Integer threads = 50;
+    private Integer threads = 50;//最小值为1
     /**
      * 注意，如果上一次爬取的最大深度为4，程序意外终止后，修改最大深度为2，继续上次爬取保存的结果继续爬取，那么无论如何至少会爬取一次。
      */
@@ -83,6 +83,14 @@ public class Config implements HttpConfig<Config>, Serializable {
 
     {
         defaultReverseRegExs.add(".*\\.(js|css).*");
+    }
+
+    public void setThreads(Integer threads) {
+        if (threads < 1) {
+            this.threads = 1;
+        } else {
+            this.threads = threads;
+        }
     }
 
     public Map<String, String> getLines() {
