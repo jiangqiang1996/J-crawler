@@ -15,6 +15,11 @@ import java.util.List;
 public abstract class AbstractRecorder implements Recorder {
     protected Config config = Singleton.get(Config.class);
 
+    {
+        /*初始化爬虫数据*/
+        initBeforeStart();
+    }
+
     @Override
     public void add(Crawler crawler) {
 

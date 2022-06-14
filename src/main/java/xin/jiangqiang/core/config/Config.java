@@ -1,12 +1,22 @@
 package xin.jiangqiang.core.config;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.util.StrUtil;
-import lombok.*;
+import cn.hutool.json.JSONUtil;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import xin.jiangqiang.common.StringUtil;
 import xin.jiangqiang.core.app.Starter;
 import xin.jiangqiang.core.filter.Filter;
 import xin.jiangqiang.core.interfaces.HttpConfig;
 import xin.jiangqiang.core.recoder.Recorder;
 
+import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -16,7 +26,10 @@ import java.util.Map;
 
 @NoArgsConstructor
 @Data
+@Slf4j
 public class Config implements HttpConfig<Config>, Serializable {
+    /*配置文件路径，此文件中的配置会在程序运行时修改实时生效*/
+    private String configFilePath;
     private Charset charset = Charset.defaultCharset();
     private Integer threads = 50;//最小值为1
     /**
@@ -61,7 +74,6 @@ public class Config implements HttpConfig<Config>, Serializable {
      */
     private Boolean isContinue = true;
 
-
     /**
      * http请求代理参数设置
      */
@@ -83,6 +95,38 @@ public class Config implements HttpConfig<Config>, Serializable {
 
     {
         defaultReverseRegExs.add(".*\\.(js|css).*");
+    }
+
+    private Map<String, String> getConfigMap() {
+        if (StrUtil.isNotBlank(configFilePath)) {
+            File file = FileUtil.file(configFilePath);
+            if (file.exists()) {
+                String jsonStr = IoUtil.read(FileUtil.getReader(file, getCharset()), true);
+                try {
+                    return JSONUtil.toBean(jsonStr, new TypeReference<>() {
+                    }, false);
+                } catch (Exception e) {
+                    log.debug(e.getMessage());
+                    return new HashMap<>();
+                }
+            }
+        }
+        return new HashMap<>();
+    }
+
+    /**
+     * 从文件读取配置
+     *
+     * @param key
+     * @return
+     */
+    public String getConfigFromFile(String key) {
+        String value = getConfigMap().get(key);
+        if (StringUtil.isNotEmpty(value)) {
+            return value.trim();
+        } else {
+            return null;
+        }
     }
 
     public void setThreads(Integer threads) {

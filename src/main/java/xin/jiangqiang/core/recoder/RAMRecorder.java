@@ -4,7 +4,6 @@ import cn.hutool.core.collection.ConcurrentHashSet;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.lang.TypeReference;
-import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -24,9 +23,9 @@ public class RAMRecorder extends AbstractRecorder {
     /**
      * 存储没有爬取的URL
      */
-    private final static Set<Crawler> crawlersSet =new ConcurrentHashSet<>();
+    private final static Set<Crawler> crawlersSet = new ConcurrentHashSet<>();
     /**
-     * 正在爬取中的URL，如果遇到强行终止程序，只会保存没有爬取的URL，正在爬取中的URL会丢失
+     * 正在爬取中的URL，也可能是已经加入任务正在等待的任务，如果结束时需要保存，那么此集合与crawlersSet中的种子都会进行保存
      */
     private final static Set<Crawler> tmpCrawlersSet = new ConcurrentHashSet<>();
 
@@ -41,7 +40,7 @@ public class RAMRecorder extends AbstractRecorder {
     /**
      * 存储所有记录
      */
-    private final Map<String, Crawler> crawlerMap = Collections.synchronizedMap(new HashMap<>());
+    private final static Map<String, Crawler> crawlerMap = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * 写集合crawlersSet
@@ -138,17 +137,21 @@ public class RAMRecorder extends AbstractRecorder {
     @Override
     public synchronized void saveBeforeEnd() {
         //保存路径不为空，则保存
-        if (crawlersSet.size() != 0 && StrUtil.isNotEmpty(config.getSavePath())) {
+        if ((crawlersSet.size() != 0 || tmpCrawlersSet.size() != 0) && StrUtil.isNotEmpty(config.getSavePath())) {
             log.info("开始保存未爬取的爬虫");
             FileUtil.mkParentDirs(config.getSavePath());
             File file = new File(config.getSavePath());
-            String jsonStr = JSONUtil.toJsonPrettyStr(crawlersSet);
+            Set<Crawler> allCrawlers = new HashSet<>();
+            allCrawlers.addAll(crawlersSet);
+            allCrawlers.addAll(tmpCrawlersSet);
+            String jsonStr = JSONUtil.toJsonPrettyStr(allCrawlers);
             IoUtil.write(FileUtil.getOutputStream(file), true, jsonStr.getBytes());
             log.info("保存爬取状态成功");
         }
     }
 
     /**
+     * 初始化内存记录器
      * 写集合crawlersList
      */
     @Override
@@ -156,11 +159,13 @@ public class RAMRecorder extends AbstractRecorder {
         //保存路径不为空，config的isContinue属性为true,则读取
         if (config.getIsContinue() && StrUtil.isNotEmpty(config.getSavePath())) {
             File file = new File(config.getSavePath());
-            String jsonStr = IoUtil.read(FileUtil.getReader(file, CharsetUtil.CHARSET_UTF_8), true);
-            Set<Crawler> crawlers = JSONUtil.toBean(jsonStr, new TypeReference<>() {
-            }, false);
-            this.addAll(new ArrayList<>(crawlers));
-            log.debug("从文件获取的爬虫种子:\n" + crawlers);
+            if (file.exists()) {
+                String jsonStr = IoUtil.read(FileUtil.getReader(file, config.getCharset()), true);
+                Set<Crawler> crawlers = JSONUtil.toBean(jsonStr, new TypeReference<>() {
+                }, false);
+                this.addAll(new ArrayList<>(crawlers));
+                log.debug("从文件获取的爬虫种子:\n" + crawlers);
+            }
         }
     }
 

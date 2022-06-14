@@ -33,6 +33,8 @@ public class MyStarterGitee extends SimpleStarter {
         config.setThreads(10);
         config.setDepth(2);
         config.setAsync(false);
+        config.setSavePath("D:\\cache\\J-Clawler\\data.txt");
+        config.setConfigFilePath("D:\\cache\\J-Clawler\\config.txt");
         /**
          * 满足正则表达式的所有URL将会自动提取到deal生命周期的page对象
          */

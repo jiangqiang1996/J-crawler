@@ -99,7 +99,7 @@ public abstract class AbstractStarter implements Starter {
             activeCounts[2] = ((ThreadPoolExecutor) executor).getActiveCount();
             log.debug(Arrays.toString(activeCounts));
             if (executor.isTerminated()) {
-                log.info("所有线程执行完毕");
+                log.info("线程池清理完毕");
                 isEnd = true;
                 break;
             }
@@ -107,12 +107,22 @@ public abstract class AbstractStarter implements Starter {
              * 连续三秒活动线程为0
              */
             if (activeCounts[0] == 0 && activeCounts[1] == 0 && activeCounts[2] == 0) {
-                log.info("线程池清理完毕");
+                log.info("所有任务执行完毕，开始结束程序");
                 executor.shutdown();
+            }
+            String closeStr = config.getConfigFromFile("close");
+            if ("true".equals(closeStr)) {
+                log.info("用户主动请求结束程序");
+                isEnd = true;
+                if ("now".equals(config.getConfigFromFile("endTime"))) {
+                    executor.shutdownNow();
+                } else {
+                    executor.shutdown();
+                }
+                break;
             }
         }
         callMethodHelper.after();//爬虫任务完成时执行
-
     }
 
 
@@ -147,7 +157,9 @@ public abstract class AbstractStarter implements Starter {
      * 程序结束前会执行,此方法用于保存内存中的数据到本地，并且清理内存资源
      */
     public void saveAndClearResource() {
-
+        log.info("开始保存并清理资源");
+        recorder.saveBeforeEnd();
+        log.info("保存并清理资源结束");
     }
 
     /**
