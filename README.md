@@ -20,6 +20,7 @@
 5. 多线程爬取
 6. 支持请求json接口,支持请求参数,支持多种提交方式,支持自定义header,类似于实现了postman的部分功能,继承SimpleStarter类即可
 7. 支持HTTP代理,爬取墙外内容(注意,即使你电脑开了全局代理,但是在cmd窗口里面都是不会生效的,因此使用请求工具如果不添加代理参数一样是网络不通的)
+8. 已经支持续爬功能
 
 注意:
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.不支持form-data。

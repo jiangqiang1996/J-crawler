@@ -2,13 +2,16 @@ package xin.jiangqiang.core.recoder;
 
 import cn.hutool.core.collection.ConcurrentHashSet;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.lang.TypeReference;
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import xin.jiangqiang.core.config.Config;
 import xin.jiangqiang.core.entities.Crawler;
 
-import java.io.*;
+import java.io.File;
 import java.util.*;
 
 
@@ -138,19 +141,10 @@ public class RAMRecorder extends AbstractRecorder {
         if (crawlersSet.size() != 0 && StrUtil.isNotEmpty(config.getSavePath())) {
             log.info("开始保存未爬取的爬虫");
             FileUtil.mkParentDirs(config.getSavePath());
-            File f = new File(config.getSavePath());
-            try (
-                    //创建对象输出流
-                    FileOutputStream fos = new FileOutputStream(f);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-            ) {
-                crawlersSet.addAll(tmpCrawlersSet);//正在爬取的爬虫因为程序意外终止，重置到没有爬取状态
-                oos.writeObject(crawlersSet);
-                log.info(crawlersSet.toString());
-                log.info("保存爬取状态成功");
-            } catch (IOException e) {
-                log.error(e.getMessage());
-            }
+            File file = new File(config.getSavePath());
+            String jsonStr = JSONUtil.toJsonPrettyStr(crawlersSet);
+            IoUtil.write(FileUtil.getOutputStream(file), true, jsonStr.getBytes());
+            log.info("保存爬取状态成功");
         }
     }
 
@@ -161,19 +155,12 @@ public class RAMRecorder extends AbstractRecorder {
     public synchronized void initBeforeStart() {
         //保存路径不为空，config的isContinue属性为true,则读取
         if (config.getIsContinue() && StrUtil.isNotEmpty(config.getSavePath())) {
-            File f = new File(config.getSavePath());
-            try (
-                    //创建对象输入流
-                    FileInputStream fis = new FileInputStream(f);
-                    ObjectInputStream ois = new ObjectInputStream(fis);
-            ) {
-                Set<Crawler> crawlers = (Set<Crawler>) ois.readObject();
-                this.addAll(new ArrayList<>(crawlers));
-                log.debug("从文件获取的爬虫种子:\n" + crawlers.toString());
-            } catch (IOException | ClassNotFoundException e) {
-                //路径设置后是保存时才创建，所以会爆找不到指定路径
-                log.error(e.getMessage());
-            }
+            File file = new File(config.getSavePath());
+            String jsonStr = IoUtil.read(FileUtil.getReader(file, CharsetUtil.CHARSET_UTF_8), true);
+            Set<Crawler> crawlers = JSONUtil.toBean(jsonStr, new TypeReference<>() {
+            }, false);
+            this.addAll(new ArrayList<>(crawlers));
+            log.debug("从文件获取的爬虫种子:\n" + crawlers);
         }
     }
 
