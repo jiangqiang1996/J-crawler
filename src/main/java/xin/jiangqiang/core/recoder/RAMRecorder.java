@@ -1,5 +1,6 @@
 package xin.jiangqiang.core.recoder;
 
+import cn.hutool.core.collection.ConcurrentHashSet;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -20,11 +21,11 @@ public class RAMRecorder extends AbstractRecorder {
     /**
      * 存储没有爬取的URL
      */
-    private final static Set<Crawler> crawlersSet = Collections.synchronizedSet(new HashSet<>());
+    private final static Set<Crawler> crawlersSet =new ConcurrentHashSet<>();
     /**
      * 正在爬取中的URL，如果遇到强行终止程序，只会保存没有爬取的URL，正在爬取中的URL会丢失
      */
-    private final static Set<Crawler> tmpCrawlersSet = Collections.synchronizedSet(new HashSet<>());
+    private final static Set<Crawler> tmpCrawlersSet = new ConcurrentHashSet<>();
 
     /**
      * 存储爬取成功的URL
