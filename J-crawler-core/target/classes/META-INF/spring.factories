@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  top.jiangqiang.core.AutoConfiguration
+  top.jiangqiang.core.CrawlerAutoConfiguration

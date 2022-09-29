@@ -20,15 +20,18 @@ import java.util.Set;
  */
 @Slf4j
 public class HttpUtil {
-    public Request processRequest(String url, Map<String, String> lines, Map<String, String> headers, Map<String, String> bodys) {
+    public Request processRequest(String url, Map<String, String> lines, Map<String, String> headers, Map<String, String> body) {
         Request.Builder builder = new Request.Builder();
         if (StrUtil.isBlank(url)) {
             throw new BaseException("请求方式不能为空");
         }
+        url = url.trim();
+        String method;
         //请求行中获取请求方式
-        String method = lines.get("method");
-        if (StrUtil.isBlank(method)) {
+        if (CollUtil.isEmpty(lines) || lines.get("method") == null) {
             method = "GET";
+        } else {
+            method = lines.get("method");
         }
         if (CollUtil.isNotEmpty(headers)) {
             //添加请求头
@@ -40,21 +43,21 @@ public class HttpUtil {
         switch (method) {
             case "POST":
             case "PUT":
-                if (CollUtil.isNotEmpty(bodys)) {
+                if (CollUtil.isNotEmpty(body)) {
                     String contentType = headers.get("Content-Type");
                     if (StrUtil.isBlank(contentType)) {
                         contentType = "application/x-www-form-urlencoded";
                     }
                     if (contentType.startsWith("application/json")) {
                         MediaType mediaType = MediaType.parse("application/json;charset=utf-8");
-                        RequestBody requestBody = RequestBody.Companion.create(JSONUtil.toJsonStr(bodys), mediaType);
+                        RequestBody requestBody = RequestBody.Companion.create(JSONUtil.toJsonStr(body), mediaType);
                         builder.method(method, requestBody);
                     } else if ("application/x-www-form-urlencoded".equals(contentType)) {
                         FormBody.Builder formBodyBuilder = new FormBody.Builder();
                         //添加请求参数
-                        Set<String> keySet = bodys.keySet();
+                        Set<String> keySet = body.keySet();
                         for (String key : keySet) {
-                            String value = bodys.get(key);
+                            String value = body.get(key);
                             formBodyBuilder.add(key, value);
                         }
                         builder.method(method, formBodyBuilder.build());
@@ -71,11 +74,11 @@ public class HttpUtil {
             case "HEAD":
             default:
                 HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
-                if (CollUtil.isEmpty(bodys)) {
+                if (CollUtil.isNotEmpty(body)) {
                     //GET或HEAD请求添加请求参数
-                    Set<String> keySet = bodys.keySet();
+                    Set<String> keySet = body.keySet();
                     for (String key : keySet) {
-                        String value = bodys.get(key);
+                        String value = body.get(key);
                         urlBuilder.addQueryParameter(key, value);
                     }
                 }
