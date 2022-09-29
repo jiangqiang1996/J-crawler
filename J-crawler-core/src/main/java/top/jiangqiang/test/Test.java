@@ -27,7 +27,6 @@ public class Test {
         headers.put("User-Agent", "apifox/1.0.0 (https://www.apifox.cn)");
         headers.put("Accept", "*/*");
         headers.put("Host", "mp.weixin.qq.com");
-        headers.put("Accept-Encoding", "gzip, deflate, br");
         headers.put("Connection", "keep-alive");
         Map<String, String> body = new HashMap<>();
         Request request = httpUtil.processRequest(url, lines, headers, body);
