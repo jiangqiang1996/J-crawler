@@ -1,3 +1,5 @@
+# java爬虫框架4.0，整合springboot相关技术，重构持久化相关代码
+
 # J-crawler3.0.2基本功能已经实现
 
 [![License](https://img.shields.io/github/license/jiangqiang1996/J-crawler)](https://www.apache.org/licenses/LICENSE-2.0)
