@@ -38,7 +38,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         ramRecorder.add(new Crawler("https://mp.weixin.qq.com/s?__biz=MzIxMjgzMDUyNw==&mid=2247489048&idx=1&sn=072866b456945d297ec2516dd72e5a41&chksm=97414648a036cf5eba9ddf88c7cf7a27809ae414b4ce43d5595c7351172d04d70664eab25761&scene=90&subscene=93&sessionid=1664460391&clicktime=1664460397&enterid=1664460397&ascene=56&fasttmpl_type=0&fasttmpl_fullversion=6351034-zh_CN-zip&fasttmpl_flag=0&realreporttime=1664460397767&devicetype=android-31&version=28001c3b&nettype=WIFI&abtest_cookie=AAACAA%3D%3D&lang=zh_CN&session_us=gh_391abad800db&exportkey=A01mvM0fP%2BtbjfOBlrDdga8%3D&pass_ticket=fRKCL5vF5nmJEU4Y0DJ60ftOP9hbDgcI5Syn9wR%2BP26sjnBzcmbbozXA3pV42cES&wx_header=3"));
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
         crawlerGlobalConfig.addRegEx("(http|https)://.*");
-        crawlerGlobalConfig.setDepth(3);
+        crawlerGlobalConfig.setDepth(1);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
             public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page) {
                 //处理完成，加入成功结果集
@@ -47,7 +47,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                         crawler1 -> ReUtil.isMatch(".*.jpg", crawler1.getUrl()) || ReUtil.isMatch(".*.jpeg", crawler1.getUrl()) || ReUtil.isMatch(".*.png", crawler1.getUrl())
                 ).collect(Collectors.toSet());
                 List<String> strings = crawlers.stream().map(Crawler::getUrl).toList();
-                System.out.println(strings);
+//                System.out.println(strings);
                 return page.getCrawlers();
             }
 

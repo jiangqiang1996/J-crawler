@@ -22,14 +22,25 @@ import java.util.Map;
 @Data
 public class CrawlerGlobalConfig {
     private Charset charset = Charset.defaultCharset();
-    private Integer threads = 3;//最小值为1
+    /**
+     * 最小值为1
+     */
+    private Integer threads = 10;
     /**
      * 注意，如果上一次爬取的最大深度为4，程序意外终止后，修改最大深度为2，继续上次爬取保存的结果继续爬取，那么无论如何至少会爬取一次。
      */
     private Integer depth = 3;
 
-    //强力模式，将使用正则表达式强行抽取js中的链接
+    /**
+     * 强力模式，将使用正则表达式强行抽取js中的链接
+     */
     private Boolean strong = true;
+    /**
+     * 线程池内所有任务空闲之后，需要等待一分钟才会结束，开启此选项可以强制结束，
+     * 如果只有极少数线程正在执行特别耗费时间的任务时（下载文件等任务），强制结束会导致数据丢失。
+     *
+     */
+    private Boolean forceEnd = true;
     /**
      * 满足此正则表达式列表的URL会被提取
      */
@@ -65,11 +76,6 @@ public class CrawlerGlobalConfig {
      * http请求代理参数设置
      */
     private HttpConfig httpConfig = new HttpConfig();
-
-    /**
-     * 使用okhttp时是否使用异步方式发请求，使用异步方式在任务都完毕之后需要等待一分钟才会结束程序
-     */
-    private Boolean async = true;
 
     {
         defaultReverseRegExs.add(".*\\.(js|css).*");

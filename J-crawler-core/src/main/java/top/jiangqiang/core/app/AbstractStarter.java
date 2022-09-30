@@ -1,5 +1,6 @@
 package top.jiangqiang.core.app;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ReUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import top.jiangqiang.core.entities.Crawler;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -84,33 +86,39 @@ public abstract class AbstractStarter implements Starter {
     public abstract Runnable getTask(Crawler crawler);
 
     private void run() {
-        new Thread(() -> {
-            while (true) {
-                Crawler crawler = getRecorder().popOne();
-                if (crawler != null) {
-                    getRecorder().addActive(crawler);
-                    getExecutor().execute(getTask(crawler));
-                } else {
-                    log.info("没有获取到种子");
+        while (true) {
+            Crawler crawler = getRecorder().popOne();
+            if (crawler != null) {
+                getRecorder().addActive(crawler);
+                getExecutor().execute(getTask(crawler));
+            } else {
+                //没有获取到任务，因此先暂停五秒后，重新获取
+                ThreadUtil.sleep(5, TimeUnit.SECONDS);
+                ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
+                if (threadPoolExecutor.getActiveCount() == 0) {
                     crawler = getRecorder().popOne();
                     if (crawler != null) {
                         getRecorder().addActive(crawler);
                         getExecutor().execute(getTask(crawler));
                     } else {
-                        executor.shutdown();
-                        try {
-                            boolean b = executor.awaitTermination(2, TimeUnit.SECONDS);
-                            if (b) {
-                                log.info("没有获取到种子，程序即将结束");
-                                break;
+                        if (threadPoolExecutor.getActiveCount() == 0) {
+                            executor.shutdown();
+                            log.info("没有获取到种子，并且活动线程数量为:{}", threadPoolExecutor.getActiveCount());
+                            if (getGlobalConfig().getForceEnd()) {
+                                int time = 10;
+                                while (time > 0) {
+                                    log.info("程序即将结束，倒计时：{}秒", time);
+                                    ThreadUtil.sleep(1, TimeUnit.SECONDS);
+                                    time--;
+                                }
+                                log.info("程序马上停止");
+                                System.exit(0);
                             }
-                        } catch (InterruptedException e) {
-                            log.debug(e.getMessage());
                         }
                     }
                 }
             }
-        }).start();
+        }
     }
 
     /**
