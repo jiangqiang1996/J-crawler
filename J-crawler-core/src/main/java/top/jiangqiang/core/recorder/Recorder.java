@@ -1,0 +1,127 @@
+package top.jiangqiang.core.recorder;
+
+import top.jiangqiang.core.entities.Crawler;
+
+import java.util.List;
+
+/**
+ * 记录各种爬取状态的爬虫
+ *
+ * @author Jiangqiang
+ * @version 1.0
+ * @description TODO
+ * @date 2022/9/30 9:46
+ */
+
+public interface Recorder {
+    /**
+     * 存储未爬取的爬虫
+     * 需要去重处理
+     *
+     * @param crawler 需要存储的爬虫
+     */
+    void add(Crawler crawler);
+
+    /**
+     * 存储未爬取的爬虫
+     * 需要去重处理
+     *
+     * @param crawlers 需要存储的爬虫列表
+     */
+    default void addAll(List<Crawler> crawlers) {
+        crawlers.forEach(crawler -> add(crawler));
+    }
+
+    /**
+     * 此方法用于内存记录器的断点续爬
+     */
+    void saveBeforeEnd();
+
+    /**
+     * 从持久化数据中读取爬虫种子
+     */
+    void initBeforeStart();
+
+    /**
+     * 取出未爬取的爬虫
+     * 取出后需要删除该爬虫
+     */
+    Crawler popOne();
+
+    /**
+     * 查询所有未爬取的爬虫
+     */
+    List<Crawler> getAll();
+
+    /**
+     * 记录爬取成功的
+     *
+     * @param crawler 成功爬取的爬虫
+     */
+    void addSuccess(Crawler crawler);
+
+    /**
+     * 查询爬取成功的
+     *
+     * @return 爬取成功的爬虫列表
+     */
+    List<Crawler> getAllSuccess();
+
+    /**
+     * 记录失败的
+     *
+     * @param crawler 爬取失败的爬虫
+     */
+    void addError(Crawler crawler);
+
+    /**
+     * 查询爬取失败的
+     *
+     * @return 爬取失败的爬虫列表
+     */
+    List<Crawler> getAllError();
+
+    /**
+     * 获取正在爬取中的任务
+     *
+     * @return
+     */
+    List<Crawler> getAllActive();
+
+    /**
+     * @return 查询未爬取的种子条数
+     */
+    Integer count();
+
+    /**
+     * @return 查询成功条数
+     */
+    Integer countSuccess();
+
+    /**
+     * @return 查询失败条数
+     */
+    Integer countError();
+
+    /**
+     * 正在爬取中的数量
+     *
+     * @return
+     */
+    Integer countActive();
+
+    /**
+     * 是否已经存在此爬虫URL
+     * 可能已经爬取失败，也可能还未爬取，或者正在爬取
+     *
+     * @return
+     */
+    Boolean exist(Crawler crawler);
+
+    /**
+     * 正在进行的种子
+     *
+     * @param crawler
+     */
+    void addActive(Crawler crawler);
+}
