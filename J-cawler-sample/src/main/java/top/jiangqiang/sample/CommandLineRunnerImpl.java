@@ -1,6 +1,5 @@
 package top.jiangqiang.sample;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +8,7 @@ import org.jsoup.select.Elements;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import top.jiangqiang.core.app.GenericStarter;
+import top.jiangqiang.core.common.FileUtil;
 import top.jiangqiang.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.core.entities.Crawler;
 import top.jiangqiang.core.entities.Page;
@@ -19,10 +19,7 @@ import top.jiangqiang.core.recorder.Recorder;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static top.jiangqiang.core.common.DocumentUtil.generateUrl;
 
 @Component
 @Slf4j
@@ -38,19 +35,25 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         ramRecorder.add(new Crawler("https://mp.weixin.qq.com/s?__biz=MzIxMjgzMDUyNw==&mid=2247489048&idx=1&sn=072866b456945d297ec2516dd72e5a41&chksm=97414648a036cf5eba9ddf88c7cf7a27809ae414b4ce43d5595c7351172d04d70664eab25761&scene=90&subscene=93&sessionid=1664460391&clicktime=1664460397&enterid=1664460397&ascene=56&fasttmpl_type=0&fasttmpl_fullversion=6351034-zh_CN-zip&fasttmpl_flag=0&realreporttime=1664460397767&devicetype=android-31&version=28001c3b&nettype=WIFI&abtest_cookie=AAACAA%3D%3D&lang=zh_CN&session_us=gh_391abad800db&exportkey=A01mvM0fP%2BtbjfOBlrDdga8%3D&pass_ticket=fRKCL5vF5nmJEU4Y0DJ60ftOP9hbDgcI5Syn9wR%2BP26sjnBzcmbbozXA3pV42cES&wx_header=3"));
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
         crawlerGlobalConfig.addRegEx("(http|https)://.*");
-        crawlerGlobalConfig.setDepth(1);
+        crawlerGlobalConfig.setDepth(3);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
             public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page) {
                 //处理完成，加入成功结果集
                 recorder.addSuccess(crawler);
-                Set<Crawler> crawlers = page.getCrawlers().stream().filter(
-                        crawler1 -> ReUtil.isMatch(".*.jpg", crawler1.getUrl()) || ReUtil.isMatch(".*.jpeg", crawler1.getUrl()) || ReUtil.isMatch(".*.png", crawler1.getUrl())
-                ).collect(Collectors.toSet());
-                List<String> strings = crawlers.stream().map(Crawler::getUrl).toList();
-//                System.out.println(strings);
+//                Set<Crawler> crawlers = page.getCrawlers().stream().filter(
+//                        crawler1 -> {
+//                            return ReUtil.isMatch(".*\\.(jpg|jpeg|png|webp|gif)", crawler1.getUrl());
+//                        }
+//                ).collect(Collectors.toSet());
+                List<String> urlList = page.getCrawlers().stream().map(Crawler::getUrl).toList();
+//                System.out.println(urlList.size());
+//                System.out.println(urlList);
+                List<String> stringList = FileUtil.downloadFilesFromUrlList(urlList, FileUtil.file("D:\\cache"),1024*100);
+                System.out.println("++++++++++++++++++++++++");
+                System.out.println(stringList.size());
+                System.out.println(stringList);
                 return page.getCrawlers();
             }
-
 
             public void doFailure(Recorder recorder, Crawler crawler, IOException e) {
                 //处理完成，加入失败结果集

@@ -113,6 +113,9 @@ public abstract class AbstractStarter implements Starter {
                                 }
                                 log.info("程序马上停止");
                                 System.exit(0);
+                            } else {
+                                log.info("程序即将停止");
+                                break;
                             }
                         }
                     }

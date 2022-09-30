@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
-            <artifactId>hutool-cache</artifactId>
+            <artifactId>hutool-http</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>

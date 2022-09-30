@@ -11,7 +11,7 @@ import top.jiangqiang.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.core.entities.Crawler;
 import top.jiangqiang.core.entities.Page;
 import top.jiangqiang.core.handler.ResultHandler;
-import top.jiangqiang.core.http.HttpUtil;
+import top.jiangqiang.core.http.OkHttpUtil;
 import top.jiangqiang.core.recorder.Recorder;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class GenericStarter extends AbstractStarter {
 
         @Override
         public void run() {
-            Call call = HttpUtil.request(crawler, getGlobalConfig());
+            Call call = OkHttpUtil.request(crawler, getGlobalConfig());
             if (call == null) {
                 getRecorder().addError(crawler);
                 return;
@@ -100,7 +100,8 @@ public class GenericStarter extends AbstractStarter {
             page.addSeeds(urls);
         }
         Set<Crawler> crawlers = getResultHandler().doSuccess(recorder, crawler, page);
-        if (page.getDepth() < (getGlobalConfig().getDepth())) {//当前爬虫深度没有达到设置的级别，加入爬虫任务列表
+        //当前爬虫深度没有达到设置的级别，加入爬虫任务列表
+        if (page.getDepth() < (getGlobalConfig().getDepth())) {
             //过滤本次提取出来的URL
             getRecorder().addAll(new ArrayList<>(crawlers));
             //把没有爬取的加入任务列表

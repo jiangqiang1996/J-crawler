@@ -38,9 +38,9 @@ public class CrawlerGlobalConfig {
     /**
      * 线程池内所有任务空闲之后，需要等待一分钟才会结束，开启此选项可以强制结束，
      * 如果只有极少数线程正在执行特别耗费时间的任务时（下载文件等任务），强制结束会导致数据丢失。
-     *
+     * 强制结束会使整个程序结束，如果是其他项目（web项目）引用此工具二次开发，不应该开启强制结束
      */
-    private Boolean forceEnd = true;
+    private Boolean forceEnd = false;
     /**
      * 满足此正则表达式列表的URL会被提取
      */

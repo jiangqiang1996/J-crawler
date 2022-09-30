@@ -2,15 +2,17 @@ package top.jiangqiang.core.http;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import top.jiangqiang.core.base.BaseException;
-import top.jiangqiang.core.util.SpringUtil;
 import top.jiangqiang.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.core.entities.Crawler;
 import top.jiangqiang.core.interceptor.DefaultHttpInterceptor;
 import top.jiangqiang.core.util.JSONUtil;
+import top.jiangqiang.core.util.SpringUtil;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Map;
@@ -23,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @date 2022-09-29
  */
 @Slf4j
-public class HttpUtil {
+public class OkHttpUtil {
     public static Call request(Crawler crawler, CrawlerGlobalConfig globalConfig) {
         if (StrUtil.isBlank(crawler.getUrl())) {
             return null;
@@ -199,5 +201,14 @@ public class HttpUtil {
             return Proxy.Type.SOCKS;
         }
         return Proxy.Type.HTTP;
+    }
+
+    public static Response send(String url, String method) {
+        Request request = new Request.Builder().method(method, null).url(URLUtil.url(url)).build();
+        try {
+            return new OkHttpClient.Builder().build().newCall(request).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
