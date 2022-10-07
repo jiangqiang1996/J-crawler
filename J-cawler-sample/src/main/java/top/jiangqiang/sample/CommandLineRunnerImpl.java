@@ -27,7 +27,42 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     @Override
     public void run(String... args) {
 //        fetchOpenSourceChina();
-        fetchWeChatArticle();
+//        fetchWeChatArticle();
+        fetchPicture();
+    }
+
+    private void fetchPicture() {
+        RamRecorder ramRecorder = new RamRecorder();
+        ramRecorder.add(new Crawler("https://huaban.com/boards/72192551"));
+        CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
+        crawlerGlobalConfig.addRegEx("(http|https)://.*");
+        crawlerGlobalConfig.setDepth(3);
+        new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
+            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page) {
+                //处理完成，加入成功结果集
+                recorder.addSuccess(crawler);
+//                Set<Crawler> crawlers = page.getCrawlers().stream().filter(
+//                        crawler1 -> {
+//                            return ReUtil.isMatch(".*\\.(jpg|jpeg|png|webp|gif)", crawler1.getUrl());
+//                        }
+//                ).collect(Collectors.toSet());
+                List<String> urlList = page.getCrawlers().stream().map(Crawler::getUrl).toList();
+//                System.out.println(urlList.size());
+//                System.out.println(urlList);
+                List<String> stringList = FileUtil.downloadFilesFromUrlList(urlList, FileUtil.file("D:\\cache"), 1024 * 100);
+//                System.out.println("++++++++++++++++++++++++");
+//                System.out.println(stringList.size());
+//                System.out.println(stringList);
+//                System.out.println(urlList.size());
+                System.out.println(crawler.getHeaders().get("referer"));
+                return page.getCrawlers();
+            }
+
+            public void doFailure(Recorder recorder, Crawler crawler, IOException e) {
+                //处理完成，加入失败结果集
+                recorder.addError(crawler);
+            }
+        }).start();
     }
 
     void fetchWeChatArticle() {

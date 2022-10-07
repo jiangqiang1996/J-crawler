@@ -23,9 +23,10 @@ import java.util.*;
 public class Crawler implements Serializable {
     //深度，初始种子作为第1层
     private Integer depth = 1;
-    private String url;//当前的URL
-    //根据type执行不同逻辑，对应@Match注解的value
-    private Set<Crawler> crawlers = new HashSet<>();//当前URL中提取出来的子爬虫
+    //当前的URL
+    private String url;
+    //当前URL中提取出来的子爬虫
+    private Set<Crawler> crawlers = new HashSet<>();
     private HttpConfig httpConfig = new HttpConfig();
 
     public Crawler(String url) {
@@ -45,6 +46,7 @@ public class Crawler implements Serializable {
             BeanUtil.copyProperties(this, crawler);
             crawler.setUrl(url);
             crawler.setDepth(this.depth + 1);
+            crawler.addHeader("referer", this.url);
             crawlers.add(crawler);
             return crawler;
         }
