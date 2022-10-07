@@ -114,8 +114,15 @@ public abstract class AbstractStarter implements Starter {
                                 log.info("程序马上停止");
                                 System.exit(0);
                             } else {
-                                log.info("程序即将停止");
-                                break;
+                                ThreadUtil.safeSleep(1000 * 60 * 5);
+                                crawler = getRecorder().popOne();
+                                if (crawler != null) {
+                                    getRecorder().addActive(crawler);
+                                    getExecutor().execute(getTask(crawler));
+                                } else {
+                                    log.info("程序即将停止");
+                                    break;
+                                }
                             }
                         }
                     }
