@@ -14,7 +14,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
                     converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
     <!-- 彩色日志格式 -->
     <property name="CONSOLE_LOG_PATTERN"
-              value="${CONSOLE_LOG_PATTERN:-%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-50.50logger{49}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-50.50logger{49}  : %line){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
     <!--    定义日志的根目录-->
     <property name="LOG_HOME" value="./log"/>
     <!-- 定义日志文件名称 -->
@@ -78,7 +78,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
         </root>
-        <logger name="top.jiangqiang" level="INFO" additivity="false">
+        <logger name="top.jiangqiang" level="DEBUG" additivity="false">
             <appender-ref ref="STDOUT"/>
         </logger>
         <logger name="org.springframework" level="INFO" additivity="false">

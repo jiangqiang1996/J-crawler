@@ -89,6 +89,7 @@ public class OkHttpUtil {
             throw new BaseException("请求方式不能为空");
         }
         url = url.trim();
+        HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
         String method;
         //请求行中获取请求方式
         if (CollUtil.isEmpty(lines) || lines.get("method") == null) {
@@ -136,7 +137,6 @@ public class OkHttpUtil {
             case "GET":
             case "HEAD":
             default:
-                HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
                 if (CollUtil.isNotEmpty(body)) {
                     //GET或HEAD请求添加请求参数
                     Set<String> keySet = body.keySet();
@@ -145,9 +145,9 @@ public class OkHttpUtil {
                         urlBuilder.addQueryParameter(key, value);
                     }
                 }
-                builder.method(method, null).url(urlBuilder.build());
+                builder.method(method, null);
         }
-        return builder.build();
+        return builder.url(urlBuilder.build()).build();
     }
 
     /**

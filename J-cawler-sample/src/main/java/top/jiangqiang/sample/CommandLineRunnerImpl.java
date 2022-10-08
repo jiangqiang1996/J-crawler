@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import top.jiangqiang.core.app.GenericStarter;
 import top.jiangqiang.core.common.FileUtil;
 import top.jiangqiang.core.config.CrawlerGlobalConfig;
+import top.jiangqiang.core.config.HttpConfig;
 import top.jiangqiang.core.entities.Crawler;
 import top.jiangqiang.core.entities.Page;
 import top.jiangqiang.core.handler.ResultHandler;
@@ -18,6 +19,7 @@ import top.jiangqiang.core.recorder.Recorder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -35,7 +37,11 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     private void fetchPicture() {
         RamRecorder ramRecorder = new RamRecorder();
-        ramRecorder.add(new Crawler("https://www.huashi6.com/rank"));
+        Crawler crawler = new Crawler("https://www.huashi6.com/rank");
+        crawler.addParam("key", "value1");
+        crawler.addLine("method", "POST");
+        crawler.addHeader("Referer", "http://www.baidu.com");
+        ramRecorder.add(crawler);
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
 //        crawlerGlobalConfig.addRegEx("(http|https)://.*");
         crawlerGlobalConfig.setDepth(3);
