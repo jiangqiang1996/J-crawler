@@ -47,7 +47,7 @@ public class OkHttpUtil {
             interceptor.set(SpringUtil.getOneBeanDefault(Interceptor.class, new DefaultHttpInterceptor()));
             //拦截器;
             OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addInterceptor(interceptor.get())
-                    .addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(HttpLoggingInterceptor.Level.BODY));
+                    .addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(globalConfig.getLogLevel()));
 
             Boolean useProxy = globalConfig.getUseProxy();
             if (crawler.getUseProxy() != null) {

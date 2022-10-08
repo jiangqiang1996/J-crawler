@@ -1,17 +1,20 @@
 package top.jiangqiang.core.util;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileTypeUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.io.file.FileNameUtil;
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.core.util.URLUtil;
+import cn.hutool.core.util.*;
 import cn.hutool.http.HttpUtil;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import top.jiangqiang.core.entities.Page;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,132 +22,6 @@ import java.util.List;
  * @date 2022-09-30
  */
 public class FileUtil extends cn.hutool.core.io.FileUtil {
-    /**
-     * 从url获取文件mimeType
-     *
-     * @param url url地址
-     * @return
-     */
-    public static String getMimeTypeFromUrl(String url) {
-        return getMimeType("." + getExtName(url));
-    }
-
-    /**
-     * 获取文件后缀名
-     *
-     * @param url
-     * @return
-     */
-    public static String getExtName(String url) {
-        return FileTypeUtil.getType(URLUtil.getStream(URLUtil.url(url)));
-    }
-
-    public static List<String> downloadFilesFromUrlList(List<String> urlList, File destDir, Integer size, String... allowDownloadList) {
-        List<String> fileNameList = new ArrayList<>();
-        if (CollUtil.isNotEmpty(urlList)) {
-            for (String url : urlList) {
-                String fileName = downloadFileFromUrl(url, destDir, size, allowDownloadList);
-                if (StrUtil.isNotBlank(fileName)) {
-                    fileNameList.add(fileName);
-                }
-            }
-        }
-        return fileNameList;
-    }
-
-    public static Integer getSizeFromUrl(String url) {
-        try {
-            return URLUtil.url(url).openConnection().getContentLength();
-        } catch (IOException e) {
-            return -1;
-        }
-    }
-
-    /**
-     * @param url               文件地址
-     * @param destDir           目录名
-     * @param allowDownloadList 允许的文件格式，扩展名或mimeType
-     * @return
-     */
-    public static String downloadFileFromUrl(String url, File destDir, Integer minSize, String... allowDownloadList) {
-        try {
-            int fileSize = getSizeFromUrl(url);
-            if (fileSize < minSize) {
-                return null;
-            }
-            String extName = getExtName(url);
-            String destFileName = genFileKey();
-            if (StrUtil.isBlank(extName)) {
-                extName = "";
-            } else {
-                destFileName = destFileName + "." + extName;
-            }
-            String mimeType = getMimeType(destFileName);
-            if (mimeType == null) {
-                mimeType = "";
-            }
-            if (ArrayUtil.isEmpty(allowDownloadList)) {
-                HttpUtil.downloadFileFromUrl(url, FileUtil.file(destDir, destFileName), null);
-                return destFileName;
-            } else {
-                for (String extNameOrMimeType : allowDownloadList) {
-                    if (extName.equals(extNameOrMimeType) || mimeType.startsWith(extNameOrMimeType)) {
-                        HttpUtil.downloadFileFromUrl(url, FileUtil.file(destDir, destFileName), null);
-                        return destFileName;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
-    }
-
-    /**
-     * 根据文件名和sha256生成文件唯一标识
-     *
-     * @param fileName 文件名或key
-     * @param sha256
-     * @return
-     */
-    public static String genFileKey(String fileName, String sha256) {
-        String extName = FileNameUtil.extName(fileName);
-        return genFileKeyByExtName(extName, sha256);
-    }
-
-    public static String genFileKeyByExtName(String extName, String randomStr) {
-        String tmpStr = mixinStr(String.valueOf(System.currentTimeMillis()), randomStr);
-        if (StrUtil.isBlank(extName)) {
-            return tmpStr;
-        } else {
-            return tmpStr + "." + extName;
-        }
-    }
-
-    /**
-     * key
-     *
-     * @return
-     */
-    public static String genFileKey() {
-        return mixinStr(String.valueOf(System.currentTimeMillis()), RandomUtil.randomString(64));
-    }
-
-    private static String getFileNameFromUrl(String url) {
-        if (StrUtil.isBlank(url)) {
-            return "";
-        } else {
-            String tmpStr = url;
-            if (tmpStr.contains("?")) {
-                tmpStr = tmpStr.substring(0, tmpStr.indexOf('?'));
-            }
-            tmpStr = StrUtil.subAfter(tmpStr, '/', true);
-            if (tmpStr.contains("=")) {
-                tmpStr = tmpStr.substring(0, tmpStr.indexOf('='));
-            }
-            return tmpStr;
-        }
-    }
 
     /**
      * 将两个字符串按照一定规则混合，防止信息泄露
@@ -178,4 +55,116 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         return stringBuilder.toString();
     }
 
+
+    /**
+     * @param page     需要下载的文件来源
+     * @param response okhttp响应
+     * @param dirPath  文件下载到指定目录
+     * @return 返回下载后保存的文件名，null表示下载失败
+     */
+    public static String downloadFile(Page page, Response response, String dirPath) {
+        //根据mimeType获取扩展名
+        String type = getTypeFromMimeType(page.getContentType());
+        if (ArrayUtil.isNotEmpty(page.getBodyBytes())) {
+            return saveFileFromPage(page, type, dirPath);
+        } else {
+            return downloadFile(response, type, dirPath);
+        }
+    }
+
+    private static String getTypeFromMimeType(String contentType) {
+        if (StrUtil.isBlank(contentType)) {
+            return null;
+        } else {
+            return null;
+        }
+    }
+
+
+    public static String saveFileFromPage(Page page, String type, String dirPath) {
+        if (page == null) {
+            return null;
+        }
+        byte[] data = page.getBodyBytes();
+        if (ArrayUtil.isEmpty(data)) {
+            return null;
+        }
+        if (StrUtil.isBlank(type)) {
+            String contentType = page.getContentType();
+            if (StrUtil.isNotBlank(contentType)) {
+                type = getTypeFromMimeType(contentType);
+            }
+            if (StrUtil.isBlank(type)) {
+                type = getTypeFromBytes(data);
+            }
+        }
+        String fileName = genFileName(type);
+        IoUtil.write(FileUtil.getOutputStream(FileUtil.file(dirPath, fileName)), true, data);
+        return fileName;
+    }
+
+    /**
+     * okhttp使用
+     *
+     * @param response
+     * @param type
+     * @param dirPath
+     * @return
+     */
+    public static String downloadFile(Response response, String type, String dirPath) {
+        ResponseBody responseBody = response.body();
+        if (responseBody == null) {
+            return null;
+        }
+        return downloadFile(responseBody.byteStream(), type, dirPath);
+    }
+
+    public static String downloadFile(InputStream inputStream, String type, String dirPath) {
+        BufferedOutputStream bufferedOutputStream = null;
+        try (
+                BufferedInputStream bufferedInputStream = IoUtil.toBuffered(inputStream);
+        ) {
+            String fileName = genFileName();
+            byte[] buffer = new byte[4096];
+            int len;
+            boolean flag = true;
+            while ((len = bufferedInputStream.read(buffer)) != -1) {
+                if (flag) {
+                    flag = false;
+                    if (StrUtil.isBlank(type)) {
+                        type = getTypeFromBytes(buffer);
+                    }
+                    if (StrUtil.isNotBlank(type)) {
+                        fileName = fileName + "." + type;
+                    }
+                    bufferedOutputStream = IoUtil.toBuffered(FileUtil.getOutputStream(FileUtil.file(dirPath, fileName)));
+                }
+                bufferedOutputStream.write(buffer, 0, len);
+            }
+            return fileName;
+        } catch (Exception ignored) {
+            return null;
+        } finally {
+            IoUtil.close(bufferedOutputStream);
+        }
+    }
+
+    private static String getTypeFromBytes(byte[] buffer) {
+        String type;
+        type = FileTypeUtil.getType(HexUtil.encodeHexStr(buffer));
+        return type;
+    }
+
+    private static String genFileName(String type) {
+        if (StrUtil.isBlank(type)) {
+            return DateUtil.format(new Date(), DatePattern.PURE_DATETIME_MS_PATTERN) + RandomUtil.randomString(10);
+        } else {
+            return DateUtil.format(new Date(), DatePattern.PURE_DATETIME_MS_PATTERN) + RandomUtil.randomString(10) + "." + type;
+        }
+    }
+
+    private static String genFileName() {
+        return genFileName(null);
+    }
 }
+

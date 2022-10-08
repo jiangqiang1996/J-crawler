@@ -3,6 +3,7 @@ package top.jiangqiang.sample;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Response;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.boot.CommandLineRunner;
@@ -16,6 +17,7 @@ import top.jiangqiang.core.recorder.RamRecorder;
 import top.jiangqiang.core.recorder.Recorder;
 import top.jiangqiang.core.util.FileUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,34 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     public void run(String... args) {
 //        fetchOpenSourceChina();
 //        fetchWeChatArticle();
-        fetchPicture();
+//        fetchPicture();
+        fetchPicture1();
+    }
+
+    private void fetchPicture1() {
+        RamRecorder ramRecorder = new RamRecorder();
+        Crawler crawler = new Crawler("https://csdnimg.cn/02d34b42a3ee476fb50850304ab67017.png");
+        crawler.addParam("key", "value1");
+        crawler.addLine("method", "GET");
+        crawler.addHeader("Referer", "http://www.baidu.com");
+        ramRecorder.add(crawler);
+        CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
+//        crawlerGlobalConfig.addRegEx("(http|https)://.*");
+        crawlerGlobalConfig.setDepth(3);
+        crawlerGlobalConfig.setMaxSize((long) 1024 * 1024);
+        new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
+            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
+                // 储存下载文件的目录
+                File dir = FileUtil.file("D:/cache/cache");
+                FileUtil.downloadFile(page, response, dir.getAbsolutePath());
+                return page.getCrawlers();
+            }
+
+            public void doFailure(Recorder recorder, Crawler crawler, IOException e) {
+                //处理完成，加入失败结果集
+                recorder.addError(crawler);
+            }
+        }).start();
     }
 
     private void fetchPicture() {
@@ -45,17 +74,10 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         crawlerGlobalConfig.setDepth(3);
         crawlerGlobalConfig.setMaxSize((long) 1024 * 1024);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
-            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page) {
+            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
                 //处理完成，加入成功结果集
                 recorder.addSuccess(crawler);
-//                Set<Crawler> crawlers = page.getCrawlers().stream().filter(
-//                        crawler1 -> {
-//                            return ReUtil.isMatch(".*\\.(jpg|jpeg|png|webp|gif)", crawler1.getUrl());
-//                        }
-//                ).collect(Collectors.toSet());
-//                List<String> urlList = page.getCrawlers().stream().map(Crawler::getUrl).toList();
-//                System.out.println(urlList.size());
-//                System.out.println(urlList);
+
                 List<String> urlList = new ArrayList<>();
                 String regEx = """
                         ("originalPath":")[(\\w),(\\\\u002F)]{1,}(\\.)([a-z]{3})
@@ -67,11 +89,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                         urlList.add(url);
                     }
                 }
-                List<String> stringList = FileUtil.downloadFilesFromUrlList(urlList, FileUtil.file("D:\\cache"), 100 * 1024);
-//                System.out.println("++++++++++++++++++++++++");
-//                System.out.println(stringList.size());
-//                System.out.println(stringList);
-//                System.out.println(urlList.size());
+                page.addSeeds(urlList);
                 return page.getCrawlers();
             }
 
@@ -89,7 +107,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         crawlerGlobalConfig.addRegEx("(http|https)://.*");
         crawlerGlobalConfig.setDepth(3);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
-            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page) {
+            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
                 //处理完成，加入成功结果集
                 recorder.addSuccess(crawler);
 //                Set<Crawler> crawlers = page.getCrawlers().stream().filter(
@@ -100,10 +118,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                 List<String> urlList = page.getCrawlers().stream().map(Crawler::getUrl).toList();
 //                System.out.println(urlList.size());
 //                System.out.println(urlList);
-                List<String> stringList = FileUtil.downloadFilesFromUrlList(urlList, FileUtil.file("D:\\cache"), 1024 * 100);
-                System.out.println("++++++++++++++++++++++++");
-                System.out.println(stringList.size());
-                System.out.println(stringList);
+                page.addSeeds(urlList);
                 return page.getCrawlers();
             }
 
@@ -125,7 +140,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         crawlerGlobalConfig.addRegEx("https://.*");
         crawlerGlobalConfig.setDepth(2);
         GenericStarter genericStarter = new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
-            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page) {
+            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
                 if (ReUtil.isMatch("^https://gitee.com/explore/([A-Za-z0-9-]{1,})", page.getUrl())) {
                     match(page);
                 }

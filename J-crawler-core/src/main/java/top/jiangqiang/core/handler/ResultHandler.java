@@ -1,5 +1,6 @@
 package top.jiangqiang.core.handler;
 
+import okhttp3.Response;
 import top.jiangqiang.core.entities.Crawler;
 import top.jiangqiang.core.entities.Page;
 import top.jiangqiang.core.recorder.Recorder;
@@ -8,7 +9,7 @@ import java.io.IOException;
 import java.util.Set;
 
 public interface ResultHandler {
-    default Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page) {
+    default Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
         //处理完成，加入成功结果集
         recorder.addSuccess(crawler);
         return page.getCrawlers();

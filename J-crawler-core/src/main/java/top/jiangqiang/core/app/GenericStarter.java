@@ -15,6 +15,7 @@ import top.jiangqiang.core.recorder.Recorder;
 import top.jiangqiang.core.util.DocumentUtil;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -84,7 +85,7 @@ public class GenericStarter extends AbstractStarter {
         }
         String contentType = mediaType.toString();
         long contentLength = body.contentLength();
-        if ((contentType.startsWith("application/json") || "text".equals(mediaType.type()) && contentLength <= getGlobalConfig().getMaxSize())) {
+//        if ((contentType.startsWith("application/json") || "text".equals(mediaType.type()) && contentLength <= getGlobalConfig().getMaxSize())) {
             byte[] bodyBytes = null;
             try {
                 bodyBytes = body.bytes();
@@ -100,15 +101,15 @@ public class GenericStarter extends AbstractStarter {
                 urls = getMatchUrls(urls);
                 page.addSeeds(urls);
             }
-            Set<Crawler> crawlers = getResultHandler().doSuccess(recorder, crawler, page);
+            Set<Crawler> crawlers = getResultHandler().doSuccess(recorder, crawler, page, response);
             //当前爬虫深度没有达到设置的级别，加入爬虫任务列表
             if (page.getDepth() < (getGlobalConfig().getDepth())) {
                 //把没有爬取的加入任务列表，在addAll方法中需要自定义实现过滤
                 getRecorder().addAll(new ArrayList<>(crawlers));
             }
-        } else {
-            Page page = Page.getPage(crawler, code, contentType);
-            getResultHandler().doSuccess(recorder, crawler, page);
-        }
+//        } else {
+//            Page page = Page.getPage(crawler, code, contentType);
+//            getResultHandler().doSuccess(recorder, crawler, page, response);
+//        }
     }
 }
