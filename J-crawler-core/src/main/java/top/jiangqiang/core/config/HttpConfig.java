@@ -2,6 +2,7 @@ package top.jiangqiang.core.config;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Map;
  * @Date: 2022年05月15日 12:07
  */
 @Data
-public class HttpConfig {
+public class HttpConfig implements Serializable {
     private Boolean useProxy = false;
     private Map<String, String> lines;
     private Map<String, String> headers;

@@ -1,7 +1,7 @@
 package top.jiangqiang.core.entities;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,8 +42,7 @@ public class Crawler implements Serializable {
     public Crawler addSeed(String url) {
         if (StrUtil.isNotBlank(url)) {
             //this是当前爬虫，crawler是子爬虫
-            Crawler crawler = new Crawler();
-            BeanUtil.copyProperties(this, crawler);
+            Crawler crawler = ObjectUtil.cloneByStream(this);
             crawler.setUrl(url);
             crawler.setDepth(this.depth + 1);
             crawler.addHeader("referer", this.url);

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import java.util.Map;
  */
 @Slf4j
 @Data
-public class CrawlerGlobalConfig {
+public class CrawlerGlobalConfig implements Serializable {
     private Charset charset = Charset.defaultCharset();
     /**
      * 最小值为1
