@@ -44,12 +44,7 @@ public class Page extends Crawler {
      * @return 返回一个page
      */
     public static Page getPage(Crawler crawler, Integer responseCode, String contentType, byte[] bodyBytes, Charset charset) {
-        //深克隆
-        crawler = ObjectUtil.cloneByStream(crawler);
-        Page page = new Page();
-        BeanUtil.copyProperties(crawler, page);
-        page.setResponseCode(responseCode);
-        page.setContentType(contentType);
+        Page page = getPage(crawler, responseCode, contentType);
         if (bodyBytes == null) {
             bodyBytes = new byte[0];
         }
@@ -72,6 +67,16 @@ public class Page extends Crawler {
                 page.document = Jsoup.parse(html, page.getUrl());
             }
         }
+        return page;
+    }
+
+    public static Page getPage(Crawler crawler, Integer responseCode, String contentType) {
+        //深克隆
+        crawler = ObjectUtil.cloneByStream(crawler);
+        Page page = new Page();
+        BeanUtil.copyProperties(crawler, page);
+        page.setResponseCode(responseCode);
+        page.setContentType(contentType);
         return page;
     }
 }

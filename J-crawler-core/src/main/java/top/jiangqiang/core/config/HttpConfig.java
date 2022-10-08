@@ -3,6 +3,7 @@ package top.jiangqiang.core.config;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -12,8 +13,12 @@ import java.util.Map;
 @Data
 public class HttpConfig implements Serializable {
     private Boolean useProxy = false;
-    private Map<String, String> lines;
-    private Map<String, String> headers;
-    private Map<String, String> body;
-    private Map<String, String> proxyConfig;
+    private Map<String, String> lines = new HashMap<>();
+    private Map<String, String> headers = new HashMap<>();
+    private Map<String, String> body = new HashMap<>();
+    private Map<String, String> proxyConfig = new HashMap<>();
+
+    {
+        headers.put("Accept-Encoding", "identity");
+    }
 }

@@ -8,18 +8,16 @@ import org.jsoup.select.Elements;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import top.jiangqiang.core.app.GenericStarter;
-import top.jiangqiang.core.common.FileUtil;
 import top.jiangqiang.core.config.CrawlerGlobalConfig;
-import top.jiangqiang.core.config.HttpConfig;
 import top.jiangqiang.core.entities.Crawler;
 import top.jiangqiang.core.entities.Page;
 import top.jiangqiang.core.handler.ResultHandler;
 import top.jiangqiang.core.recorder.RamRecorder;
 import top.jiangqiang.core.recorder.Recorder;
+import top.jiangqiang.core.util.FileUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -39,12 +37,13 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         RamRecorder ramRecorder = new RamRecorder();
         Crawler crawler = new Crawler("https://www.huashi6.com/rank");
         crawler.addParam("key", "value1");
-        crawler.addLine("method", "POST");
+        crawler.addLine("method", "GET");
         crawler.addHeader("Referer", "http://www.baidu.com");
         ramRecorder.add(crawler);
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
 //        crawlerGlobalConfig.addRegEx("(http|https)://.*");
         crawlerGlobalConfig.setDepth(3);
+        crawlerGlobalConfig.setMaxSize((long) 1024 * 1024);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
             public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page) {
                 //处理完成，加入成功结果集
@@ -82,6 +81,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
             }
         }).start();
     }
+
     void fetchWeChatArticle() {
         RamRecorder ramRecorder = new RamRecorder();
         ramRecorder.add(new Crawler("https://mp.weixin.qq.com/s?__biz=MzIxMjgzMDUyNw==&mid=2247489048&idx=1&sn=072866b456945d297ec2516dd72e5a41&chksm=97414648a036cf5eba9ddf88c7cf7a27809ae414b4ce43d5595c7351172d04d70664eab25761&scene=90&subscene=93&sessionid=1664460391&clicktime=1664460397&enterid=1664460397&ascene=56&fasttmpl_type=0&fasttmpl_fullversion=6351034-zh_CN-zip&fasttmpl_flag=0&realreporttime=1664460397767&devicetype=android-31&version=28001c3b&nettype=WIFI&abtest_cookie=AAACAA%3D%3D&lang=zh_CN&session_us=gh_391abad800db&exportkey=A01mvM0fP%2BtbjfOBlrDdga8%3D&pass_ticket=fRKCL5vF5nmJEU4Y0DJ60ftOP9hbDgcI5Syn9wR%2BP26sjnBzcmbbozXA3pV42cES&wx_header=3"));
@@ -100,7 +100,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                 List<String> urlList = page.getCrawlers().stream().map(Crawler::getUrl).toList();
 //                System.out.println(urlList.size());
 //                System.out.println(urlList);
-                List<String> stringList = FileUtil.downloadFilesFromUrlList(urlList, FileUtil.file("D:\\cache"),1024*100);
+                List<String> stringList = FileUtil.downloadFilesFromUrlList(urlList, FileUtil.file("D:\\cache"), 1024 * 100);
                 System.out.println("++++++++++++++++++++++++");
                 System.out.println(stringList.size());
                 System.out.println(stringList);

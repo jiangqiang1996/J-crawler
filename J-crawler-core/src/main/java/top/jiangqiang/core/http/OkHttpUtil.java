@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import okhttp3.logging.HttpLoggingInterceptor;
 import top.jiangqiang.core.base.BaseException;
 import top.jiangqiang.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.core.entities.Crawler;
@@ -26,6 +27,17 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Slf4j
 public class OkHttpUtil {
+    public static class HttpLogger implements HttpLoggingInterceptor.Logger {
+        @Override
+        public void log(String s) {
+            if (s.length() > 300) {
+                log.debug("\n" + s);
+            } else {
+                log.info(s);
+            }
+        }
+    }
+
     public static Call request(Crawler crawler, CrawlerGlobalConfig globalConfig) {
         if (StrUtil.isBlank(crawler.getUrl())) {
             return null;
@@ -34,7 +46,8 @@ public class OkHttpUtil {
             AtomicReference<Interceptor> interceptor = new AtomicReference<>();
             interceptor.set(SpringUtil.getOneBeanDefault(Interceptor.class, new DefaultHttpInterceptor()));
             //拦截器;
-            OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addInterceptor(interceptor.get());
+            OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addInterceptor(interceptor.get())
+                    .addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(HttpLoggingInterceptor.Level.BODY));
 
             Boolean useProxy = globalConfig.getUseProxy();
             if (crawler.getUseProxy() != null) {
@@ -92,16 +105,21 @@ public class OkHttpUtil {
         HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
         String method;
         //请求行中获取请求方式
-        if (CollUtil.isEmpty(lines) || lines.get("method") == null) {
+        if (CollUtil.isEmpty(lines)) {
             method = "GET";
         } else {
             method = lines.get("method");
+            if (StrUtil.isBlank(method)) {
+                method = "GET";
+            } else {
+                method = method.toUpperCase();
+            }
         }
         if (CollUtil.isNotEmpty(headers)) {
             //添加请求头
             Set<Map.Entry<String, String>> headerEntrySet = headers.entrySet();
             for (Map.Entry<String, String> entry : headerEntrySet) {
-                builder.header(entry.getKey(), entry.getValue());
+                builder.addHeader(entry.getKey(), entry.getValue());
             }
         }
         switch (method) {

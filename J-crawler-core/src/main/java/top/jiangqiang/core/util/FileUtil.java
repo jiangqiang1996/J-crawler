@@ -1,4 +1,4 @@
-package top.jiangqiang.core.common;
+package top.jiangqiang.core.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileTypeUtil;
@@ -177,4 +177,5 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         stringBuilder.append(longStr.substring(shortStr.length() * i));
         return stringBuilder.toString();
     }
+
 }

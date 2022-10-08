@@ -1,4 +1,4 @@
-package top.jiangqiang.core.common;
+package top.jiangqiang.core.util;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ReUtil;
