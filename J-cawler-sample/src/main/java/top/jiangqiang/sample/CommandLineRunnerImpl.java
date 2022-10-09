@@ -4,6 +4,7 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.boot.CommandLineRunner;
@@ -38,17 +39,22 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     private void fetchPicture1() {
         RamRecorder ramRecorder = new RamRecorder();
-        Crawler crawler = new Crawler("https://csdnimg.cn/02d34b42a3ee476fb50850304ab67017.png");
+        Crawler crawler = new Crawler("https://www.pixiv.net/ranking.php?mode=daily&content=illust&p=1&format=json");
         crawler.addParam("key", "value1");
         crawler.addLine("method", "GET");
         crawler.addHeader("Referer", "http://www.baidu.com");
         ramRecorder.add(crawler);
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
-//        crawlerGlobalConfig.addRegEx("(http|https)://.*");
+        crawlerGlobalConfig.addRegEx("(http|https)://.*");
         crawlerGlobalConfig.setAllowEnd(true);
         crawlerGlobalConfig.setForceEnd(true);
         crawlerGlobalConfig.setDepth(3);
         crawlerGlobalConfig.setMaxSize((long) 1024 * 1024);
+        crawlerGlobalConfig.setUseProxy(true);
+        crawlerGlobalConfig.addProxyIp("127.0.0.1");
+        crawlerGlobalConfig.addProxyPort("7890");
+        crawlerGlobalConfig.addProxyProtocol("HTTP");
+        crawlerGlobalConfig.setLogLevel(HttpLoggingInterceptor.Level.BODY);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
             public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
                 // 储存下载文件的目录

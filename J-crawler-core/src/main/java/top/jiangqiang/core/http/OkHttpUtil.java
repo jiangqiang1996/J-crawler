@@ -50,10 +50,6 @@ public class OkHttpUtil {
                     .addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(globalConfig.getLogLevel()));
 
             Boolean useProxy = globalConfig.getUseProxy();
-            if (crawler.getUseProxy() != null) {
-                useProxy = crawler.getUseProxy();
-            }
-
             OkHttpClient client;
             if (useProxy == null || !useProxy) {
                 //不使用代理

@@ -12,7 +12,6 @@ import java.util.Map;
  */
 @Data
 public class HttpConfig implements Serializable {
-    private Boolean useProxy = false;
     private Map<String, String> lines = new HashMap<>();
     private Map<String, String> headers = new HashMap<>();
     private Map<String, String> body = new HashMap<>();

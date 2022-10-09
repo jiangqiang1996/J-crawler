@@ -24,8 +24,14 @@ import java.util.Map;
 @Data
 public class CrawlerGlobalConfig implements Serializable {
     private Charset charset = Charset.defaultCharset();
+    /**
+     * 请求和响应报文的日志打印级别
+     */
     private HttpLoggingInterceptor.Level logLevel = HttpLoggingInterceptor.Level.HEADERS;
-
+    /**
+     * 是否使用代理
+     */
+    private Boolean useProxy = false;
     /**
      * 超过指定字节数的响应数据，不会对响应内容进行处理，响应数据过大，一般是静态资源文件，超过此大小的响应会被当成非文本响应内容
      */
@@ -163,14 +169,6 @@ public class CrawlerGlobalConfig implements Serializable {
         return this;
     }
 
-    public Boolean getUseProxy() {
-        if (httpConfig == null) {
-            return false;
-        } else {
-            return httpConfig.getUseProxy();
-        }
-    }
-
     public Map<String, String> getHeaders() {
         if (httpConfig == null) {
             return null;
@@ -224,6 +222,26 @@ public class CrawlerGlobalConfig implements Serializable {
         }
         proxyConfig.put(key, value);
         return this;
+    }
+
+    public CrawlerGlobalConfig addProxyIp(String ip) {
+        return addProxyConfig("IP", ip);
+    }
+
+    public CrawlerGlobalConfig addProxyPort(String port) {
+        return addProxyConfig("port", port);
+    }
+
+    public CrawlerGlobalConfig addProxyProtocol(String protocol) {
+        return addProxyConfig("protocol", protocol);
+    }
+
+    public CrawlerGlobalConfig addProxyUsername(String username) {
+        return addProxyConfig("username", username);
+    }
+
+    public CrawlerGlobalConfig addProxyPassword(String password) {
+        return addProxyConfig("password", password);
     }
 
     public Map<String, String> getProxyConfig() {

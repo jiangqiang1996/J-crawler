@@ -95,14 +95,6 @@ public class Crawler implements Serializable {
         return this;
     }
 
-    public Boolean getUseProxy() {
-        if (httpConfig == null) {
-            return false;
-        } else {
-            return httpConfig.getUseProxy();
-        }
-    }
-
     public Map<String, String> getHeaders() {
         if (httpConfig == null) {
             return null;
@@ -156,6 +148,26 @@ public class Crawler implements Serializable {
         }
         proxyConfig.put(key, value);
         return this;
+    }
+
+    public Crawler addProxyIp(String ip) {
+        return addProxyConfig("IP", ip);
+    }
+
+    public Crawler addProxyPort(String port) {
+        return addProxyConfig("port", port);
+    }
+
+    public Crawler addProxyProtocol(String protocol) {
+        return addProxyConfig("protocol", protocol);
+    }
+
+    public Crawler addProxyUsername(String username) {
+        return addProxyConfig("username", username);
+    }
+
+    public Crawler addProxyPassword(String password) {
+        return addProxyConfig("password", password);
     }
 
     public Map<String, String> getProxyConfig() {
