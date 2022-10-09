@@ -1,6 +1,5 @@
 package top.jiangqiang.core.entities;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
@@ -71,10 +70,10 @@ public class Page extends Crawler {
     }
 
     public static Page getPage(Crawler crawler, Integer responseCode, String contentType) {
-        //深克隆
-        crawler = ObjectUtil.cloneByStream(crawler);
         Page page = new Page();
-        BeanUtil.copyProperties(crawler, page);
+        page.setUrl(crawler.getUrl());
+        page.setDepth(crawler.getDepth());
+        page.setHttpConfig(ObjectUtil.cloneByStream(crawler.getHttpConfig()));
         page.setResponseCode(responseCode);
         page.setContentType(contentType);
         return page;

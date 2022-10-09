@@ -207,6 +207,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         if (StrUtil.isBlank(contentType)) {
             contentType = "";
         }
+        contentType = contentType.toLowerCase();
         if (contentType.endsWith("charset=utf-8")) {
             return StrUtil.subBefore(contentType, ";", true).trim();
         } else {
