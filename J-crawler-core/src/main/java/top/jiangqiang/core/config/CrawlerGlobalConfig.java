@@ -26,8 +26,16 @@ public class CrawlerGlobalConfig implements Serializable {
     private Charset charset = Charset.defaultCharset();
     private HttpLoggingInterceptor.Level logLevel = HttpLoggingInterceptor.Level.HEADERS;
 
-    //超过指定字节数的响应数据，不会对响应内容进行处理，响应数据过大，一般是静态资源文件
-    private Long maxSize = 1024 * 300L;
+    /**
+     * 超过指定字节数的响应数据，不会对响应内容进行处理，响应数据过大，一般是静态资源文件，超过此大小的响应会被当成非文本响应内容
+     */
+    private Long maxSize = 1024 * 512L;
+    /**
+     * 可以是父类型，例如text，application等，也可以配置具体的子类型，例如：application/json
+     * 需要解析内容的媒体类型列表，此列表中的媒体类型会被当做文本类型，在配置正则表达式之后会自动从此列表中列举的类型中提取URL。
+     * 不在此列表中的内容往往是二进制文件，图片，音频，视频等格式。这些需要自己过滤后进行下载。
+     */
+    private List<String> mimeTypeList = new ArrayList<>();
     /**
      * 最小值为1
      */
@@ -50,7 +58,7 @@ public class CrawlerGlobalConfig implements Serializable {
     /**
      * 是否允许任务结束，如果为false，当没有爬虫任务时会定期轮训检查是否有新的种子，如果为true，则会在一段时间后结束程序
      */
-    private Boolean allowEnd = true;
+    private Boolean allowEnd = false;
     /**
      * 满足此正则表达式列表的URL会被提取
      */
@@ -77,10 +85,6 @@ public class CrawlerGlobalConfig implements Serializable {
      * 结束时没有爬取的种子会保存到此路径，用于断点续爬。路径不能为空，且未爬取的种子数不能为0，才会保存
      */
     private String savePath = "";
-    /**
-     * 是否继续上次爬取，保存路径为空或此属性值为false时均不会继续爬取
-     */
-    private Boolean isContinue = true;
 
     /**
      * http请求代理参数设置
@@ -89,6 +93,9 @@ public class CrawlerGlobalConfig implements Serializable {
 
     {
         defaultReverseRegExs.add(".*\\.(js|css).*");
+        mimeTypeList.add("text");
+        mimeTypeList.add("application/json");
+        mimeTypeList.add("application/json;charset=utf-8");
     }
 
     public void setThreads(Integer threads) {

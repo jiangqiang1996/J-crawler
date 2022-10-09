@@ -45,6 +45,8 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         ramRecorder.add(crawler);
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
 //        crawlerGlobalConfig.addRegEx("(http|https)://.*");
+        crawlerGlobalConfig.setAllowEnd(true);
+        crawlerGlobalConfig.setForceEnd(true);
         crawlerGlobalConfig.setDepth(3);
         crawlerGlobalConfig.setMaxSize((long) 1024 * 1024);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
@@ -75,8 +77,6 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         crawlerGlobalConfig.setMaxSize((long) 1024 * 1024);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
             public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
-                //处理完成，加入成功结果集
-                recorder.addSuccess(crawler);
 
                 List<String> urlList = new ArrayList<>();
                 String regEx = """
@@ -94,8 +94,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
             }
 
             public void doFailure(Recorder recorder, Crawler crawler, IOException e) {
-                //处理完成，加入失败结果集
-                recorder.addError(crawler);
+
             }
         }).start();
     }
@@ -105,11 +104,11 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         ramRecorder.add(new Crawler("https://mp.weixin.qq.com/s?__biz=MzIxMjgzMDUyNw==&mid=2247489048&idx=1&sn=072866b456945d297ec2516dd72e5a41&chksm=97414648a036cf5eba9ddf88c7cf7a27809ae414b4ce43d5595c7351172d04d70664eab25761&scene=90&subscene=93&sessionid=1664460391&clicktime=1664460397&enterid=1664460397&ascene=56&fasttmpl_type=0&fasttmpl_fullversion=6351034-zh_CN-zip&fasttmpl_flag=0&realreporttime=1664460397767&devicetype=android-31&version=28001c3b&nettype=WIFI&abtest_cookie=AAACAA%3D%3D&lang=zh_CN&session_us=gh_391abad800db&exportkey=A01mvM0fP%2BtbjfOBlrDdga8%3D&pass_ticket=fRKCL5vF5nmJEU4Y0DJ60ftOP9hbDgcI5Syn9wR%2BP26sjnBzcmbbozXA3pV42cES&wx_header=3"));
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
         crawlerGlobalConfig.addRegEx("(http|https)://.*");
+        crawlerGlobalConfig.setAllowEnd(true);
+        crawlerGlobalConfig.setForceEnd(true);
         crawlerGlobalConfig.setDepth(3);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
             public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
-                //处理完成，加入成功结果集
-                recorder.addSuccess(crawler);
 //                Set<Crawler> crawlers = page.getCrawlers().stream().filter(
 //                        crawler1 -> {
 //                            return ReUtil.isMatch(".*\\.(jpg|jpeg|png|webp|gif)", crawler1.getUrl());
@@ -123,8 +122,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
             }
 
             public void doFailure(Recorder recorder, Crawler crawler, IOException e) {
-                //处理完成，加入失败结果集
-                recorder.addError(crawler);
+
             }
         }).start();
     }
@@ -144,8 +142,6 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                 if (ReUtil.isMatch("^https://gitee.com/explore/([A-Za-z0-9-]{1,})", page.getUrl())) {
                     match(page);
                 }
-                //处理完成，加入成功结果集
-                recorder.addSuccess(crawler);
                 Set<Crawler> crawlers = page.getCrawlers().stream().filter(
                         crawler1 -> ReUtil.isMatch("^https://gitee.com/explore/([A-Za-z0-9-]{1,})", crawler1.getUrl())
                 ).collect(Collectors.toSet());
@@ -156,8 +152,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
 
             public void doFailure(Recorder recorder, Crawler crawler, IOException e) {
-                //处理完成，加入失败结果集
-                recorder.addError(crawler);
+
             }
         });
         genericStarter.start();

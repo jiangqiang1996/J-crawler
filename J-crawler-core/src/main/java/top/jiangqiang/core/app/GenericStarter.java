@@ -1,5 +1,6 @@
 package top.jiangqiang.core.app;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -15,7 +16,6 @@ import top.jiangqiang.core.recorder.Recorder;
 import top.jiangqiang.core.util.DocumentUtil;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -50,17 +50,24 @@ public class GenericStarter extends AbstractStarter {
             Call call = OkHttpUtil.request(crawler, getGlobalConfig());
             if (call == null) {
                 getRecorder().addError(crawler);
+                getRecorder().removeActive(crawler);
                 return;
             }
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    getResultHandler().doFailure(recorder, crawler, e);
+                    getResultHandler().doFailure(getRecorder(), crawler, e);
+                    //处理完成，加入失败结果集
+                    getRecorder().addError(crawler);
+                    getRecorder().removeActive(crawler);
                 }
 
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) {
                     doSuccess(crawler, response);
+                    //处理完成，加入成功结果集
+                    getRecorder().addSuccess(crawler);
+                    getRecorder().removeActive(crawler);
                 }
             });
         }
@@ -85,7 +92,11 @@ public class GenericStarter extends AbstractStarter {
         }
         String contentType = mediaType.toString();
         long contentLength = body.contentLength();
-//        if ((contentType.startsWith("application/json") || "text".equals(mediaType.type()) && contentLength <= getGlobalConfig().getMaxSize())) {
+
+        List<String> mimeTypeList = globalConfig.getMimeTypeList();
+        if (StrUtil.isNotBlank(contentType)
+                && (mimeTypeList.contains(contentType) || mimeTypeList.contains(mediaType.type()))
+                && contentLength <= getGlobalConfig().getMaxSize()) {
             byte[] bodyBytes = null;
             try {
                 bodyBytes = body.bytes();
@@ -107,9 +118,9 @@ public class GenericStarter extends AbstractStarter {
                 //把没有爬取的加入任务列表，在addAll方法中需要自定义实现过滤
                 getRecorder().addAll(new ArrayList<>(crawlers));
             }
-//        } else {
-//            Page page = Page.getPage(crawler, code, contentType);
-//            getResultHandler().doSuccess(recorder, crawler, page, response);
-//        }
+        } else {
+            Page page = Page.getPage(crawler, code, contentType);
+            getResultHandler().doSuccess(recorder, crawler, page, response);
+        }
     }
 }

@@ -23,22 +23,24 @@ public interface Recorder {
     void add(Crawler crawler);
 
     /**
-     * 存储未爬取的爬虫
+     * 批量存储未爬取的爬虫
      * 需要去重处理
      *
      * @param crawlers 需要存储的爬虫列表
      */
     default void addAll(List<Crawler> crawlers) {
-        crawlers.forEach(crawler -> add(crawler));
+        crawlers.forEach(this::add);
     }
 
     /**
      * 此方法用于内存记录器的断点续爬
+     * 程序结束前执行
      */
     void saveBeforeEnd();
 
     /**
      * 从持久化数据中读取爬虫种子
+     * 爬虫任务开始前执行
      */
     void initBeforeStart();
 
@@ -124,4 +126,11 @@ public interface Recorder {
      * @param crawler
      */
     void addActive(Crawler crawler);
+
+    /**
+     * 爬取成功或失败后移除
+     *
+     * @param crawler
+     */
+    void removeActive(Crawler crawler);
 }

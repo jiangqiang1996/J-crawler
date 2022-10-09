@@ -25,7 +25,7 @@ public class RamRecorder implements Recorder {
     private final List<Crawler> activeList = Collections.synchronizedList(new LinkedList<>());
 
     @Override
-    public void add(Crawler crawler) {
+    public synchronized void add(Crawler crawler) {
         if (!exist(crawler)) {
             try {
                 crawlerBlockingQueue.add(crawler);
@@ -36,18 +36,23 @@ public class RamRecorder implements Recorder {
     }
 
     @Override
-    public void saveBeforeEnd() {
+    public synchronized void saveBeforeEnd() {
         //保存 successList activeList
         log.info("保存爬虫数据");
     }
 
     @Override
-    public void initBeforeStart() {
+    public synchronized void initBeforeStart() {
         log.info("读取爬虫数据");
     }
 
+    /**
+     * 取出后放active列表
+     *
+     * @return
+     */
     @Override
-    public Crawler popOne() {
+    public synchronized Crawler popOne() {
         try {
             return crawlerBlockingQueue.poll(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -56,62 +61,67 @@ public class RamRecorder implements Recorder {
     }
 
     @Override
-    public List<Crawler> getAll() {
+    public synchronized List<Crawler> getAll() {
         return crawlerBlockingQueue.stream().toList();
     }
 
     @Override
-    public void addSuccess(Crawler crawler) {
+    public synchronized void addSuccess(Crawler crawler) {
         successList.add(crawler);
     }
 
     @Override
-    public List<Crawler> getAllSuccess() {
+    public synchronized List<Crawler> getAllSuccess() {
         return successList;
     }
 
     @Override
-    public void addError(Crawler crawler) {
+    public synchronized void addError(Crawler crawler) {
         errorList.add(crawler);
     }
 
     @Override
-    public List<Crawler> getAllError() {
+    public synchronized List<Crawler> getAllError() {
         return errorList;
     }
 
     @Override
-    public List<Crawler> getAllActive() {
+    public synchronized List<Crawler> getAllActive() {
         return activeList;
     }
 
     @Override
-    public void addActive(Crawler crawler) {
+    public synchronized void addActive(Crawler crawler) {
         activeList.add(crawler);
     }
 
     @Override
-    public Integer count() {
+    public synchronized void removeActive(Crawler crawler) {
+        activeList.remove(crawler);
+    }
+
+    @Override
+    public synchronized Integer count() {
         return crawlerBlockingQueue.size();
     }
 
     @Override
-    public Integer countSuccess() {
+    public synchronized Integer countSuccess() {
         return successList.size();
     }
 
     @Override
-    public Integer countError() {
+    public synchronized Integer countError() {
         return errorList.size();
     }
 
     @Override
-    public Integer countActive() {
+    public synchronized Integer countActive() {
         return activeList.size();
     }
 
     @Override
-    public Boolean exist(Crawler crawler) {
+    public synchronized Boolean exist(Crawler crawler) {
         return crawlerBlockingQueue.contains(crawler) || errorList.contains(crawler) || successList.contains(crawler) || activeList.contains(crawler);
     }
 

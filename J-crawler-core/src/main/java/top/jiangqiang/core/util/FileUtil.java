@@ -182,10 +182,11 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
     }
 
     private static String genFileName(String type) {
+        String fileName = DateUtil.format(new Date(), DatePattern.PURE_DATETIME_MS_PATTERN) + "_" + RandomUtil.randomString(10);
         if (StrUtil.isBlank(type)) {
-            return DateUtil.format(new Date(), DatePattern.PURE_DATETIME_MS_PATTERN) + RandomUtil.randomString(10);
+            return fileName;
         } else {
-            return DateUtil.format(new Date(), DatePattern.PURE_DATETIME_MS_PATTERN) + RandomUtil.randomString(10) + "." + type;
+            return fileName + "." + type;
         }
     }
 
