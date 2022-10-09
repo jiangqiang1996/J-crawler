@@ -79,7 +79,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         });
 //        crawlerGlobalConfig.addRegEx("(http|https)://.*");
         crawlerGlobalConfig.setAllowEnd(true);
-        crawlerGlobalConfig.setForceEnd(true);
+        crawlerGlobalConfig.setForceEnd(false);
         crawlerGlobalConfig.setDepth(3);
         crawlerGlobalConfig.setMaxSize((long) 1024 * 1024);
         crawlerGlobalConfig.setUseProxy(true);

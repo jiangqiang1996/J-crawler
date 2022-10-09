@@ -42,9 +42,10 @@ public class Crawler implements Serializable {
     public Crawler addSeed(String url) {
         if (StrUtil.isNotBlank(url)) {
             //this是当前爬虫，crawler是子爬虫
-            Crawler crawler = ObjectUtil.cloneByStream(this);
+            Crawler crawler = new Crawler();
             crawler.setUrl(url);
             crawler.setDepth(this.depth + 1);
+            crawler.setHttpConfig(ObjectUtil.cloneByStream(this.httpConfig));
             crawler.addHeader("referer", this.url);
             crawlers.add(crawler);
             return crawler;
