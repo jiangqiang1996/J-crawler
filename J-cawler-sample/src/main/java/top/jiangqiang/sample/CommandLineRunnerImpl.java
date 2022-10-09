@@ -94,7 +94,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                         Set<JSONObject> jsonObjects = contents.stream().map(o -> (JSONObject) o).collect(Collectors.toSet());
                         List<String> strings = jsonObjects.stream().map(jsonObject -> {
                             Object illust_id = jsonObject.get("illust_id");
-                            if (StrUtil.isBlankIfStr(illust_id)) {
+                            if (illust_id != null) {
                                 return "https://www.pixiv.net/artworks/" + illust_id;
                             } else return null;
                         }).filter(StrUtil::isNotBlank).toList();
