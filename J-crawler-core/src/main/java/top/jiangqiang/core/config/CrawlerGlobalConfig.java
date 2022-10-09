@@ -31,7 +31,7 @@ public class CrawlerGlobalConfig implements Serializable {
     /**
      * 是否使用代理
      */
-    private Boolean useProxy = false;
+    private boolean useProxy = false;
     /**
      * 超过指定字节数的响应数据，不会对响应内容进行处理，响应数据过大，一般是静态资源文件，超过此大小的响应会被当成非文本响应内容
      */

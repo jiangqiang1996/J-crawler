@@ -27,16 +27,10 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Slf4j
 public class OkHttpUtil {
-    public static class HttpLogger implements HttpLoggingInterceptor.Logger {
-        @Override
-        public void log(String s) {
-            if (s.length() > 300) {
-                log.debug("\n" + s);
-            } else {
-                log.debug(s);
-            }
-        }
-    }
+    /**
+     * 使用全局配置构建的客户端
+     */
+    private static volatile OkHttpClient client;
 
     public static Call request(Crawler crawler, CrawlerGlobalConfig globalConfig) {
         if (StrUtil.isBlank(crawler.getUrl())) {
@@ -48,18 +42,28 @@ public class OkHttpUtil {
             //拦截器;
             OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addInterceptor(interceptor.get())
                     .addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(globalConfig.getLogLevel()));
-
-            Boolean useProxy = globalConfig.getUseProxy();
-            OkHttpClient client;
-            if (useProxy == null || !useProxy) {
-                //不使用代理
-                client = okHttpClientBuilder.build();
-            } else {
-                Map<String, String> proxyConfig = crawler.getProxyConfig();
-                if (CollUtil.isEmpty(proxyConfig)) {
-                    proxyConfig = globalConfig.getProxyConfig();
+            boolean useProxy = globalConfig.isUseProxy();
+            synchronized (OkHttpUtil.class) {
+                if (client == null) {
+                    synchronized (OkHttpUtil.class) {
+                        if (client == null) {
+                            Map<String, String> proxyConfig = globalConfig.getProxyConfig();
+                            if (!useProxy || CollUtil.isEmpty(proxyConfig)) {
+                                //不使用代理
+                                client = okHttpClientBuilder.build();
+                            } else {
+                                client = processOkHttpClient(proxyConfig, okHttpClientBuilder);
+                            }
+                        }
+                    }
                 }
-                client = processOkHttpClient(proxyConfig, okHttpClientBuilder);
+            }
+            Map<String, String> proxyConfig = crawler.getProxyConfig();
+            OkHttpClient tmpClient;
+            if (!useProxy || CollUtil.isEmpty(proxyConfig)) {
+                tmpClient = client;
+            } else {
+                tmpClient = processOkHttpClient(globalConfig.getProxyConfig(), okHttpClientBuilder);
             }
             Map<String, String> lines = crawler.getLines();
             Map<String, String> headers = crawler.getHeaders();
@@ -74,7 +78,7 @@ public class OkHttpUtil {
                 body = globalConfig.getBody();
             }
             Request request = processRequestParam(crawler.getUrl(), lines, headers, body);
-            return client.newCall(request);
+            return tmpClient.newCall(request);
         } catch (Exception e) {
             log.debug(e.getMessage());
             return null;
@@ -170,6 +174,9 @@ public class OkHttpUtil {
      * @return
      */
     public static OkHttpClient processOkHttpClient(Map<String, String> configs, OkHttpClient.Builder okHttpClientBuilder) {
+        if (CollUtil.isEmpty(configs)) {
+            return okHttpClientBuilder.build();
+        }
         String ip = configs.get("IP");
         String portString = configs.get("port");
         String protocol = configs.get("protocol");

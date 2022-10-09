@@ -59,13 +59,20 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
              * https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=20221007&p=1&format=json
              */
             Date date = new Date();
-            int days = 30;
+            int days = 3;
             for (int i = 0; i < days; i++) {
                 String dateStr = DateUtil.format(date, DatePattern.PURE_DATE_PATTERN);
                 date = DateUtil.offsetDay(date, -1);
-                int pages = 10;
+                int pages = 1;
                 for (int page = 1; page <= pages; page++) {
-                    Crawler crawler = new Crawler("https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=" + dateStr + "&p=" + page + "&format=json");
+                    String url;
+                    if (days == 1) {
+                        url = "https://www.pixiv.net/ranking.php?mode=daily&content=illust" + "&p=" + page + "&format=json";
+                    } else {
+                        url = "https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=" + dateStr + "&p=" + page + "&format=json";
+                    }
+                    System.out.println(url);
+                    Crawler crawler = new Crawler(url);
                     recorder.add(crawler);
                 }
             }
