@@ -56,18 +56,24 @@ public class GenericStarter extends AbstractStarter {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    getResultHandler().doFailure(getRecorder(), crawler, e);
-                    //处理完成，加入失败结果集
-                    getRecorder().addError(crawler);
-                    getRecorder().removeActive(crawler);
+                    try {
+                        getResultHandler().doFailure(getRecorder(), crawler, e);
+                    } finally {
+                        //处理完成，加入失败结果集
+                        getRecorder().addError(crawler);
+                        getRecorder().removeActive(crawler);
+                    }
                 }
 
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) {
-                    doSuccess(crawler, response);
-                    //处理完成，加入成功结果集
-                    getRecorder().addSuccess(crawler);
-                    getRecorder().removeActive(crawler);
+                    try {
+                        doSuccess(crawler, response);
+                    } finally {
+                        //处理完成，加入成功结果集
+                        getRecorder().addSuccess(crawler);
+                        getRecorder().removeActive(crawler);
+                    }
                 }
             });
         }
