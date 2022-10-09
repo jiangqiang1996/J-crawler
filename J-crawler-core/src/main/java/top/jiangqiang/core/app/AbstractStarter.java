@@ -1,6 +1,5 @@
 package top.jiangqiang.core.app;
 
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ReUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +8,6 @@ import top.jiangqiang.core.entities.Crawler;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: JiangQiang
@@ -90,28 +88,15 @@ public abstract class AbstractStarter implements Starter {
         boolean isEnd = false;
         while (!isEnd) {
             if (!processTask()) {
-                int count = 0;
-                while (true) {
-                    //没有获取到任务，因此先暂停五秒后，重新获取
-                    ThreadUtil.sleep(5, TimeUnit.SECONDS);
-                    if (!processTask()) {
-                        count++;
-                        if (allowEnd && count >= 3) {
-                            executor.shutdown();
-                            if (forceEnd) {
-                                log.info("程序马上停止");
-                                System.exit(0);
-                            } else {
-                                log.info("程序即将停止");
-                                isEnd = true;
-                                break;
-                            }
-                        }
-                    } else {
-                        break;
-                    }
+                if (allowEnd && getRecorder().countActive() == 0) {
+                    isEnd = true;
+                    executor.shutdown();
                 }
             }
+        }
+        if (forceEnd) {
+            log.info("程序马上停止");
+            System.exit(0);
         }
     }
 

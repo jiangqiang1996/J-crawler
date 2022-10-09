@@ -78,7 +78,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
         </root>
-        <logger name="top.jiangqiang" level="DEBUG" additivity="false">
+        <logger name="top.jiangqiang" level="INFO" additivity="false">
             <appender-ref ref="STDOUT"/>
         </logger>
         <logger name="org.springframework" level="INFO" additivity="false">

@@ -43,7 +43,11 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     private void fetchPicture1() {
         RamRecorder ramRecorder = new RamRecorder();
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
+        //下面写法会在任务开始前执行
         ramRecorder.setInitCallback(recorder -> {
+            /**
+             * 这里可以从数据库中读取上次保存的种子。。。
+             */
             //https://www.pixiv.net/artworks/101741272
             /**
              * mode 按天或按周 daily按天
@@ -51,17 +55,22 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
              * date 按天时的日期
              * format 返回的格式
              * p 页数 1-10
+             * https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=20221007&p=1&format=json
              */
-            Crawler crawler = new Crawler("https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=20221007&p=1&format=json");
-
             Date date = new Date();
-            DateUtil.format(date, DatePattern.PURE_DATE_PATTERN);
-            crawler.addParam("key", "value1");
-            crawler.addLine("method", "GET");
-            crawler.addHeader("Referer", "http://www.baidu.com");
-            recorder.add(crawler);
+            int days = 30;
+            for (int i = 0; i < days; i++) {
+                String dateStr = DateUtil.format(date, DatePattern.PURE_DATE_PATTERN);
+                date = DateUtil.offsetDay(date, -1);
+                int pages = 10;
+                for (int page = 1; page <= pages; page++) {
+                    Crawler crawler = new Crawler("https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=" + dateStr + "&p=" + page + "&format=json");
+//                    System.out.println(crawler);
+                    recorder.add(crawler);
+                }
+            }
         });
-        crawlerGlobalConfig.addRegEx("(http|https)://.*");
+//        crawlerGlobalConfig.addRegEx("(http|https)://.*");
         crawlerGlobalConfig.setAllowEnd(true);
         crawlerGlobalConfig.setForceEnd(true);
         crawlerGlobalConfig.setDepth(3);
@@ -70,7 +79,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         crawlerGlobalConfig.addProxyIp("127.0.0.1");
         crawlerGlobalConfig.addProxyPort("7890");
         crawlerGlobalConfig.addProxyProtocol("HTTP");
-        crawlerGlobalConfig.setLogLevel(HttpLoggingInterceptor.Level.BODY);
+        crawlerGlobalConfig.setLogLevel(HttpLoggingInterceptor.Level.NONE);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
             public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
                 // 储存下载文件的目录
@@ -80,8 +89,6 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
             }
 
             public void doFailure(Recorder recorder, Crawler crawler, IOException e) {
-                //处理完成，加入失败结果集
-                recorder.addError(crawler);
             }
         }).start();
     }
