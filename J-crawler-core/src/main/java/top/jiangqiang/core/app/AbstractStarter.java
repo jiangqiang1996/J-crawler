@@ -9,7 +9,6 @@ import top.jiangqiang.core.entities.Crawler;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -86,49 +85,49 @@ public abstract class AbstractStarter implements Starter {
     public abstract Runnable getTask(Crawler crawler);
 
     private void run() {
-        while (true) {
-            Crawler crawler = getRecorder().popOne();
-            if (crawler != null) {
-                getRecorder().addActive(crawler);
-                getExecutor().execute(getTask(crawler));
-            } else {
-                //没有获取到任务，因此先暂停五秒后，重新获取
-                ThreadUtil.sleep(5, TimeUnit.SECONDS);
-                ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
-                if (threadPoolExecutor.getActiveCount() == 0) {
-                    crawler = getRecorder().popOne();
-                    if (crawler != null) {
-                        getRecorder().addActive(crawler);
-                        getExecutor().execute(getTask(crawler));
-                    } else {
-                        if (threadPoolExecutor.getActiveCount() == 0) {
+        Boolean allowEnd = getGlobalConfig().getAllowEnd();
+        Boolean forceEnd = getGlobalConfig().getForceEnd();
+        boolean isEnd = false;
+        while (!isEnd) {
+            if (!processTask()) {
+                int count = 0;
+                while (true) {
+                    //没有获取到任务，因此先暂停五秒后，重新获取
+                    ThreadUtil.sleep(5, TimeUnit.SECONDS);
+                    if (!processTask()) {
+                        count++;
+                        if (allowEnd && count >= 3) {
                             executor.shutdown();
-                            log.info("没有获取到种子，并且活动线程数量为:{}", threadPoolExecutor.getActiveCount());
-                            if (getGlobalConfig().getForceEnd()) {
-                                int time = 10;
-                                while (time > 0) {
-                                    log.info("程序即将结束，倒计时：{}秒", time);
-                                    ThreadUtil.sleep(1, TimeUnit.SECONDS);
-                                    time--;
-                                }
+                            if (forceEnd) {
                                 log.info("程序马上停止");
                                 System.exit(0);
                             } else {
-                                ThreadUtil.safeSleep(1000 * 60 * 5);
-                                crawler = getRecorder().popOne();
-                                if (crawler != null) {
-                                    getRecorder().addActive(crawler);
-                                    getExecutor().execute(getTask(crawler));
-                                } else {
-                                    log.info("程序即将停止");
-                                    break;
-                                }
+                                log.info("程序即将停止");
+                                isEnd = true;
+                                break;
                             }
                         }
+                    } else {
+                        break;
                     }
                 }
             }
         }
+    }
+
+    /**
+     * 获取一个任务并执行，获取到返回true，否则返回false
+     *
+     * @return
+     */
+    public boolean processTask() {
+        Crawler crawler = getRecorder().popOne();
+        if (crawler != null) {
+            getRecorder().addActive(crawler);
+            getExecutor().execute(getTask(crawler));
+            return true;
+        }
+        return false;
     }
 
     /**

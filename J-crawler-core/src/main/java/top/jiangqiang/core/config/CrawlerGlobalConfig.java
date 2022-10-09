@@ -48,6 +48,10 @@ public class CrawlerGlobalConfig implements Serializable {
      */
     private Boolean forceEnd = false;
     /**
+     * 是否允许任务结束，如果为false，当没有爬虫任务时会定期轮训检查是否有新的种子，如果为true，则会在一段时间后结束程序
+     */
+    private Boolean allowEnd = true;
+    /**
      * 满足此正则表达式列表的URL会被提取
      */
     @Setter(AccessLevel.NONE)
