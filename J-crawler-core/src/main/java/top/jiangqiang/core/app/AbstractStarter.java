@@ -1,5 +1,6 @@
 package top.jiangqiang.core.app;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ReUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +90,7 @@ public abstract class AbstractStarter implements Starter {
         while (!isEnd) {
             if (!processTask()) {
                 if (allowEnd && getRecorder().countActive() == 0) {
+                    ThreadUtil.safeSleep(3000);
                     isEnd = true;
                     executor.shutdown();
                 }

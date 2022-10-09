@@ -33,7 +33,7 @@ public class OkHttpUtil {
             if (s.length() > 300) {
                 log.debug("\n" + s);
             } else {
-                log.info(s);
+                log.debug(s);
             }
         }
     }
@@ -61,8 +61,6 @@ public class OkHttpUtil {
                 }
                 client = processOkHttpClient(proxyConfig, okHttpClientBuilder);
             }
-
-            log.debug("url: " + crawler.getUrl());
             Map<String, String> lines = crawler.getLines();
             Map<String, String> headers = crawler.getHeaders();
             Map<String, String> body = crawler.getBody();

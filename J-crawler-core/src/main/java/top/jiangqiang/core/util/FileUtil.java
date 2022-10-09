@@ -193,5 +193,25 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
     private static String genFileName() {
         return genFileName(null);
     }
+
+    /**
+     * 将包含编码的mimetype调整为没有编码的部分
+     *
+     * @param contentType
+     * @return
+     */
+    public static String subMimeType(String contentType) {
+        if (contentType == null) {
+            return contentType;
+        }
+        if (StrUtil.isBlank(contentType)) {
+            contentType = "";
+        }
+        if (contentType.endsWith("charset=utf-8")) {
+            return StrUtil.subBefore(contentType, ";", true).trim();
+        } else {
+            return contentType.trim();
+        }
+    }
 }
 

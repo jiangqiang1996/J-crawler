@@ -79,4 +79,14 @@ public class Page extends Crawler {
         page.setContentType(contentType);
         return page;
     }
+
+    @Override
+    public String toString() {
+        return "Page{" +
+                "content='" + content + '\'' +
+                ", document=" + document +
+                ", responseCode=" + responseCode +
+                ", contentType='" + contentType + '\'' +
+                '}';
+    }
 }

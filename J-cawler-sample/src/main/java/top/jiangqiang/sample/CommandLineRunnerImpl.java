@@ -1,9 +1,12 @@
 package top.jiangqiang.sample;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -19,13 +22,11 @@ import top.jiangqiang.core.handler.ResultHandler;
 import top.jiangqiang.core.recorder.RamRecorder;
 import top.jiangqiang.core.recorder.Recorder;
 import top.jiangqiang.core.util.FileUtil;
+import top.jiangqiang.core.util.JSONUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -65,7 +66,6 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                 int pages = 10;
                 for (int page = 1; page <= pages; page++) {
                     Crawler crawler = new Crawler("https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=" + dateStr + "&p=" + page + "&format=json");
-//                    System.out.println(crawler);
                     recorder.add(crawler);
                 }
             }
@@ -79,16 +79,32 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         crawlerGlobalConfig.addProxyIp("127.0.0.1");
         crawlerGlobalConfig.addProxyPort("7890");
         crawlerGlobalConfig.addProxyProtocol("HTTP");
-        crawlerGlobalConfig.setLogLevel(HttpLoggingInterceptor.Level.NONE);
+        crawlerGlobalConfig.setLogLevel(HttpLoggingInterceptor.Level.BODY);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
             public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
                 // 储存下载文件的目录
                 File dir = FileUtil.file("D:/cache/cache");
-                FileUtil.downloadFile(page, response, dir.getAbsolutePath());
+//                FileUtil.downloadFile(page, response, dir.getAbsolutePath());
+                String mimeType = FileUtil.subMimeType(page.getContentType());
+                if ("application/json".equals(mimeType) && page.getUrl().startsWith("https://www.pixiv.net/ranking.php")) {
+                    String content = page.getContent();
+                    HashMap<String, Object> hashMap = JSONUtil.parse(content, new HashMap<>());
+                    JSONArray contents = (JSONArray) hashMap.get("contents");
+                    if (CollUtil.isNotEmpty(contents)) {
+                        Set<JSONObject> jsonObjects = contents.stream().map(o -> (JSONObject) o).collect(Collectors.toSet());
+                        List<String> strings = jsonObjects.stream().map(jsonObject -> {
+                            Object illust_id = jsonObject.get("illust_id");
+                            if (StrUtil.isBlankIfStr(illust_id)) {
+                                return "https://www.pixiv.net/artworks/" + illust_id;
+                            } else return null;
+                        }).filter(StrUtil::isNotBlank).toList();
+                        page.addSeeds(strings);
+                    }
+                }
+                if (page.getUrl().startsWith("https://www.pixiv.net/artworks/")) {
+                    System.out.println(page.getContent());
+                }
                 return page.getCrawlers();
-            }
-
-            public void doFailure(Recorder recorder, Crawler crawler, IOException e) {
             }
         }).start();
     }

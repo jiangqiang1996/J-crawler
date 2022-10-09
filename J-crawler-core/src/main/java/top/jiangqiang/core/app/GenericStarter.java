@@ -13,6 +13,7 @@ import top.jiangqiang.core.handler.ResultHandler;
 import top.jiangqiang.core.http.OkHttpUtil;
 import top.jiangqiang.core.recorder.Recorder;
 import top.jiangqiang.core.util.DocumentUtil;
+import top.jiangqiang.core.util.FileUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,41 +109,41 @@ public class GenericStarter extends AbstractStarter {
         if (body == null) {
             return;
         }
+        String contentType = null;
         MediaType mediaType = body.contentType();
-        if (mediaType == null) {
-            return;
+        if (mediaType != null) {
+            contentType = mediaType.toString();
         }
-        String contentType = mediaType.toString();
-        long contentLength = body.contentLength();
-
-        List<String> mimeTypeList = globalConfig.getMimeTypeList();
-        if (StrUtil.isNotBlank(contentType)
-                && (mimeTypeList.contains(contentType) || mimeTypeList.contains(mediaType.type()))
-                && contentLength <= getGlobalConfig().getMaxSize()) {
-            byte[] bodyBytes = null;
-            try {
-                bodyBytes = body.bytes();
-            } catch (IOException e) {
-                log.debug(e.getMessage());
+        if (StrUtil.isNotBlank(contentType)) {
+            String contentTypeNoCharset = FileUtil.subMimeType(contentType);
+            List<String> mimeTypeList = globalConfig.getMimeTypeList();
+            long contentLength = body.contentLength();
+            if (contentLength <= getGlobalConfig().getMaxSize() && (mimeTypeList.contains(contentTypeNoCharset) || mimeTypeList.contains(mediaType.type()))) {
+                byte[] bodyBytes = null;
+                try {
+                    bodyBytes = body.bytes();
+                } catch (IOException e) {
+                    log.debug(e.getMessage());
+                }
+                Page page = Page.getPage(crawler, code, contentType, bodyBytes, getGlobalConfig().getCharset());
+                //如果正正则或反正则列表有一个有值，就会抽取所有URL
+                if (getGlobalConfig().getRegExs().size() != 0 || getGlobalConfig().getReverseRegExs().size() != 0) {
+                    //此处用于抓取所有URL
+                    List<String> urls = DocumentUtil.getAllUrl(page.getContent(), crawler.getUrl(), getGlobalConfig().getStrong());
+                    //使用正则表达式筛选URL
+                    urls = getMatchUrls(urls);
+                    page.addSeeds(urls);
+                }
+                Set<Crawler> crawlers = getResultHandler().doSuccess(recorder, crawler, page, response);
+                //当前爬虫深度没有达到设置的级别，加入爬虫任务列表
+                if (page.getDepth() < (getGlobalConfig().getDepth())) {
+                    //把没有爬取的加入任务列表，在addAll方法中需要自定义实现过滤
+                    getRecorder().addAll(new ArrayList<>(crawlers));
+                }
+                return;
             }
-            Page page = Page.getPage(crawler, code, contentType, bodyBytes, getGlobalConfig().getCharset());
-            //如果正正则或反正则列表有一个有值，就会抽取所有URL
-            if (getGlobalConfig().getRegExs().size() != 0 || getGlobalConfig().getReverseRegExs().size() != 0) {
-                //此处用于抓取所有URL
-                List<String> urls = DocumentUtil.getAllUrl(page.getContent(), crawler.getUrl(), getGlobalConfig().getStrong());
-                //使用正则表达式筛选URL
-                urls = getMatchUrls(urls);
-                page.addSeeds(urls);
-            }
-            Set<Crawler> crawlers = getResultHandler().doSuccess(recorder, crawler, page, response);
-            //当前爬虫深度没有达到设置的级别，加入爬虫任务列表
-            if (page.getDepth() < (getGlobalConfig().getDepth())) {
-                //把没有爬取的加入任务列表，在addAll方法中需要自定义实现过滤
-                getRecorder().addAll(new ArrayList<>(crawlers));
-            }
-        } else {
-            Page page = Page.getPage(crawler, code, contentType);
-            getResultHandler().doSuccess(recorder, crawler, page, response);
         }
+        Page page = Page.getPage(crawler, code, contentType);
+        getResultHandler().doSuccess(recorder, crawler, page, response);
     }
 }

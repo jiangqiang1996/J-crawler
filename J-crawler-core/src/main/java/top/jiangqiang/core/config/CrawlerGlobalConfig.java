@@ -101,7 +101,6 @@ public class CrawlerGlobalConfig implements Serializable {
         defaultReverseRegExs.add(".*\\.(js|css).*");
         mimeTypeList.add("text");
         mimeTypeList.add("application/json");
-        mimeTypeList.add("application/json;charset=utf-8");
     }
 
     public void setThreads(Integer threads) {
