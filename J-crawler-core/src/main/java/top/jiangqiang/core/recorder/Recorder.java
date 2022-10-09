@@ -1,5 +1,6 @@
 package top.jiangqiang.core.recorder;
 
+import top.jiangqiang.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.core.entities.Crawler;
 
 import java.util.List;
@@ -14,6 +15,19 @@ import java.util.List;
  */
 
 public interface Recorder {
+
+    /**
+     * 用于初始化爬虫任务
+     * 手动注入种子，在readSeeds方法后执行
+     */
+    Callback getInitCallback();
+
+    void setInitCallback(Callback initCallback);
+
+    void setConfig(CrawlerGlobalConfig globalConfig);
+
+    CrawlerGlobalConfig getConfig();
+
     /**
      * 存储未爬取的爬虫
      * 需要去重处理
@@ -28,9 +42,7 @@ public interface Recorder {
      *
      * @param crawlers 需要存储的爬虫列表
      */
-    default void addAll(List<Crawler> crawlers) {
-        crawlers.forEach(this::add);
-    }
+    void addAll(List<Crawler> crawlers);
 
     /**
      * 此方法用于内存记录器的断点续爬

@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2022/9/30 9:47
  */
 @Slf4j
-public class RamRecorder implements Recorder {
+public class RamRecorder extends AbstractRecorder {
     private final BlockingQueue<Crawler> crawlerBlockingQueue = CollUtil.newBlockingQueue(1000, true);
     private final List<Crawler> successList = Collections.synchronizedList(new LinkedList<>());
     private final List<Crawler> errorList = Collections.synchronizedList(new LinkedList<>());
@@ -33,17 +33,6 @@ public class RamRecorder implements Recorder {
                 log.debug(e.getMessage());
             }
         }
-    }
-
-    @Override
-    public synchronized void saveBeforeEnd() {
-        //保存 successList activeList
-        log.info("保存爬虫数据");
-    }
-
-    @Override
-    public synchronized void initBeforeStart() {
-        log.info("读取爬虫数据");
     }
 
     /**

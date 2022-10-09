@@ -1,5 +1,7 @@
 package top.jiangqiang.sample;
 
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import top.jiangqiang.core.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -39,12 +42,25 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     private void fetchPicture1() {
         RamRecorder ramRecorder = new RamRecorder();
-        Crawler crawler = new Crawler("https://www.pixiv.net/ranking.php?mode=daily&content=illust&p=1&format=json");
-        crawler.addParam("key", "value1");
-        crawler.addLine("method", "GET");
-        crawler.addHeader("Referer", "http://www.baidu.com");
-        ramRecorder.add(crawler);
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
+        ramRecorder.setInitCallback(recorder -> {
+            //https://www.pixiv.net/artworks/101741272
+            /**
+             * mode 按天或按周 daily按天
+             * content illust
+             * date 按天时的日期
+             * format 返回的格式
+             * p 页数 1-10
+             */
+            Crawler crawler = new Crawler("https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=20221007&p=1&format=json");
+
+            Date date = new Date();
+            DateUtil.format(date, DatePattern.PURE_DATE_PATTERN);
+            crawler.addParam("key", "value1");
+            crawler.addLine("method", "GET");
+            crawler.addHeader("Referer", "http://www.baidu.com");
+            recorder.add(crawler);
+        });
         crawlerGlobalConfig.addRegEx("(http|https)://.*");
         crawlerGlobalConfig.setAllowEnd(true);
         crawlerGlobalConfig.setForceEnd(true);

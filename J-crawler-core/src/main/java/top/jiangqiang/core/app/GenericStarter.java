@@ -1,7 +1,6 @@
 package top.jiangqiang.core.app;
 
 import cn.hutool.core.util.StrUtil;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +24,18 @@ import java.util.Set;
  * @Date: 2022年05月14日 13:45
  */
 @Slf4j
-@AllArgsConstructor
 @Getter
 public class GenericStarter extends AbstractStarter {
     private final CrawlerGlobalConfig globalConfig;
     private final Recorder recorder;
     private final ResultHandler resultHandler;
+
+    public GenericStarter(CrawlerGlobalConfig globalConfig, Recorder recorder, ResultHandler resultHandler) {
+        this.globalConfig = globalConfig;
+        this.recorder = recorder;
+        this.resultHandler = resultHandler;
+        this.recorder.setConfig(this.globalConfig);
+    }
 
     @Override
     public Runnable getTask(Crawler crawler) {
@@ -73,7 +78,7 @@ public class GenericStarter extends AbstractStarter {
                     try {
                         doSuccess(crawler, response);
                     } catch (Exception ignored) {
-                        isSuccess=false;
+                        isSuccess = false;
                         log.info(ignored.getMessage());
                     } finally {
                         if (isSuccess) {
