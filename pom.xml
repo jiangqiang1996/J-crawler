@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>top.jiangqiang</groupId>
+    <groupId>top.jiangqiang.crawler</groupId>
     <artifactId>J-crawler</artifactId>
     <name>${project.artifactId}</name>
     <version>${revision}</version>
@@ -13,7 +13,7 @@
     <description>
         java爬虫框架
     </description>
-    <url>https://github.com/jiangqiang1996/J-crawler</url>
+    <url>https://gitee.com/qianyi-community/J-crawler</url>
     <!-- 开源签名证书 -->
     <licenses>
         <license>
@@ -23,21 +23,21 @@
         </license>
     </licenses>
     <issueManagement>
-        <system>github</system>
-        <url>https://github.com/jiangqiang1996/J-crawler/issues</url>
+        <system>gitee</system>
+        <url>https://gitee.com/qianyi-community/J-crawler/issues</url>
     </issueManagement>
     <!-- 仓库信息 -->
     <scm>
-        <connection>scm:git:https://github.com/jiangqiang1996/J-crawler.git</connection>
-        <developerConnection>scm:git:https://github.com/jiangqiang1996/J-crawler.git</developerConnection>
-        <url>https://github.com/jiangqiang1996/J-crawler</url>
+        <connection>scm:git:https://gitee.com/qianyi-community/J-crawler.git</connection>
+        <developerConnection>scm:git:https://gitee.com/qianyi-community/J-crawler.git</developerConnection>
+        <url>https://gitee.com/qianyi-community/J-crawler</url>
     </scm>
     <!-- 开发人员信息 -->
     <developers>
         <developer>
             <name>JiangQiang</name>
             <email>jq1257403419@vip.qq.com</email>
-            <url>https://www.qianyi.xin</url>
+            <url>https://www.jiangqiang.top</url>
         </developer>
     </developers>
 
@@ -63,7 +63,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>top.jiangqiang</groupId>
+                <groupId>top.jiangqiang.crawler</groupId>
                 <artifactId>J-crawler-core</artifactId>
                 <version>${revision}</version>
             </dependency>
@@ -201,15 +201,6 @@
             <id>aliyunmaven</id>
             <name>aliyun</name>
             <url>https://maven.aliyun.com/repository/public</url>
-        </repository>
-        <!--拉取springboot3时，需要注释掉阿里云仓库配置，目前阿里云仓库没有该依赖-->
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
         </repository>
         <repository>
             <id>snapshots</id>

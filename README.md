@@ -1,6 +1,4 @@
-# java爬虫框架4.0，整合springboot相关技术，重构持久化相关代码
-
-# J-crawler3.0.2基本功能已经实现
+# java爬虫框架4.0
 
 [![License](https://img.shields.io/github/license/jiangqiang1996/J-crawler)](https://www.apache.org/licenses/LICENSE-2.0)
 ![JAVA](https://img.shields.io/badge/JAVA-11+-green.svg)
@@ -18,7 +16,7 @@
 
 1. 支持统计爬取的任务，默认实现内存记录器，只需要实现Recorder接口，即可轻松定义一个基于数据库的记录器，重写对应的方法即可实现断点续爬等功能。
 2. 只需要关注业务逻辑，而不需要过多关注技术实现。
-4. 多线程爬取
+4. 多线程异步爬取
 5. 支持HTTP代理,爬取墙外内容，可以针对每一个链接配置请求参数，请求方式，请求头以及请求代理，轻松对接各种ip池
 6. 内置完整示例，帮助了解学习。
 
@@ -28,13 +26,13 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 有两种使用方式：
 1. 拉取本框架代码，创建自己的包，然后在自己的包下编写启动类，具体参照Sample模块。
 如果有不满足你需求的地方，可以自己实现AbstractStarter类，不建议直接修改框架原有实现类的源码。目前尚不支持爬取单页面项目，后续会逐渐支持。
-2. 使用maven构建项目，引入下面依赖：（下面依赖为3.*版本，和4.*版本完全不兼容，建议直接fork此项目进行二次开发）
+2. 使用maven构建项目，引入下面依赖：
 ```XML
 <!-- https://mvnrepository.com/artifact/xin.jiangqiang/J-crawler -->
 <dependency>
-    <groupId>xin.jiangqiang</groupId>
+    <groupId>top.jiangqiang.crawler</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>3.0.2</version>
+    <version>4.0.0</version>
 </dependency>
 ```
 
