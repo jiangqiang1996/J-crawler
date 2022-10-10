@@ -3,12 +3,7 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.0-M4</version>
-        <relativePath/><!-- lookup parent from repository -->
-    </parent>
+
     <groupId>top.jiangqiang</groupId>
     <artifactId>J-crawler</artifactId>
     <name>${project.artifactId}</name>
@@ -61,6 +56,7 @@
         <hutool.version>5.8.8</hutool.version>
         <jsoup.version>1.15.3</jsoup.version>
         <okhttp.version>4.10.0</okhttp.version>
+        <lombok.version>1.18.24</lombok.version>
         <playwright.version>1.26.0</playwright.version>
     </properties>
     <dependencyManagement>
@@ -105,6 +101,11 @@
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>logging-interceptor</artifactId>
                 <version>${okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.microsoft.playwright</groupId>

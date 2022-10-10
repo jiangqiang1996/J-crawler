@@ -12,8 +12,6 @@ import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 import top.jiangqiang.core.app.GenericStarter;
 import top.jiangqiang.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.core.entities.Crawler;
@@ -30,17 +28,14 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@Component
+/**
+ * @author Jiangqiang
+ * @version 1.0
+ * @description TODO
+ * @date 2022/10/10 9:39
+ */
 @Slf4j
-public class CommandLineRunnerImpl implements CommandLineRunner {
-    @Override
-    public void run(String... args) {
-//        fetchOpenSourceChina();
-//        fetchWeChatArticle();
-//        fetchPicture();
-        fetchPicture1();
-    }
-
+public class Test {
     private void fetchPicture1() {
         RamRecorder ramRecorder = new RamRecorder();
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
