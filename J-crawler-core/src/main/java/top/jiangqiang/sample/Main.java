@@ -7,6 +7,7 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import top.jiangqiang.core.app.GenericStarter;
@@ -31,9 +32,12 @@ import java.util.Set;
  * @description TODO
  * @date 2022/10/10 9:33
  */
+@Slf4j
 public class Main {
     public static void main(String[] args) {
-        fetchPicture1();
+//        fetchPicture1();
+        log.info("12312");
+        log.debug("234");
     }
 
     private static void fetchPicture1() {

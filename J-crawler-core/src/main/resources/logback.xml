@@ -5,23 +5,17 @@ scanPeriod：设置监测配置文件是否有修改的时间间隔，如果没�
 此属性生效。默认的时间间隔为1分钟。
 debug：当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false-->
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
-    <!-- 彩色日志 -->
-    <!-- 彩色日志依赖的渲染类 -->
-    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
-    <conversionRule conversionWord="wex"
-                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
-    <conversionRule conversionWord="wEx"
-                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+
     <!-- 彩色日志格式 -->
     <property name="CONSOLE_LOG_PATTERN"
-              value="${CONSOLE_LOG_PATTERN:-%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-50.50logger{49}  : %line){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) --- %magenta([%thread]) %cyan([%-50.50logger{49}@%method:%line]) : %msg%n"/>
     <!--    定义日志的根目录-->
     <property name="LOG_HOME" value="./log"/>
     <!-- 定义日志文件名称 -->
     <property name="appName" value="J-crawler"/>
     <!-- ch.qos.logback.core.ConsoleAppender 表示控制台输出 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
+        <encoder>
             <!--
                 日志输出格式说明：
                 %d 输出日期时间
@@ -32,7 +26,20 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
                 %n 换行符
              -->
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-        </layout>
+        </encoder>
+
+        <!--        <encoder>-->
+        <!--
+              日志输出格式说明：
+              %d 输出日期时间
+              %thread 输出当前线程名
+              %-5level 输出日志级别，左对齐5个字符宽度
+              %logger{50} 输出全类名最长50个字符，超过按照句点分割
+              %msg 日志信息
+              %n 换行符
+        -->
+        <!--            <pattern>${CONSOLE_LOG_PATTERN}</pattern>-->
+        <!--        </encoder>-->
     </appender>
     <!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -48,6 +55,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
             ${LOG_HOME}/${appName}-%d{yyyy-MM-dd}-%i.log：当文件大小超过maxFileSize时，按照i进行文件滚动
             -->
             <fileNamePattern>${LOG_HOME}/${appName}-%d{yyyy-MM-dd}.log</fileNamePattern>
+
             <!--
             可选节点，控制保留的归档文件的最大数量，超出数量就删除旧文件。
             假设设置每天滚动，且maxHistory是365，则只保存最近365天的文件，删除之前的旧文件。
@@ -64,9 +72,9 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
               </timeBasedFileNamingAndTriggeringPolicy>-->
         </rollingPolicy>
         <!-- 日志输出格式： -->
-        <layout class="ch.qos.logback.classic.PatternLayout">
+        <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [ %thread ] - [ %-5level ] [ %logger{50} : %line ] - %msg%n</pattern>
-        </layout>
+        </encoder>
     </appender>
     <!-- logger主要用于存放日志对象，也可以定义日志类型、级别
      name：表示匹配的logger类型前缀，也就是包的前半部分
@@ -74,21 +82,14 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
      additivity：作用在于children-logger是否使用 rootLogger配置的appender进行输出，
      false：表示只用当前logger的appender-ref，true：
      表示当前logger的appender-ref和rootLogger的appender-ref都有效-->
-    <springProfile name="dev">
-        <root level="INFO">
-            <appender-ref ref="STDOUT"/>
-        </root>
-        <logger name="top.jiangqiang" level="DEBUG" additivity="false">
-            <appender-ref ref="STDOUT"/>
-        </logger>
-        <logger name="org.springframework" level="INFO" additivity="false">
-            <appender-ref ref="STDOUT"/>
-        </logger>
-    </springProfile>
-    <springProfile name="prod,default">
-        <root level="INFO">
-            <appender-ref ref="STDOUT"/>
-            <appender-ref ref="FILE"/>
-        </root>
-    </springProfile>
+
+    <!-- 使用root的appender-ref -->
+    <logger name="top.jiangqiang" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
 </configuration>

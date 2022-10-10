@@ -43,7 +43,6 @@
 
     <modules>
         <module>J-crawler-core</module>
-        <module>J-cawler-sample</module>
     </modules>
     <properties>
         <revision>4.0.0</revision><!--项目版本-->
@@ -58,17 +57,14 @@
         <okhttp.version>4.10.0</okhttp.version>
         <lombok.version>1.18.24</lombok.version>
         <playwright.version>1.26.0</playwright.version>
+        <slf4j.version>2.0.3</slf4j.version>
+        <logback.version>1.4.3</logback.version>
     </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>top.jiangqiang</groupId>
                 <artifactId>J-crawler-core</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>top.jiangqiang</groupId>
-                <artifactId>J-crawler-sample</artifactId>
                 <version>${revision}</version>
             </dependency>
             <!--hutool模块版本管理-->
@@ -112,7 +108,17 @@
                 <artifactId>playwright</artifactId>
                 <version>${playwright.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
 
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <profiles>
