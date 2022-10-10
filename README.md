@@ -1,16 +1,14 @@
 # java爬虫框架4.0
+[![Fork me on Gitee](https://gitee.com/qianyi-community/J-crawler/widgets/widget_4.svg)](https://gitee.com/qianyi-community/J-crawler)
 
 [![License](https://img.shields.io/github/license/jiangqiang1996/J-crawler)](https://www.apache.org/licenses/LICENSE-2.0)
-![JAVA](https://img.shields.io/badge/JAVA-11+-green.svg)
+![JAVA](https://img.shields.io/badge/JAVA-17+-green.svg)
 ![issues](https://img.shields.io/github/issues/jiangqiang1996/J-crawler)
-![stars](https://img.shields.io/github/stars/jiangqiang1996/J-crawler)
-![forks](https://img.shields.io/github/forks/jiangqiang1996/J-crawler)
+[![star](https://gitee.com/qianyi-community/J-crawler/badge/star.svg?theme=dark)](https://gitee.com/qianyi-community/J-crawler/stargazers)
+[![fork](https://gitee.com/qianyi-community/J-crawler/badge/fork.svg?theme=dark)](https://gitee.com/qianyi-community/J-crawler/members)
+[![千异社区/J-crawler](https://gitee.com/qianyi-community/J-crawler/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/qianyi-community/J-crawler)
 
 ### java爬虫框架
-
-旨在用最少的代码开发爬虫框架,即使现有框架不满足你,你也可以使用最少的代码重构框架
-只需要提供一个URL链接，即可获取到该响应内容中的所有其他链接。不需要关注线程问题，以及同步还是异步问题。只需要定义一个ResultHandler即可实现自己的逻辑，或者定义一个Recorder即可轻松接入各种持久层数据库。
-内置大量常用正则表达式，可以让你不写一行代码即可获取html文档中的所有url链接。
 
 特色功能:
 
@@ -24,11 +22,9 @@
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.不支持form-data。
 
 有两种使用方式：
-1. 拉取本框架代码，创建自己的包，然后在自己的包下编写启动类，具体参照Sample模块。
-如果有不满足你需求的地方，可以自己实现AbstractStarter类，不建议直接修改框架原有实现类的源码。目前尚不支持爬取单页面项目，后续会逐渐支持。
+1. 拉取本框架代码，具体参考top.jiangqiang.crawler.sample包下示例，可以重写top.jiangqiang.crawler.core.app.GenericStarter类，实现自己的启动类。
 2. 使用maven构建项目，引入下面依赖：
 ```XML
-<!-- https://mvnrepository.com/artifact/xin.jiangqiang/J-crawler -->
 <dependency>
     <groupId>top.jiangqiang.crawler</groupId>
     <artifactId>J-crawler</artifactId>
@@ -36,12 +32,9 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 </dependency>
 ```
 
-**如果运行报错，请先注释掉pom.xml中profiles节点所有内容**
-
+**如果运行报错，注意jdk版本，最低17**
 
 持续更新中...
-
-爬虫框架4.0重构中...
 
 如有疑问或bug，欢迎去我个人[博客](https://www.jiangqiang.top)留言，博客地址目前暂时不能访问。
 
