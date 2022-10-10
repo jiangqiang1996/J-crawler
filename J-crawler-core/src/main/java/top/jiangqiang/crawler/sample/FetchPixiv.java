@@ -1,6 +1,5 @@
 package top.jiangqiang.crawler.sample;
 
-import ch.qos.logback.classic.Logger;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
@@ -10,8 +9,6 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
-import org.slf4j.LoggerFactory;
 import top.jiangqiang.crawler.core.app.GenericStarter;
 import top.jiangqiang.crawler.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.crawler.core.entities.Crawler;
@@ -35,7 +32,7 @@ import java.util.Set;
  * @date 2022/10/10 9:33
  */
 @Slf4j
-public class Main {
+public class FetchPixiv {
     public static void main(String[] args) {
         fetchPicture1();
     }
