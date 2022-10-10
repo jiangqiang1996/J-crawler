@@ -1,69 +1,79 @@
 package top.jiangqiang.core.http;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.core.util.URLUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import okhttp3.logging.HttpLoggingInterceptor;
 import top.jiangqiang.core.base.BaseException;
 import top.jiangqiang.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.core.entities.Crawler;
-import top.jiangqiang.core.interceptor.DefaultHttpInterceptor;
 import top.jiangqiang.core.util.JSONUtil;
-import top.jiangqiang.core.util.SpringUtil;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author jiangqiang
  * @date 2022-09-29
  */
 @Slf4j
-public class OkHttpUtil {
+public class OkHttpService {
     /**
      * 使用全局配置构建的客户端
      */
-    private static volatile OkHttpClient client;
+    private final OkHttpClient client;
+    private final Interceptor[] interceptors;
+    private final CrawlerGlobalConfig globalConfig;
 
-    public static Call request(Crawler crawler, CrawlerGlobalConfig globalConfig) {
+    public OkHttpService(CrawlerGlobalConfig globalConfig, Interceptor... interceptors) {
+        //拦截器;
+        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
+                .addNetworkInterceptor(
+                        new HttpLoggingInterceptor(new HttpLogger())
+                                .setLevel(globalConfig.getLogLevel())
+                );
+        Boolean useProxy = globalConfig.getUseProxy();
+        Map<String, String> proxyConfig = globalConfig.getProxyConfig();
+        if (ArrayUtil.isNotEmpty(interceptors)) {
+            for (Interceptor interceptor : interceptors) {
+                okHttpClientBuilder.addInterceptor(interceptor);
+            }
+        }
+        if (useProxy == null || !useProxy || CollUtil.isEmpty(proxyConfig)) {
+            //不使用代理
+            this.client = okHttpClientBuilder.build();
+        } else {
+            this.client = processOkHttpClient(proxyConfig, okHttpClientBuilder);
+        }
+        this.interceptors = interceptors;
+        this.globalConfig = globalConfig;
+    }
+
+    public Call request(Crawler crawler) {
         if (StrUtil.isBlank(crawler.getUrl())) {
             return null;
         }
         try {
-            AtomicReference<Interceptor> interceptor = new AtomicReference<>();
-            interceptor.set(SpringUtil.getOneBeanDefault(Interceptor.class, new DefaultHttpInterceptor()));
             //拦截器;
-            OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addInterceptor(interceptor.get())
+            OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
                     .addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(globalConfig.getLogLevel()));
-            boolean useProxy = globalConfig.isUseProxy();
-            synchronized (OkHttpUtil.class) {
-                if (client == null) {
-                    synchronized (OkHttpUtil.class) {
-                        if (client == null) {
-                            Map<String, String> proxyConfig = globalConfig.getProxyConfig();
-                            if (!useProxy || CollUtil.isEmpty(proxyConfig)) {
-                                //不使用代理
-                                client = okHttpClientBuilder.build();
-                            } else {
-                                client = processOkHttpClient(proxyConfig, okHttpClientBuilder);
-                            }
-                        }
-                    }
+            if (ArrayUtil.isNotEmpty(interceptors)) {
+                for (Interceptor interceptor : interceptors) {
+                    okHttpClientBuilder.addInterceptor(interceptor);
                 }
             }
+            Boolean useProxy = globalConfig.getUseProxy();
             Map<String, String> proxyConfig = crawler.getProxyConfig();
             OkHttpClient tmpClient;
-            if (!useProxy || CollUtil.isEmpty(proxyConfig)) {
+            if (useProxy == null || !useProxy || CollUtil.isEmpty(proxyConfig)) {
                 tmpClient = client;
             } else {
-                tmpClient = processOkHttpClient(globalConfig.getProxyConfig(), okHttpClientBuilder);
+                tmpClient = processOkHttpClient(proxyConfig, okHttpClientBuilder);
             }
             Map<String, String> lines = crawler.getLines();
             Map<String, String> headers = crawler.getHeaders();
@@ -94,7 +104,7 @@ public class OkHttpUtil {
      * @param body
      * @return
      */
-    public static Request processRequestParam(String url, Map<String, String> lines, Map<String, String> headers, Map<String, String> body) {
+    public Request processRequestParam(String url, Map<String, String> lines, Map<String, String> headers, Map<String, String> body) {
         Request.Builder builder = new Request.Builder();
         if (StrUtil.isBlank(url)) {
             throw new BaseException("请求方式不能为空");
@@ -173,7 +183,7 @@ public class OkHttpUtil {
      * @param okHttpClientBuilder
      * @return
      */
-    public static OkHttpClient processOkHttpClient(Map<String, String> configs, OkHttpClient.Builder okHttpClientBuilder) {
+    public OkHttpClient processOkHttpClient(Map<String, String> configs, OkHttpClient.Builder okHttpClientBuilder) {
         if (CollUtil.isEmpty(configs)) {
             return okHttpClientBuilder.build();
         }
@@ -211,7 +221,7 @@ public class OkHttpUtil {
      * @param protocol
      * @return
      */
-    private static Proxy.Type selectType(String protocol) {
+    private Proxy.Type selectType(String protocol) {
         if ("HTTP".equals(protocol) || "".equals(protocol)) {
             return Proxy.Type.HTTP;
         } else if ("DIRECT".equals(protocol)) {
@@ -222,12 +232,15 @@ public class OkHttpUtil {
         return Proxy.Type.HTTP;
     }
 
-    public static Response send(String url, String method) {
-        Request request = new Request.Builder().method(method, null).url(URLUtil.url(url)).build();
-        try {
-            return new OkHttpClient.Builder().build().newCall(request).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    @Slf4j
+    public static class HttpLogger implements HttpLoggingInterceptor.Logger {
+        @Override
+        public void log(String s) {
+            if (s.length() > 300) {
+                log.debug("\n" + s);
+            } else {
+                log.debug(s);
+            }
         }
     }
 }

@@ -60,13 +60,13 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
              */
             Date date = new Date();
             int days = 30;
-            for (int i = 0; i < days; i++) {
+            for (int day = 1; day <= days; day++) {
                 String dateStr = DateUtil.format(date, DatePattern.PURE_DATE_PATTERN);
                 date = DateUtil.offsetDay(date, -1);
                 int pages = 10;
                 for (int page = 1; page <= pages; page++) {
                     String url;
-                    if (days == 1) {
+                    if (day == 1) {
                         url = "https://www.pixiv.net/ranking.php?mode=daily&content=illust" + "&p=" + page + "&format=json";
                     } else {
                         url = "https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=" + dateStr + "&p=" + page + "&format=json";

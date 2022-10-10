@@ -9,8 +9,10 @@ import org.jetbrains.annotations.NotNull;
 import top.jiangqiang.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.core.entities.Crawler;
 import top.jiangqiang.core.entities.Page;
+import top.jiangqiang.core.handler.DefaultResultHandler;
 import top.jiangqiang.core.handler.ResultHandler;
-import top.jiangqiang.core.http.OkHttpUtil;
+import top.jiangqiang.core.http.OkHttpService;
+import top.jiangqiang.core.recorder.RamRecorder;
 import top.jiangqiang.core.recorder.Recorder;
 import top.jiangqiang.core.util.DocumentUtil;
 import top.jiangqiang.core.util.FileUtil;
@@ -18,6 +20,7 @@ import top.jiangqiang.core.util.FileUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -30,12 +33,30 @@ public class GenericStarter extends AbstractStarter {
     private final CrawlerGlobalConfig globalConfig;
     private final Recorder recorder;
     private final ResultHandler resultHandler;
+    private final OkHttpService okHttpService;
 
-    public GenericStarter(CrawlerGlobalConfig globalConfig, Recorder recorder, ResultHandler resultHandler) {
-        this.globalConfig = globalConfig;
-        this.recorder = recorder;
-        this.resultHandler = resultHandler;
+    public GenericStarter(CrawlerGlobalConfig globalConfig, Recorder recorder, ResultHandler resultHandler, Interceptor... interceptors) {
+        this.globalConfig = Objects.requireNonNullElseGet(globalConfig, CrawlerGlobalConfig::new);
+        this.recorder = Objects.requireNonNullElseGet(recorder, RamRecorder::new);
+        this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
         this.recorder.setConfig(this.globalConfig);
+        this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
+    }
+
+    public GenericStarter(Recorder recorder, ResultHandler resultHandler, Interceptor... interceptors) {
+        this.globalConfig = new CrawlerGlobalConfig();
+        this.recorder = Objects.requireNonNullElseGet(recorder, RamRecorder::new);
+        this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
+        this.recorder.setConfig(this.globalConfig);
+        this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
+    }
+
+    public GenericStarter(ResultHandler resultHandler, Interceptor... interceptors) {
+        this.globalConfig = new CrawlerGlobalConfig();
+        this.recorder = new RamRecorder();
+        this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
+        this.recorder.setConfig(this.globalConfig);
+        this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
     }
 
     @Override
@@ -53,7 +74,7 @@ public class GenericStarter extends AbstractStarter {
 
         @Override
         public void run() {
-            Call call = OkHttpUtil.request(crawler, getGlobalConfig());
+            Call call = okHttpService.request(crawler);
             if (call == null) {
                 getRecorder().addError(crawler);
                 getRecorder().removeActive(crawler);
