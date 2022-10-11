@@ -1,9 +1,8 @@
 # java爬虫框架4.0
 [![Fork me on Gitee](https://gitee.com/qianyi-community/J-crawler/widgets/widget_4.svg)](https://gitee.com/qianyi-community/J-crawler)
 
-[![License](https://img.shields.io/github/license/jiangqiang1996/J-crawler)](https://www.apache.org/licenses/LICENSE-2.0)
+![Maven Central](https://img.shields.io/maven-central/v/top.jiangqiang.crawler/J-crawler)
 ![JAVA](https://img.shields.io/badge/JAVA-17+-green.svg)
-![issues](https://img.shields.io/github/issues/jiangqiang1996/J-crawler)
 [![star](https://gitee.com/qianyi-community/J-crawler/badge/star.svg?theme=dark)](https://gitee.com/qianyi-community/J-crawler/stargazers)
 [![fork](https://gitee.com/qianyi-community/J-crawler/badge/fork.svg?theme=dark)](https://gitee.com/qianyi-community/J-crawler/members)
 [![千异社区/J-crawler](https://gitee.com/qianyi-community/J-crawler/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/qianyi-community/J-crawler)
