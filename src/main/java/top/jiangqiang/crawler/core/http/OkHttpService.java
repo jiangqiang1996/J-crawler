@@ -39,7 +39,10 @@ public class OkHttpService {
      */
     void initLogLevel(CrawlerGlobalConfig globalConfig) {
         if (globalConfig.getLogLevel() == null) {
-            Logger logger = (Logger) LoggerFactory.getLogger("top.jiangqiang.crawler.http");
+            Logger logger = (Logger) LoggerFactory.getLogger("top.jiangqiang.crawler.core.http");
+            if (logger.getLevel() == null) {
+                logger = (Logger) LoggerFactory.getLogger("top.jiangqiang.crawler.core");
+            }
             if (logger.getLevel() == null) {
                 logger = (Logger) LoggerFactory.getLogger("top.jiangqiang.crawler");
             }
