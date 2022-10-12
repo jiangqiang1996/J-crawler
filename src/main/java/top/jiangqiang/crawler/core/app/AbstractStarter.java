@@ -55,9 +55,18 @@ public abstract class AbstractStarter implements Starter {
          */
         init(getRecorder());
         getRecorder().initBeforeStart();
-        if (getRecorder().count() == 0 && getGlobalConfig().getAllowEnd() != null && getGlobalConfig().getAllowEnd()) {
+        Boolean allowEnd = getGlobalConfig().getAllowEnd();
+        Boolean forceEnd = getGlobalConfig().getForceEnd();
+        //没有任务，并且允许结束
+        if (getRecorder().count() == 0 && allowEnd) {
             log.info("没有爬取任务，任务结束");
-            System.exit(0);
+            if (forceEnd) {
+                //强制结束程序
+                System.exit(0);
+            } else {
+                //爬虫任务结束
+                return;
+            }
         }
         /**
          * 爬取before方法中设置的爬虫，分配线程爬取recorder中的实例，启动爬虫任务
@@ -87,21 +96,22 @@ public abstract class AbstractStarter implements Starter {
     private void run() {
         Boolean allowEnd = getGlobalConfig().getAllowEnd();
         Boolean forceEnd = getGlobalConfig().getForceEnd();
-        boolean isEnd = false;
-        while (!isEnd) {
+        while (true) {
+            //没有获取到任务
             if (!processTask()) {
-                if (allowEnd && getRecorder().countActive() == 0) {
-                    ThreadUtil.safeSleep(3000);
-                    isEnd = true;
+                //允许结束
+                if (allowEnd && getRecorder().countActive() == 0 && !processTask()) {
                     executor.shutdown();
+                    break;
                 }
-            }
-            Supplier<Long> timeout = getGlobalConfig().getTimeout();
-            if (timeout != null) {
-                Long time = timeout.get();
-                if (time != null && time > 0L) {
-                    log.debug("下次请求间隔：{}ms", time);
-                    ThreadUtil.safeSleep(time);
+            } else {
+                Supplier<Long> timeout = getGlobalConfig().getTimeout();
+                if (timeout != null) {
+                    Long time = timeout.get();
+                    if (time != null && time > 0L) {
+                        log.debug("距离下次请求任务时间间隔：{}ms", time);
+                        ThreadUtil.safeSleep(time);
+                    }
                 }
             }
         }
