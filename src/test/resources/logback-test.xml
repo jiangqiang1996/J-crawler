@@ -87,6 +87,9 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
     <logger name="top.jiangqiang.crawler.core.http" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
+    <logger name="top.jiangqiang.crawler.core.app" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
     <logger name="top.jiangqiang.crawler" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>

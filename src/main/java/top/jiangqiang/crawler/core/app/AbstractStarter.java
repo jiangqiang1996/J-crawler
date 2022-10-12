@@ -9,6 +9,7 @@ import top.jiangqiang.crawler.core.entities.Crawler;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Supplier;
 
 /**
  * @Author: JiangQiang
@@ -93,6 +94,14 @@ public abstract class AbstractStarter implements Starter {
                     ThreadUtil.safeSleep(3000);
                     isEnd = true;
                     executor.shutdown();
+                }
+            }
+            Supplier<Long> timeout = getGlobalConfig().getTimeout();
+            if (timeout != null) {
+                Long time = timeout.get();
+                if (time != null && time > 0L) {
+                    log.debug("下次请求间隔：{}ms", time);
+                    ThreadUtil.safeSleep(time);
                 }
             }
         }

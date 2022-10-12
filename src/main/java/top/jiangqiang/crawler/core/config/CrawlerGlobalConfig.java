@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * 全局配置
@@ -24,6 +25,12 @@ import java.util.Map;
 @Data
 public class CrawlerGlobalConfig implements Serializable {
     private Charset charset = Charset.defaultCharset();
+    /**
+     * 返回一个时间，单位毫秒，用于指定每次爬虫任务请求的时间间隔，
+     * 建议返回一个随机数，不容易被察觉为机器请求，防止被封禁。
+     * timeout为null或Supplier.get()返回null或小于等于0的数字则不需要时间间隔
+     */
+    private Supplier<Long> timeout = () -> null;
     /**
      * 请求和响应报文的日志打印级别
      */
@@ -58,13 +65,16 @@ public class CrawlerGlobalConfig implements Serializable {
     /**
      * 线程池内所有任务空闲之后，需要等待一分钟才会结束，开启此选项可以强制结束，
      * 如果只有极少数线程正在执行特别耗费时间的任务时（下载文件等任务），强制结束会导致数据丢失。
-     * 强制结束会使整个程序结束，如果是其他项目（web项目）引用此工具二次开发，不应该开启强制结束
+     * 开启此选项后，如果recorder中没有正在进行的任务，则会立即结束爬虫任务，停止整个程序。
+     * 强制结束会使整个程序结束，如果是其他项目（web项目）引用此工具二次开发，不应该开启强制结束，
      */
     private Boolean forceEnd = false;
     /**
-     * 是否允许任务结束，如果为false，当没有爬虫任务时会定期轮训检查是否有新的种子，如果为true，则会在一段时间后结束程序
+     * 是否允许任务结束，如果为false，当没有爬虫任务时会定期轮训检查是否有新的种子，
+     * 如果种子来源不仅仅是此程序，建议设置为false
+     * 如果为true，则会在一段时间后结束程序
      */
-    private Boolean allowEnd = false;
+    private Boolean allowEnd = true;
     /**
      * 满足此正则表达式列表的URL会被提取
      */

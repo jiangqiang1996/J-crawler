@@ -1,8 +1,9 @@
-package top.jiangqiang.crawler.sample;
+package top.jiangqiang.crawler.core.sample;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONArray;
@@ -55,7 +56,7 @@ public class FetchPixiv {
              * https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=20221007&p=1&format=json
              */
             Date date = new Date();
-            int days = 30;
+            int days = 3;
             for (int day = 1; day <= days; day++) {
                 String dateStr = DateUtil.format(date, DatePattern.PURE_DATE_PATTERN);
                 date = DateUtil.offsetDay(date, -1);
@@ -74,6 +75,9 @@ public class FetchPixiv {
             }
         });
 //        crawlerGlobalConfig.addRegEx("(http|https)://.*");
+        //每次请求间隔1000-10000ms
+//        crawlerGlobalConfig.setTimeout(() -> RandomUtil.randomLong(1000, 10000));
+        crawlerGlobalConfig.setTimeout(null);
         crawlerGlobalConfig.setAllowEnd(true);
         crawlerGlobalConfig.setForceEnd(false);
         crawlerGlobalConfig.setDepth(3);

@@ -7,9 +7,7 @@
 [![fork](https://gitee.com/qianyi-community/J-crawler/badge/fork.svg?theme=dark)](https://gitee.com/qianyi-community/J-crawler/members)
 [![千异社区/J-crawler](https://gitee.com/qianyi-community/J-crawler/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/qianyi-community/J-crawler)
 
-### java爬虫框架
-
-特色功能:
+### 特色功能
 
 1. 支持统计爬取的任务，默认实现内存记录器，只需要实现Recorder接口，即可轻松定义一个基于数据库的记录器，重写对应的方法即可实现断点续爬等功能。
 2. 只需要关注业务逻辑，而不需要过多关注技术实现。
@@ -20,21 +18,17 @@
 注意:
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.不支持form-data。
 
-有两种使用方式：
+### 使用方式
 1. 拉取本框架代码，具体参考top.jiangqiang.crawler.sample包下示例，可以重写top.jiangqiang.crawler.core.app.GenericStarter类，实现自己的启动类。
 2. 使用maven构建项目，引入下面依赖：
 ```XML
 <dependency>
     <groupId>top.jiangqiang.crawler</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
 </dependency>
 ```
 
 **如果运行报错，注意jdk版本，最低17**
-
-持续更新中...
-
-如有疑问或bug，欢迎去我个人[博客](https://www.jiangqiang.top)留言，博客地址目前暂时不能访问。
 
 **本项目仅学习使用，切勿用在非法用途。否则后果自负，技术无罪。**

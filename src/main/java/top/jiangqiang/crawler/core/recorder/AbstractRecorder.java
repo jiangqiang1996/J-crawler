@@ -6,6 +6,7 @@ import top.jiangqiang.crawler.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.crawler.core.entities.Crawler;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 记录各种爬取状态的爬虫
@@ -19,13 +20,12 @@ import java.util.List;
 @Getter
 @Setter
 public abstract class AbstractRecorder implements Recorder {
-    private Callback initCallback;
+    private Consumer<Recorder> initCallback;
     private CrawlerGlobalConfig config;
 
     public void initBeforeStart() {
-        Callback initCallback = getInitCallback();
         if (initCallback != null) {
-            initCallback.process(this);
+            initCallback.accept(this);
         }
     }
 

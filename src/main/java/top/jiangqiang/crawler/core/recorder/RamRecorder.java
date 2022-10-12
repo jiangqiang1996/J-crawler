@@ -116,26 +116,6 @@ public class RamRecorder extends AbstractRecorder {
     }
 
     @Override
-    public synchronized Callback getInitCallback() {
-        return super.getInitCallback();
-    }
-
-    @Override
-    public synchronized CrawlerGlobalConfig getConfig() {
-        return super.getConfig();
-    }
-
-    @Override
-    public synchronized void setInitCallback(Callback initCallback) {
-        super.setInitCallback(initCallback);
-    }
-
-    @Override
-    public synchronized void setConfig(CrawlerGlobalConfig config) {
-        super.setConfig(config);
-    }
-
-    @Override
     public synchronized void initBeforeStart() {
         super.initBeforeStart();
     }

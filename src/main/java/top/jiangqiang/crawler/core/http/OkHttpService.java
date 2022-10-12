@@ -1,5 +1,6 @@
 package top.jiangqiang.crawler.core.http;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
@@ -39,28 +40,22 @@ public class OkHttpService {
      */
     void initLogLevel(CrawlerGlobalConfig globalConfig) {
         if (globalConfig.getLogLevel() == null) {
-            Logger logger = (Logger) LoggerFactory.getLogger("top.jiangqiang.crawler.core.http");
-            if (logger.getLevel() == null) {
-                logger = (Logger) LoggerFactory.getLogger("top.jiangqiang.crawler.core");
+            String packageName = OkHttpService.class.getPackageName();
+            Level level = ((Logger) LoggerFactory.getLogger(packageName)).getLevel();
+            while (level == null) {
+                if (packageName.contains(".")) {
+                    packageName = StrUtil.subBefore(packageName, ".", true);
+                } else {
+                    packageName = null;
+                }
+                if (StrUtil.isBlank(packageName)) {
+                    level = ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).getLevel();
+                    break;
+                } else {
+                    level = ((Logger) LoggerFactory.getLogger(packageName)).getLevel();
+                }
             }
-            if (logger.getLevel() == null) {
-                logger = (Logger) LoggerFactory.getLogger("top.jiangqiang.crawler");
-            }
-            if (logger.getLevel() == null) {
-                logger = (Logger) LoggerFactory.getLogger("top.jiangqiang");
-            }
-            if (logger.getLevel() == null) {
-                logger = (Logger) LoggerFactory.getLogger("top");
-            }
-            if (logger.getLevel() == null) {
-                logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-            }
-            if (logger.getLevel() == null) {
-                globalConfig.setLogLevel(HttpLoggingInterceptor.Level.NONE);
-                return;
-            }
-            String levelStr = logger.getLevel().levelStr;
-            switch (levelStr) {
+            switch (level.levelStr) {
                 case "OFF", "ERROR" -> globalConfig.setLogLevel(HttpLoggingInterceptor.Level.NONE);
                 case "INFO" -> globalConfig.setLogLevel(HttpLoggingInterceptor.Level.HEADERS);
                 case "DEBUG", "TRACE", "ALL" -> globalConfig.setLogLevel(HttpLoggingInterceptor.Level.BODY);
@@ -72,11 +67,7 @@ public class OkHttpService {
     public OkHttpService(CrawlerGlobalConfig globalConfig, Interceptor... interceptors) {
         initLogLevel(globalConfig);
         //拦截器;
-        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-                .addNetworkInterceptor(
-                        new HttpLoggingInterceptor(new HttpLogger())
-                                .setLevel(globalConfig.getLogLevel())
-                );
+        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(globalConfig.getLogLevel()));
         Boolean useProxy = globalConfig.getUseProxy();
         Map<String, String> proxyConfig = globalConfig.getProxyConfig();
         if (ArrayUtil.isNotEmpty(interceptors)) {
@@ -100,8 +91,7 @@ public class OkHttpService {
         }
         try {
             //拦截器;
-            OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-                    .addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(globalConfig.getLogLevel()));
+            OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(globalConfig.getLogLevel()));
             if (ArrayUtil.isNotEmpty(interceptors)) {
                 for (Interceptor interceptor : interceptors) {
                     okHttpClientBuilder.addInterceptor(interceptor);
@@ -246,9 +236,7 @@ public class OkHttpService {
                 okHttpClientBuilder.proxyAuthenticator((route, response) -> {
                     //设置代理服务器账号密码
                     String credential = Credentials.basic(username, password);
-                    return response.request().newBuilder()
-                            .header("Proxy-Authorization", credential)
-                            .build();
+                    return response.request().newBuilder().header("Proxy-Authorization", credential).build();
                 });
             }
         }

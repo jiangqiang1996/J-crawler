@@ -1,4 +1,4 @@
-package top.jiangqiang.crawler.sample;
+package top.jiangqiang.crawler.core.sample;
 
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
@@ -27,7 +27,9 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class Test {
-
+    /**
+     * 爬取微信公众号文章的图片
+     */
     void fetchWeChatArticle() {
         RamRecorder ramRecorder = new RamRecorder();
         ramRecorder.add(new Crawler("https://mp.weixin.qq.com/s?__biz=MzIxMjgzMDUyNw==&mid=2247489048&idx=1&sn=072866b456945d297ec2516dd72e5a41&chksm=97414648a036cf5eba9ddf88c7cf7a27809ae414b4ce43d5595c7351172d04d70664eab25761&scene=90&subscene=93&sessionid=1664460391&clicktime=1664460397&enterid=1664460397&ascene=56&fasttmpl_type=0&fasttmpl_fullversion=6351034-zh_CN-zip&fasttmpl_flag=0&realreporttime=1664460397767&devicetype=android-31&version=28001c3b&nettype=WIFI&abtest_cookie=AAACAA%3D%3D&lang=zh_CN&session_us=gh_391abad800db&exportkey=A01mvM0fP%2BtbjfOBlrDdga8%3D&pass_ticket=fRKCL5vF5nmJEU4Y0DJ60ftOP9hbDgcI5Syn9wR%2BP26sjnBzcmbbozXA3pV42cES&wx_header=3"));
@@ -57,7 +59,7 @@ public class Test {
     }
 
     /**
-     * 爬取开源中国的数据
+     * 爬取gitee的开源仓库数据
      */
     void fetchOpenSourceChina() {
         RamRecorder ramRecorder = new RamRecorder();

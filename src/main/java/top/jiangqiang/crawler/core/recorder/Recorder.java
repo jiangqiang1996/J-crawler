@@ -4,6 +4,7 @@ import top.jiangqiang.crawler.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.crawler.core.entities.Crawler;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 记录各种爬取状态的爬虫
@@ -20,9 +21,9 @@ public interface Recorder {
      * 用于初始化爬虫任务
      * 手动注入种子，在readSeeds方法后执行
      */
-    Callback getInitCallback();
+    Consumer<Recorder> getInitCallback();
 
-    void setInitCallback(Callback initCallback);
+    void setInitCallback(Consumer<Recorder> initCallback);
 
     void setConfig(CrawlerGlobalConfig globalConfig);
 
