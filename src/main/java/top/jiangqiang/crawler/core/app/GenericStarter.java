@@ -18,10 +18,8 @@ import top.jiangqiang.crawler.core.util.DocumentUtil;
 import top.jiangqiang.crawler.core.util.FileUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @Author: JiangQiang
@@ -152,11 +150,11 @@ public class GenericStarter extends AbstractStarter {
                     urls = getMatchUrls(urls);
                     page.addSeeds(urls);
                 }
-                Set<Crawler> crawlers = getResultHandler().doSuccess(recorder, crawler, page, response);
+                List<Crawler> crawlers = getResultHandler().doSuccess(recorder, crawler, page, response);
                 //当前爬虫深度没有达到设置的级别，加入爬虫任务列表
                 if (page.getDepth() < (getGlobalConfig().getDepth())) {
                     //把没有爬取的加入任务列表，在addAll方法中需要自定义实现过滤
-                    getRecorder().addAll(new ArrayList<>(crawlers));
+                    getRecorder().addAll(crawlers);
                 }
                 return;
             }

@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import top.jiangqiang.crawler.core.config.HttpConfig;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: JiangQiang
@@ -26,7 +29,7 @@ public class Crawler implements Serializable {
     //当前的URL
     private String url;
     //当前URL中提取出来的子爬虫
-    private Set<Crawler> crawlers = new HashSet<>();
+    private List<Crawler> crawlers = new ArrayList<>();
     private HttpConfig httpConfig = new HttpConfig();
 
     public Crawler(String url) {
@@ -62,11 +65,13 @@ public class Crawler implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Crawler crawler = (Crawler) o;
-
         return url.equals(crawler.url);
     }
 

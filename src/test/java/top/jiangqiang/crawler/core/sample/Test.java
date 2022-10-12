@@ -16,8 +16,6 @@ import top.jiangqiang.crawler.core.recorder.Recorder;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Jiangqiang
@@ -39,8 +37,8 @@ public class Test {
         crawlerGlobalConfig.setForceEnd(true);
         crawlerGlobalConfig.setDepth(3);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
-            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
-//                Set<Crawler> crawlers = page.getCrawlers().stream().filter(
+            public List<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
+//                List<Crawler> crawlers = page.getCrawlers().stream().filter(
 //                        crawler1 -> {
 //                            return ReUtil.isMatch(".*\\.(jpg|jpeg|png|webp|gif)", crawler1.getUrl());
 //                        }
@@ -69,13 +67,13 @@ public class Test {
         crawlerGlobalConfig.addRegEx("https://.*");
         crawlerGlobalConfig.setDepth(2);
         GenericStarter genericStarter = new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
-            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
+            public List<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
                 if (ReUtil.isMatch("^https://gitee.com/explore/([A-Za-z0-9-]{1,})", page.getUrl())) {
                     match(page);
                 }
-                Set<Crawler> crawlers = page.getCrawlers().stream().filter(
+                List<Crawler> crawlers = page.getCrawlers().stream().filter(
                         crawler1 -> ReUtil.isMatch("^https://gitee.com/explore/([A-Za-z0-9-]{1,})", crawler1.getUrl())
-                ).collect(Collectors.toSet());
+                ).toList();
                 List<String> strings = crawlers.stream().map(Crawler::getUrl).toList();
 //                System.out.println(strings);
                 return crawlers;

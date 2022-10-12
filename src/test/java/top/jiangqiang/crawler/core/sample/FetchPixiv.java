@@ -3,7 +3,6 @@ package top.jiangqiang.crawler.core.sample;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONArray;
@@ -24,7 +23,6 @@ import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Jiangqiang
@@ -88,7 +86,7 @@ public class FetchPixiv {
         crawlerGlobalConfig.addProxyProtocol("HTTP");
 //        crawlerGlobalConfig.setLogLevel(HttpLoggingInterceptor.Level.BODY);
         new GenericStarter(crawlerGlobalConfig, ramRecorder, new ResultHandler() {
-            public Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
+            public List<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
                 // 储存下载文件的目录
                 File dir = FileUtil.file("D:/cache/cache");
 //                FileUtil.downloadFile(page, response, dir.getAbsolutePath());

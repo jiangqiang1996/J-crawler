@@ -151,7 +151,8 @@ public abstract class AbstractStarter implements Starter {
         List<String> reverseRegExs = getGlobalConfig().getReverseRegExs();
         List<String> defaultReverseRegExs = getGlobalConfig().getIsUseDefault() ? getGlobalConfig().getDefaultReverseRegExs() : new ArrayList<>();
         List<String> tmpUrls = new ArrayList<>();
-        Set<String> sets = new HashSet<>(urls);//去重
+        //去重
+        Set<String> sets = new HashSet<>(urls);
         Iterator<String> interator = sets.iterator();
         OUT:
         while (interator.hasNext()) {

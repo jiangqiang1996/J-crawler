@@ -6,10 +6,10 @@ import top.jiangqiang.crawler.core.entities.Page;
 import top.jiangqiang.crawler.core.recorder.Recorder;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 public interface ResultHandler {
-    default Set<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
+    default List<Crawler> doSuccess(Recorder recorder, Crawler crawler, Page page, Response response) {
         return page.getCrawlers();
     }
 
