@@ -91,23 +91,23 @@ public class RamRecorder extends AbstractRecorder {
     }
 
     @Override
-    public synchronized Integer count() {
-        return crawlerBlockingQueue.size();
+    public synchronized Long count() {
+        return (long) crawlerBlockingQueue.size();
     }
 
     @Override
-    public synchronized Integer countSuccess() {
-        return successList.size();
+    public synchronized Long countSuccess() {
+        return (long) successList.size();
     }
 
     @Override
-    public synchronized Integer countError() {
-        return errorList.size();
+    public synchronized Long countError() {
+        return (long) errorList.size();
     }
 
     @Override
-    public synchronized Integer countActive() {
-        return activeList.size();
+    public synchronized Long countActive() {
+        return (long) activeList.size();
     }
 
     @Override

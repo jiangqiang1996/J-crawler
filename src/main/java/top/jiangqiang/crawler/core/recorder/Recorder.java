@@ -106,24 +106,24 @@ public interface Recorder {
     /**
      * @return 查询未爬取的种子条数
      */
-    Integer count();
+    Long count();
 
     /**
      * @return 查询成功条数
      */
-    Integer countSuccess();
+    Long countSuccess();
 
     /**
      * @return 查询失败条数
      */
-    Integer countError();
+    Long countError();
 
     /**
      * 正在爬取中的数量
      *
      * @return
      */
-    Integer countActive();
+    Long countActive();
 
     /**
      * 是否已经存在此爬虫URL

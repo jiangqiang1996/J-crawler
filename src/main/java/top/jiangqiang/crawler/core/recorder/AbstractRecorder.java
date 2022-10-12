@@ -79,22 +79,22 @@ public abstract class AbstractRecorder implements Recorder {
     }
 
     @Override
-    public Integer count() {
+    public Long count() {
         return null;
     }
 
     @Override
-    public Integer countSuccess() {
+    public Long countSuccess() {
         return null;
     }
 
     @Override
-    public Integer countError() {
+    public Long countError() {
         return null;
     }
 
     @Override
-    public Integer countActive() {
+    public Long countActive() {
         return null;
     }
 
