@@ -6,5 +6,5 @@ package top.jiangqiang.crawler.core.recorder;
  * @description redis记录器 TODO 暂时未实现
  * @date 2022/10/12 9:49
  */
-public class RedisUtil extends AbstractRecorder {
+public class RedisRecorder extends AbstractRecorder {
 }
