@@ -26,6 +26,7 @@ public class RedisRecorder extends AbstractRecorder {
     public void initBeforeStart() {
         addAll(getAllError());
         addAll(getAllActive());
+        super.initBeforeStart();
     }
 
     @Override
