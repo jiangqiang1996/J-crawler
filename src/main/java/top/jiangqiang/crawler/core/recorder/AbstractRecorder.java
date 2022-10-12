@@ -36,7 +36,7 @@ public abstract class AbstractRecorder implements Recorder {
     }
 
     public synchronized void addAll(List<Crawler> crawlers) {
-        if (CollUtil.isEmpty(crawlers)) {
+        if (CollUtil.isNotEmpty(crawlers)) {
             crawlers.forEach(this::add);
         }
     }
