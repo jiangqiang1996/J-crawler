@@ -4,7 +4,6 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ReUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import top.jiangqiang.crawler.core.base.BaseException;
 import top.jiangqiang.crawler.core.entities.Crawler;
 
 import java.util.*;
@@ -56,8 +55,9 @@ public abstract class AbstractStarter implements Starter {
          */
         init(getRecorder());
         getRecorder().initBeforeStart();
-        if (getRecorder().count() == 0) {
-            throw new BaseException("没有爬取任务，任务结束");
+        if (getRecorder().count() == 0 && getGlobalConfig().getAllowEnd() != null && getGlobalConfig().getAllowEnd()) {
+            log.info("没有爬取任务，任务结束");
+            System.exit(0);
         }
         /**
          * 爬取before方法中设置的爬虫，分配线程爬取recorder中的实例，启动爬虫任务

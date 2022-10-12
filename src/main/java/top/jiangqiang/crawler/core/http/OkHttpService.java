@@ -137,7 +137,7 @@ public class OkHttpService {
     public Request processRequestParam(String url, Map<String, String> lines, Map<String, String> headers, Map<String, String> body) {
         Request.Builder builder = new Request.Builder();
         if (StrUtil.isBlank(url)) {
-            throw new BaseException("请求方式不能为空");
+            throw new BaseException("请求链接不能为空");
         }
         url = url.trim();
         HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
