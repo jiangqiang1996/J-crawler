@@ -1,5 +1,6 @@
 package top.jiangqiang.crawler.core.recorder;
 
+import cn.hutool.core.collection.CollUtil;
 import lombok.Getter;
 import lombok.Setter;
 import top.jiangqiang.crawler.core.config.CrawlerGlobalConfig;
@@ -29,87 +30,14 @@ public abstract class AbstractRecorder implements Recorder {
         }
     }
 
-    public void addAll(List<Crawler> crawlers) {
-        crawlers.forEach(this::add);
-    }
-
     @Override
     public void saveBeforeEnd() {
 
     }
 
-    @Override
-    public void add(Crawler crawler) {
-
-    }
-
-    @Override
-    public Crawler popOne() {
-        return null;
-    }
-
-    @Override
-    public List<Crawler> getAll() {
-        return null;
-    }
-
-    @Override
-    public void addSuccess(Crawler crawler) {
-
-    }
-
-    @Override
-    public List<Crawler> getAllSuccess() {
-        return null;
-    }
-
-    @Override
-    public void addError(Crawler crawler) {
-
-    }
-
-    @Override
-    public List<Crawler> getAllError() {
-        return null;
-    }
-
-    @Override
-    public List<Crawler> getAllActive() {
-        return null;
-    }
-
-    @Override
-    public Long count() {
-        return null;
-    }
-
-    @Override
-    public Long countSuccess() {
-        return null;
-    }
-
-    @Override
-    public Long countError() {
-        return null;
-    }
-
-    @Override
-    public Long countActive() {
-        return null;
-    }
-
-    @Override
-    public Boolean exist(Crawler crawler) {
-        return null;
-    }
-
-    @Override
-    public void addActive(Crawler crawler) {
-
-    }
-
-    @Override
-    public void removeActive(Crawler crawler) {
-
+    public synchronized void addAll(List<Crawler> crawlers) {
+        if (CollUtil.isEmpty(crawlers)) {
+            crawlers.forEach(this::add);
+        }
     }
 }

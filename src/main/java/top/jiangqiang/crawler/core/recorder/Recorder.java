@@ -27,7 +27,28 @@ public interface Recorder {
 
     void setConfig(CrawlerGlobalConfig globalConfig);
 
+    /**
+     * 获取全局配置
+     *
+     * @return
+     */
     CrawlerGlobalConfig getConfig();
+
+    /**
+     * 此方法用于内存记录器的断点续爬
+     * 程序结束前执行
+     * 此方法并非是安全的，因为可能由于断电或程序突然崩溃等原因，机器根本没机会保存内存中的数据，
+     * 所以建议使用持久化记录器，并在开始时重置状态。
+     */
+    void saveBeforeEnd();
+
+    /**
+     * 从持久化数据中读取爬虫种子
+     * 爬虫任务开始前执行
+     * 使用持久化记录器时，通常是通过修改任务的状态而不是删除任务，所以在此方法中通过重置状态达到续爬功能。
+     * 例如，在此方法中将爬取失败的任务重新放进任务队列。
+     */
+    void initBeforeStart();
 
     /**
      * 存储未爬取的爬虫
@@ -46,18 +67,6 @@ public interface Recorder {
     void addAll(List<Crawler> crawlers);
 
     /**
-     * 此方法用于内存记录器的断点续爬
-     * 程序结束前执行
-     */
-    void saveBeforeEnd();
-
-    /**
-     * 从持久化数据中读取爬虫种子
-     * 爬虫任务开始前执行
-     */
-    void initBeforeStart();
-
-    /**
      * 取出未爬取的爬虫
      * 取出后需要删除该爬虫
      */
@@ -67,6 +76,11 @@ public interface Recorder {
      * 查询所有未爬取的爬虫
      */
     List<Crawler> getAll();
+
+    /**
+     * @return 查询未爬取的种子条数
+     */
+    Long count();
 
     /**
      * 记录爬取成功的
@@ -83,6 +97,11 @@ public interface Recorder {
     List<Crawler> getAllSuccess();
 
     /**
+     * @return 查询成功条数
+     */
+    Long countSuccess();
+
+    /**
      * 记录失败的
      *
      * @param crawler 爬取失败的爬虫
@@ -97,26 +116,30 @@ public interface Recorder {
     List<Crawler> getAllError();
 
     /**
+     * @return 查询失败条数
+     */
+    Long countError();
+
+    /**
+     * 正在进行的种子
+     *
+     * @param crawler
+     */
+    void addActive(Crawler crawler);
+
+    /**
+     * 爬取成功或失败后移除
+     *
+     * @param crawler
+     */
+    void removeActive(Crawler crawler);
+
+    /**
      * 获取正在爬取中的任务
      *
      * @return
      */
     List<Crawler> getAllActive();
-
-    /**
-     * @return 查询未爬取的种子条数
-     */
-    Long count();
-
-    /**
-     * @return 查询成功条数
-     */
-    Long countSuccess();
-
-    /**
-     * @return 查询失败条数
-     */
-    Long countError();
 
     /**
      * 正在爬取中的数量
@@ -133,17 +156,4 @@ public interface Recorder {
      */
     Boolean exist(Crawler crawler);
 
-    /**
-     * 正在进行的种子
-     *
-     * @param crawler
-     */
-    void addActive(Crawler crawler);
-
-    /**
-     * 爬取成功或失败后移除
-     *
-     * @param crawler
-     */
-    void removeActive(Crawler crawler);
 }

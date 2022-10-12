@@ -56,6 +56,7 @@
         <playwright.version>1.26.0</playwright.version>
         <slf4j.version>2.0.3</slf4j.version>
         <logback.version>1.4.3</logback.version>
+        <spring-data-redis.version>2.7.3</spring-data-redis.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -111,6 +112,11 @@
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-redis</artifactId>
+                <version>${spring-data-redis.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -163,6 +169,13 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <version>${spring-data-redis.version}</version>
+            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
     </dependencies>

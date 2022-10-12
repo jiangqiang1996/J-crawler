@@ -115,18 +115,4 @@ public class RamRecorder extends AbstractRecorder {
         return crawlerBlockingQueue.contains(crawler) || errorList.contains(crawler) || successList.contains(crawler) || activeList.contains(crawler);
     }
 
-    @Override
-    public synchronized void initBeforeStart() {
-        super.initBeforeStart();
-    }
-
-    @Override
-    public synchronized void addAll(List<Crawler> crawlers) {
-        super.addAll(crawlers);
-    }
-
-    @Override
-    public synchronized void saveBeforeEnd() {
-        super.saveBeforeEnd();
-    }
 }
