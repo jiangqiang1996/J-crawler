@@ -1,10 +1,12 @@
 package top.jiangqiang.crawler.core.recorder;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import top.jiangqiang.crawler.core.constants.RedisConstants;
 import top.jiangqiang.crawler.core.entities.Crawler;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -23,9 +25,15 @@ public class RedisRecorder extends AbstractRecorder {
     public final RedisTemplate<String, Crawler> redisTemplate;
 
     @Override
-    public void initBeforeStart() {
-        addAll(getAllError());
-        addAll(getAllActive());
+    public synchronized void initBeforeStart() {
+        Crawler crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ERROR_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
+        while (crawler != null) {
+            crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ERROR_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
+        }
+        crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ACTIVE_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
+        while (crawler != null) {
+            crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ACTIVE_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
+        }
         super.initBeforeStart();
     }
 
@@ -40,6 +48,12 @@ public class RedisRecorder extends AbstractRecorder {
     @Override
     public Crawler popOne() {
         return redisTemplate.opsForList().leftPop(RedisConstants.CRAWLER_WAITING_LIST, 5L, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public synchronized Crawler waitToActive() {
+        return redisTemplate.opsForList().move(ListOperations.MoveFrom.fromHead(RedisConstants.CRAWLER_WAITING_LIST), ListOperations.MoveTo.toTail(RedisConstants.CRAWLER_ACTIVE_LIST)
+                , Duration.ofSeconds(5));
     }
 
     @Override

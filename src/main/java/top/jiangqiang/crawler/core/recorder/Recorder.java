@@ -156,4 +156,24 @@ public interface Recorder {
      */
     Boolean exist(Crawler crawler);
 
+    /**
+     * 将等待队列中的一个任务移动到激活队列，并返回改任务
+     *
+     * @return
+     */
+    Crawler waitToActive();
+
+    /**
+     * 将正在进行的任务状态修改为成功
+     *
+     * @return
+     */
+    Crawler activeToSuccess(Crawler crawler);
+
+    /**
+     * 将正在进行的任务状态修改为失败
+     *
+     * @return
+     */
+    Crawler activeToError(Crawler crawler);
 }

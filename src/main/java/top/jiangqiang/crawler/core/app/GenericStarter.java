@@ -76,8 +76,7 @@ public class GenericStarter extends AbstractStarter {
         public void run() {
             Call call = okHttpService.request(crawler);
             if (call == null) {
-                getRecorder().addError(crawler);
-                getRecorder().removeActive(crawler);
+                getRecorder().activeToError(crawler);
                 return;
             }
             call.enqueue(new Callback() {
@@ -89,8 +88,7 @@ public class GenericStarter extends AbstractStarter {
                         log.info(ignored.getMessage());
                     } finally {
                         //处理完成，加入失败结果集
-                        getRecorder().addError(crawler);
-                        getRecorder().removeActive(crawler);
+                        getRecorder().activeToError(crawler);
                     }
                 }
 
@@ -105,12 +103,11 @@ public class GenericStarter extends AbstractStarter {
                     } finally {
                         if (isSuccess) {
                             //处理完成，加入成功结果集
-                            getRecorder().addSuccess(crawler);
+                            getRecorder().activeToSuccess(crawler);
                         } else {
                             //处理完成，加入失败结果集
-                            getRecorder().addError(crawler);
+                            getRecorder().activeToError(crawler);
                         }
-                        getRecorder().removeActive(crawler);
                     }
                 }
             });

@@ -40,4 +40,27 @@ public abstract class AbstractRecorder implements Recorder {
             crawlers.forEach(this::add);
         }
     }
+
+    @Override
+    public synchronized Crawler waitToActive() {
+        Crawler crawler = popOne();
+        if (crawler != null) {
+            addActive(crawler);
+        }
+        return crawler;
+    }
+
+    @Override
+    public synchronized Crawler activeToSuccess(Crawler crawler) {
+        addSuccess(crawler);
+        removeActive(crawler);
+        return crawler;
+    }
+
+    @Override
+    public synchronized Crawler activeToError(Crawler crawler) {
+        addError(crawler);
+        removeActive(crawler);
+        return crawler;
+    }
 }
