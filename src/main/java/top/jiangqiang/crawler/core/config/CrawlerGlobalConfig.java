@@ -40,6 +40,16 @@ public class CrawlerGlobalConfig implements Serializable {
      */
     private Boolean useProxy = false;
     /**
+     * 是否重新爬取之前失败的任务
+     */
+    private Boolean isContinue = false;
+    /**
+     * 挂载到全局配置中的自定义变量，全局配置对象在整个爬虫任务的大多数可定制部分都可以获取到，
+     * 因此通过此字段注入全局可用的自定义配置，在重写其他接口时会使用到此字段进行自定义扩展。
+     * 例如自定义内存记录器时，通过此字段注入文件保存位置，将内存数据保存到文件等等。
+     */
+    private Map<String, Object> customConfig;
+    /**
      * 超过指定字节数的响应数据，不会对响应内容进行处理，响应数据过大，一般是静态资源文件，超过此大小的响应会被当成非文本响应内容
      */
     private Long maxSize = 1024 * 512L;
@@ -95,12 +105,6 @@ public class CrawlerGlobalConfig implements Serializable {
      * 是否启用默认正则表达式过滤,如果不启用则defaultReverseRegExs无效
      */
     private Boolean isUseDefault = true;
-
-    /**
-     * 下面两个属性只对内存记录器有效，对数据库记录器无效
-     * 结束时没有爬取的种子会保存到此路径，用于断点续爬。路径不能为空，且未爬取的种子数不能为0，才会保存
-     */
-    private String savePath = "";
 
     /**
      * http请求代理参数设置

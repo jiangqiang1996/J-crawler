@@ -26,13 +26,16 @@ public class RedisRecorder extends AbstractRecorder {
 
     @Override
     public synchronized void initBeforeStart() {
-        Crawler crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ERROR_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
-        while (crawler != null) {
-            crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ERROR_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
-        }
-        crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ACTIVE_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
-        while (crawler != null) {
+        Boolean isContinue = getConfig().getIsContinue();
+        if (isContinue) {
+            Crawler crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ERROR_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
+            while (crawler != null) {
+                crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ERROR_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
+            }
             crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ACTIVE_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
+            while (crawler != null) {
+                crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ACTIVE_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
+            }
         }
         super.initBeforeStart();
     }

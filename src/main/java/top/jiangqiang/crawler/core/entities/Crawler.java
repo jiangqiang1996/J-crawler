@@ -3,6 +3,7 @@ package top.jiangqiang.crawler.core.entities;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -42,6 +43,7 @@ public class Crawler implements Serializable {
      * @param url url
      * @return 返回子爬虫
      */
+    
     public Crawler addSeed(String url) {
         if (StrUtil.isNotBlank(url)) {
             //this是当前爬虫，crawler是子爬虫
@@ -80,6 +82,7 @@ public class Crawler implements Serializable {
         return url.hashCode();
     }
 
+    @JSONField(serialize = false, deserialize = false)
     public Map<String, String> getLines() {
         if (httpConfig == null) {
             return null;
@@ -101,6 +104,7 @@ public class Crawler implements Serializable {
         return this;
     }
 
+    @JSONField(serialize = false, deserialize = false)
     public Map<String, String> getHeaders() {
         if (httpConfig == null) {
             return null;
@@ -122,6 +126,7 @@ public class Crawler implements Serializable {
         return this;
     }
 
+    @JSONField(serialize = false, deserialize = false)
     public Map<String, String> getBody() {
         if (httpConfig == null) {
             return null;
@@ -176,6 +181,7 @@ public class Crawler implements Serializable {
         return addProxyConfig("password", password);
     }
 
+    @JSONField(serialize = false, deserialize = false)
     public Map<String, String> getProxyConfig() {
         if (httpConfig == null) {
             return null;

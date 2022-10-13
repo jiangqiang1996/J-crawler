@@ -130,10 +130,10 @@ public class GenericStarter extends AbstractStarter {
         if (mediaType != null) {
             contentType = mediaType.toString();
         }
+        long contentLength = body.contentLength();
         if (StrUtil.isNotBlank(contentType)) {
             String contentTypeNoCharset = FileUtil.subMimeType(contentType);
             List<String> mimeTypeList = globalConfig.getMimeTypeList();
-            long contentLength = body.contentLength();
             if (contentLength <= getGlobalConfig().getMaxSize() && (mimeTypeList.contains(contentTypeNoCharset) || mimeTypeList.contains(mediaType.type()))) {
                 byte[] bodyBytes = null;
                 try {
@@ -150,6 +150,7 @@ public class GenericStarter extends AbstractStarter {
                     urls = getMatchUrls(urls);
                     page.addSeeds(urls);
                 }
+                page.setContentLength(contentLength);
                 List<Crawler> crawlers = getResultHandler().doSuccess(recorder, crawler, page, response);
                 //当前爬虫深度没有达到设置的级别，加入爬虫任务列表
                 if (page.getDepth() < (getGlobalConfig().getDepth())) {
@@ -160,6 +161,7 @@ public class GenericStarter extends AbstractStarter {
             }
         }
         Page page = Page.getPage(crawler, code, contentType);
+        page.setContentLength(contentLength);
         getResultHandler().doSuccess(recorder, crawler, page, response);
     }
 }

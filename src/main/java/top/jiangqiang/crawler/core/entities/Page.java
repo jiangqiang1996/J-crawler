@@ -2,6 +2,7 @@ package top.jiangqiang.crawler.core.entities;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,8 @@ public class Page extends Crawler {
     private Integer responseCode = null;
     private byte[] bodyBytes = new byte[0];
     private String contentType = "";
+    //响应大小
+    private Long contentLength;
 
     /**
      * okhttp请求之后通过crawler创建page
@@ -42,6 +45,7 @@ public class Page extends Crawler {
      * @param charset      编码
      * @return 返回一个page
      */
+    @JSONField(serialize = false, deserialize = false)
     public static Page getPage(Crawler crawler, Integer responseCode, String contentType, byte[] bodyBytes, Charset charset) {
         Page page = getPage(crawler, responseCode, contentType);
         if (bodyBytes == null) {
@@ -69,6 +73,7 @@ public class Page extends Crawler {
         return page;
     }
 
+    @JSONField(serialize = false, deserialize = false)
     public static Page getPage(Crawler crawler, Integer responseCode, String contentType) {
         Page page = new Page();
         page.setUrl(crawler.getUrl());
@@ -88,4 +93,5 @@ public class Page extends Crawler {
                 ", contentType='" + contentType + '\'' +
                 '}';
     }
+
 }
