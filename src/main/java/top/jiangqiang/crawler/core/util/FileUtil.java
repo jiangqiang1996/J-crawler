@@ -90,7 +90,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         }
     }
 
-    private static String getTypeFromMimeType(String contentType) {
+    public static String getTypeFromMimeType(String contentType) {
         if (StrUtil.isBlank(contentType)) {
             return null;
         } else {
@@ -149,7 +149,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
 
     public static String downloadFile(InputStream inputStream, String type, String dirPath) {
         BufferedOutputStream bufferedOutputStream = null;
-        try (BufferedInputStream bufferedInputStream = IoUtil.toBuffered(inputStream);) {
+        try (BufferedInputStream bufferedInputStream = IoUtil.toBuffered(inputStream)) {
             String fileName = genFileName();
             byte[] buffer = new byte[4096];
             int len;
@@ -175,13 +175,13 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         }
     }
 
-    private static String getTypeFromBytes(byte[] buffer) {
+    public static String getTypeFromBytes(byte[] buffer) {
         String type;
         type = FileTypeUtil.getType(HexUtil.encodeHexStr(buffer));
         return type;
     }
 
-    private static String genFileName(String type) {
+    public static String genFileName(String type) {
         String fileName = DateUtil.format(new Date(), DatePattern.PURE_DATETIME_MS_PATTERN) + "_" + RandomUtil.randomString(10);
         if (StrUtil.isBlank(type)) {
             return fileName;
@@ -190,7 +190,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         }
     }
 
-    private static String genFileName() {
+    public static String genFileName() {
         return genFileName(null);
     }
 
@@ -202,7 +202,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
      */
     public static String subMimeType(String contentType) {
         if (contentType == null) {
-            return contentType;
+            return null;
         }
         if (StrUtil.isBlank(contentType)) {
             contentType = "";

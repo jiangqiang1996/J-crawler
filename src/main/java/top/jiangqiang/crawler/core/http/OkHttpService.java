@@ -33,6 +33,27 @@ public class OkHttpService {
     private final Interceptor[] interceptors;
     private final CrawlerGlobalConfig globalConfig;
 
+    public OkHttpService(CrawlerGlobalConfig globalConfig, Interceptor... interceptors) {
+        initLogLevel(globalConfig);
+        //拦截器;
+        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(globalConfig.getLogLevel()));
+        Boolean useProxy = globalConfig.getUseProxy();
+        Map<String, String> proxyConfig = globalConfig.getProxyConfig();
+        if (ArrayUtil.isNotEmpty(interceptors)) {
+            for (Interceptor interceptor : interceptors) {
+                okHttpClientBuilder.addInterceptor(interceptor);
+            }
+        }
+        if (useProxy == null || !useProxy || CollUtil.isEmpty(proxyConfig)) {
+            //不使用代理
+            this.client = okHttpClientBuilder.build();
+        } else {
+            this.client = processOkHttpClient(proxyConfig, okHttpClientBuilder);
+        }
+        this.interceptors = interceptors;
+        this.globalConfig = globalConfig;
+    }
+
     /**
      * 设置报文的日志级别
      *
@@ -62,27 +83,6 @@ public class OkHttpService {
                 default -> globalConfig.setLogLevel(HttpLoggingInterceptor.Level.BASIC);
             }
         }
-    }
-
-    public OkHttpService(CrawlerGlobalConfig globalConfig, Interceptor... interceptors) {
-        initLogLevel(globalConfig);
-        //拦截器;
-        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(globalConfig.getLogLevel()));
-        Boolean useProxy = globalConfig.getUseProxy();
-        Map<String, String> proxyConfig = globalConfig.getProxyConfig();
-        if (ArrayUtil.isNotEmpty(interceptors)) {
-            for (Interceptor interceptor : interceptors) {
-                okHttpClientBuilder.addInterceptor(interceptor);
-            }
-        }
-        if (useProxy == null || !useProxy || CollUtil.isEmpty(proxyConfig)) {
-            //不使用代理
-            this.client = okHttpClientBuilder.build();
-        } else {
-            this.client = processOkHttpClient(proxyConfig, okHttpClientBuilder);
-        }
-        this.interceptors = interceptors;
-        this.globalConfig = globalConfig;
     }
 
     public Call request(Crawler crawler) {

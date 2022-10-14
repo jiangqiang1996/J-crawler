@@ -25,6 +25,9 @@ import java.util.List;
  */
 @Slf4j
 public class Test {
+    public static void main(String[] args) {
+        fetchGitee();
+    }
     /**
      * 爬取微信公众号文章的图片
      */
@@ -59,7 +62,7 @@ public class Test {
     /**
      * 爬取gitee的开源仓库数据
      */
-    void fetchOpenSourceChina() {
+    static void fetchGitee() {
         RamRecorder ramRecorder = new RamRecorder();
         ramRecorder.add(new Crawler("https://gitee.com/explore"));
         CrawlerGlobalConfig crawlerGlobalConfig = new CrawlerGlobalConfig();
@@ -92,7 +95,7 @@ public class Test {
      *
      * @param page
      */
-    public void match(Page page) {
+    public static void match(Page page) {
         log.info("match: {}", page.getUrl());
         try {
             Elements select = page.getDocument().select(".pagination>.item");//翻页URL

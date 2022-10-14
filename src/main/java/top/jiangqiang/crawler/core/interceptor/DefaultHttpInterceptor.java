@@ -1,8 +1,8 @@
 package top.jiangqiang.crawler.core.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
-import okio.Buffer;
+import okhttp3.Interceptor;
+import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

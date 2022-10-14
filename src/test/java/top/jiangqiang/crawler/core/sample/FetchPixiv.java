@@ -53,12 +53,13 @@ public class FetchPixiv {
              * p 页数 1-10
              * https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=20221007&p=1&format=json
              */
+            log.info("开始初始化种子");
             Date date = new Date();
-            int days = 3;
+            int days = 1;//爬取的天数
+            int pages = 10;//爬取的页数，最大为10
             for (int day = 1; day <= days; day++) {
                 String dateStr = DateUtil.format(date, DatePattern.PURE_DATE_PATTERN);
                 date = DateUtil.offsetDay(date, -1);
-                int pages = 10;
                 for (int page = 1; page <= pages; page++) {
                     String url;
                     if (day == 1) {
@@ -66,9 +67,7 @@ public class FetchPixiv {
                     } else {
                         url = "https://www.pixiv.net/ranking.php?mode=daily&content=illust&date=" + dateStr + "&p=" + page + "&format=json";
                     }
-//                    System.out.println(url);
-                    Crawler crawler = new Crawler(url);
-                    recorder.add(crawler);
+                    recorder.add(new Crawler(url));
                 }
             }
         });

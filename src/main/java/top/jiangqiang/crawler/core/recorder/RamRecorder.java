@@ -3,7 +3,6 @@ package top.jiangqiang.crawler.core.recorder;
 
 import cn.hutool.core.collection.CollUtil;
 import lombok.extern.slf4j.Slf4j;
-import top.jiangqiang.crawler.core.config.CrawlerGlobalConfig;
 import top.jiangqiang.crawler.core.entities.Crawler;
 
 import java.util.Collections;
@@ -20,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class RamRecorder extends AbstractRecorder {
-    private  final BlockingQueue<Crawler> crawlerBlockingQueue = CollUtil.newBlockingQueue(1000, true);
+    private final BlockingQueue<Crawler> crawlerBlockingQueue = CollUtil.newBlockingQueue(1000, true);
     private final List<Crawler> successList = Collections.synchronizedList(new LinkedList<>());
     private final List<Crawler> errorList = Collections.synchronizedList(new LinkedList<>());
     private final List<Crawler> activeList = Collections.synchronizedList(new LinkedList<>());

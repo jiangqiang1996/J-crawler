@@ -1,6 +1,5 @@
 package top.jiangqiang.crawler.core.entities;
 
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Data;
@@ -78,7 +77,7 @@ public class Page extends Crawler {
         Page page = new Page();
         page.setUrl(crawler.getUrl());
         page.setDepth(crawler.getDepth());
-        page.setHttpConfig(ObjectUtil.cloneByStream(crawler.getHttpConfig()));
+        page.setHttpConfig(crawler.getHttpConfig().clone());
         page.setResponseCode(responseCode);
         page.setContentType(contentType);
         return page;

@@ -25,14 +25,14 @@ public interface Recorder {
 
     void setInitCallback(Consumer<Recorder> initCallback);
 
-    void setConfig(CrawlerGlobalConfig globalConfig);
-
     /**
      * 获取全局配置
      *
      * @return
      */
     CrawlerGlobalConfig getConfig();
+
+    void setConfig(CrawlerGlobalConfig globalConfig);
 
     /**
      * 此方法用于内存记录器的断点续爬

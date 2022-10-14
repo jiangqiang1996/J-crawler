@@ -1,7 +1,6 @@
 package top.jiangqiang.crawler.core.entities;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Data;
@@ -25,6 +24,7 @@ import java.util.Map;
 @Slf4j
 @NoArgsConstructor
 public class Crawler implements Serializable {
+    public List<String> sourceList = new ArrayList<>();
     //深度，初始种子作为第1层
     private Integer depth = 1;
     //当前的URL
@@ -43,14 +43,17 @@ public class Crawler implements Serializable {
      * @param url url
      * @return 返回子爬虫
      */
-    
+
     public Crawler addSeed(String url) {
         if (StrUtil.isNotBlank(url)) {
             //this是当前爬虫，crawler是子爬虫
             Crawler crawler = new Crawler();
             crawler.setUrl(url);
             crawler.setDepth(this.depth + 1);
-            crawler.setHttpConfig(ObjectUtil.cloneByStream(this.httpConfig));
+            crawler.setHttpConfig(this.httpConfig.clone());
+            List<String> subSourceList = new ArrayList<>(this.sourceList);
+            subSourceList.add(this.url);
+            crawler.setSourceList(subSourceList);
             crawler.addHeader("referer", this.url);
             crawlers.add(crawler);
             return crawler;
