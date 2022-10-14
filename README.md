@@ -25,7 +25,7 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 <dependency>
     <groupId>top.jiangqiang.crawler</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>4.0.4</version>
+    <version>4.0.5</version>
 </dependency>
 ```
 
