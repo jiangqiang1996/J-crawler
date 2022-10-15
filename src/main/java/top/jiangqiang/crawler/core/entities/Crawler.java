@@ -38,6 +38,11 @@ public class Crawler implements Serializable {
     }
 
     /**
+     * 存储一些额外的数据，例如给同一批来源的种子做个相同的标记，用于分类等等。
+     */
+    public Map<String, Object> metaData = new HashMap<>();
+
+    /**
      * 创建时子类爬虫深度会自动+1
      *
      * @param url url
@@ -54,6 +59,7 @@ public class Crawler implements Serializable {
             List<String> subSourceList = new ArrayList<>(this.sourceList);
             subSourceList.add(this.url);
             crawler.setSourceList(subSourceList);
+            crawler.setMetaData(new HashMap<>(this.metaData));
             crawler.addHeader("referer", this.url);
             crawlers.add(crawler);
             return crawler;

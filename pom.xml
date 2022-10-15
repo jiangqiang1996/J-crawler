@@ -42,14 +42,14 @@
     </developers>
 
     <properties>
-        <revision>4.0.5</revision><!--项目版本-->
+        <revision>4.0.6</revision><!--项目版本-->
         <java.version>17</java.version><!--JAVA版本-->
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-<!--        <maven.test.skip>true</maven.test.skip>-->
-<!--        <maven.javadoc.skip>true</maven.javadoc.skip>-->
+        <maven.test.skip>true</maven.test.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
 
         <fastjson2.version>2.0.14</fastjson2.version>
         <hutool.version>5.8.8</hutool.version>

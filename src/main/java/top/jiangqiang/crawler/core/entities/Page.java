@@ -76,9 +76,10 @@ public class Page extends Crawler {
     public static Page getPage(Crawler crawler, Integer responseCode, String contentType) {
         Page page = new Page();
         page.setSourceList(crawler.getSourceList());
+        crawler.setMetaData(crawler.metaData);
         page.setUrl(crawler.getUrl());
         page.setDepth(crawler.getDepth());
-        page.setHttpConfig(crawler.getHttpConfig().clone());
+        page.setHttpConfig(crawler.getHttpConfig());
         page.setResponseCode(responseCode);
         page.setContentType(contentType);
         return page;
