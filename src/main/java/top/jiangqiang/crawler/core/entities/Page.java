@@ -75,6 +75,7 @@ public class Page extends Crawler {
     @JSONField(serialize = false, deserialize = false)
     public static Page getPage(Crawler crawler, Integer responseCode, String contentType) {
         Page page = new Page();
+        page.setSourceList(crawler.getSourceList());
         page.setUrl(crawler.getUrl());
         page.setDepth(crawler.getDepth());
         page.setHttpConfig(crawler.getHttpConfig().clone());
