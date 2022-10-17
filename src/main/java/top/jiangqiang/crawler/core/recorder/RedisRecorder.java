@@ -1,12 +1,12 @@
 package top.jiangqiang.crawler.core.recorder;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.ListOperations;
+import cn.hutool.core.collection.CollUtil;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import top.jiangqiang.crawler.core.constants.RedisConstants;
 import top.jiangqiang.crawler.core.entities.Crawler;
 
-import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -20,21 +20,37 @@ import java.util.concurrent.TimeUnit;
  * @date 2022/10/11 17:30
  */
 @SuppressWarnings(value = {"unchecked", "rawtypes"})
-@RequiredArgsConstructor
 public class RedisRecorder extends AbstractRecorder {
     public final RedisTemplate<String, Crawler> redisTemplate;
+    public final HashOperations<String, String, Crawler> hashOperations;
+
+    public RedisRecorder(RedisTemplate<String, Crawler> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+        hashOperations = redisTemplate.opsForHash();
+    }
 
     @Override
     public synchronized void initBeforeStart() {
         Boolean isContinue = getConfig().getIsContinue();
         if (isContinue) {
-            Crawler crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ERROR_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
-            while (crawler != null) {
-                crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ERROR_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
+            //上次失败的列表
+            List<Crawler> errorCrawlers = hashOperations.values(RedisConstants.CRAWLER_ERROR_HASH);
+            //上次没有完成的列表，一般是因为意外情况导致程序突然终止，才会有数据
+            List<Crawler> activeCrawlers = hashOperations.values(RedisConstants.CRAWLER_ACTIVE_HASH);
+            List<Crawler> crawlers = new ArrayList<>();
+            if (CollUtil.isNotEmpty(errorCrawlers)) {
+                crawlers.addAll(errorCrawlers);
+                //删除整个hash结构
+                redisTemplate.delete(RedisConstants.CRAWLER_ERROR_HASH);
             }
-            crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ACTIVE_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
-            while (crawler != null) {
-                crawler = redisTemplate.opsForList().move(ListOperations.MoveFrom.fromTail(RedisConstants.CRAWLER_ACTIVE_LIST), ListOperations.MoveTo.toHead(RedisConstants.CRAWLER_WAITING_LIST));
+            if (CollUtil.isNotEmpty(activeCrawlers)) {
+                crawlers.addAll(activeCrawlers);
+                //删除整个hash结构
+                redisTemplate.delete(RedisConstants.CRAWLER_ACTIVE_HASH);
+            }
+            if (CollUtil.isNotEmpty(crawlers)) {
+                //去重
+                redisTemplate.opsForList().rightPushAll(RedisConstants.CRAWLER_WAITING_LIST, crawlers.stream().distinct().toList());
             }
         }
         super.initBeforeStart();
@@ -50,13 +66,11 @@ public class RedisRecorder extends AbstractRecorder {
 
     @Override
     public Crawler popOne() {
-        return redisTemplate.opsForList().leftPop(RedisConstants.CRAWLER_WAITING_LIST, 5L, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public synchronized Crawler waitToActive() {
-        return redisTemplate.opsForList().move(ListOperations.MoveFrom.fromHead(RedisConstants.CRAWLER_WAITING_LIST), ListOperations.MoveTo.toTail(RedisConstants.CRAWLER_ACTIVE_LIST)
-                , Duration.ofSeconds(5));
+        try {
+            return redisTemplate.opsForList().leftPop(RedisConstants.CRAWLER_WAITING_LIST, 5L, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -71,52 +85,52 @@ public class RedisRecorder extends AbstractRecorder {
 
     @Override
     public void addSuccess(Crawler crawler) {
-        redisTemplate.opsForList().rightPush(RedisConstants.CRAWLER_SUCCESS_LIST, crawler);
+        hashOperations.put(RedisConstants.CRAWLER_SUCCESS_HASH, crawler.getUrl(), crawler);
     }
 
     @Override
     public List<Crawler> getAllSuccess() {
-        return redisTemplate.opsForList().range(RedisConstants.CRAWLER_SUCCESS_LIST, 0, -1);
+        return hashOperations.values(RedisConstants.CRAWLER_SUCCESS_HASH);
     }
 
     @Override
     public Long countSuccess() {
-        return redisTemplate.opsForList().size(RedisConstants.CRAWLER_SUCCESS_LIST);
+        return hashOperations.size(RedisConstants.CRAWLER_SUCCESS_HASH);
     }
 
     @Override
     public void addError(Crawler crawler) {
-        redisTemplate.opsForList().rightPush(RedisConstants.CRAWLER_ERROR_LIST, crawler);
+        hashOperations.put(RedisConstants.CRAWLER_ERROR_HASH, crawler.getUrl(), crawler);
     }
 
     @Override
     public List<Crawler> getAllError() {
-        return redisTemplate.opsForList().range(RedisConstants.CRAWLER_ERROR_LIST, 0, -1);
+        return hashOperations.values(RedisConstants.CRAWLER_ERROR_HASH);
     }
 
     @Override
     public Long countError() {
-        return redisTemplate.opsForList().size(RedisConstants.CRAWLER_ERROR_LIST);
+        return hashOperations.size(RedisConstants.CRAWLER_ERROR_HASH);
     }
 
     @Override
     public void addActive(Crawler crawler) {
-        redisTemplate.opsForList().rightPush(RedisConstants.CRAWLER_ACTIVE_LIST, crawler);
+        hashOperations.put(RedisConstants.CRAWLER_ACTIVE_HASH, crawler.getUrl(), crawler);
     }
 
     @Override
     public void removeActive(Crawler crawler) {
-        redisTemplate.opsForList().remove(RedisConstants.CRAWLER_ACTIVE_LIST, 0, crawler);
+        hashOperations.delete(RedisConstants.CRAWLER_ACTIVE_HASH, crawler.getUrl());
     }
 
     @Override
     public List<Crawler> getAllActive() {
-        return redisTemplate.opsForList().range(RedisConstants.CRAWLER_ACTIVE_LIST, 0, -1);
+        return hashOperations.values(RedisConstants.CRAWLER_ACTIVE_HASH);
     }
 
     @Override
     public Long countActive() {
-        return redisTemplate.opsForList().size(RedisConstants.CRAWLER_ACTIVE_LIST);
+        return hashOperations.size(RedisConstants.CRAWLER_ACTIVE_HASH);
     }
 
     @Override

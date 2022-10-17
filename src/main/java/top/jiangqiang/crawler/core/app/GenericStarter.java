@@ -128,17 +128,20 @@ public class GenericStarter extends AbstractStarter {
             Call call = okHttpService.request(crawler);
             if (call == null) {
                 crawler.setErrorMessage("okhttp客户端出错，请检查请求相关配置");
+                crawler.setErrorCode(1);
                 getRecorder().activeToError(crawler);
                 return;
             }
             call.enqueue(new Callback() {
                 @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                public void onFailure(@NotNull Call call, @NotNull IOException ioException) {
                     try {
-                        getResultHandler().doFailure(getRecorder(), crawler, e);
+                        getResultHandler().doFailure(getRecorder(), crawler, ioException);
                     } catch (Exception exception) {
                         log.info(exception.getMessage());
-                        crawler.setErrorMessage("请求出错：" + recorder.getErrorMessage(exception));
+                    } finally {
+                        crawler.setErrorMessage("请求出错：" + recorder.getErrorMessage(ioException));
+                        crawler.setErrorCode(2);
                         //处理完成，加入失败结果集
                         getRecorder().activeToError(crawler);
                     }
@@ -153,6 +156,7 @@ public class GenericStarter extends AbstractStarter {
                     } catch (Exception exception) {
                         log.info(exception.getMessage());
                         crawler.setErrorMessage("数据处理出错：" + recorder.getErrorMessage(exception));
+                        crawler.setErrorCode(3);
                         //处理完成，加入失败结果集
                         getRecorder().activeToError(crawler);
                     }

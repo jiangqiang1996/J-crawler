@@ -126,7 +126,7 @@ public abstract class AbstractStarter implements Starter {
      *
      * @return
      */
-    public boolean processTask() {
+    public synchronized boolean processTask() {
         Crawler crawler = getRecorder().waitToActive();
         if (crawler != null) {
             getExecutor().execute(getTask(crawler));

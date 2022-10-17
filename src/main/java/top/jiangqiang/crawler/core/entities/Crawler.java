@@ -34,6 +34,8 @@ public class Crawler implements Serializable {
     private HttpConfig httpConfig = new HttpConfig();
     //错误信息
     private String errorMessage;
+    //错误码，根据错误码进行分类，可以自定义设置是否需要重新爬取
+    private Integer errorCode;
 
     public Crawler(String url) {
         this.url = url;
