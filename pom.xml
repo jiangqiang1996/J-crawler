@@ -48,8 +48,8 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <maven.test.skip>true</maven.test.skip>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
+<!--        <maven.test.skip>true</maven.test.skip>-->
+<!--        <maven.javadoc.skip>true</maven.javadoc.skip>-->
 
         <fastjson2.version>2.0.14</fastjson2.version>
         <hutool.version>5.8.8</hutool.version>

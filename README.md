@@ -14,6 +14,7 @@
 4. 多线程异步爬取
 5. 支持HTTP代理,爬取墙外内容，可以针对每一个链接配置请求参数，请求方式，请求头以及请求代理，轻松对接各种ip池
 6. 内置完整示例，帮助了解学习。
+7. 保存当前任务的来源链接
 
 注意:
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.不支持form-data。
@@ -25,7 +26,7 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 <dependency>
     <groupId>top.jiangqiang.crawler</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>4.0.5</version>
+    <version>4.0.6</version>
 </dependency>
 ```
 
