@@ -32,6 +32,8 @@ public class Crawler implements Serializable {
     //当前URL中提取出来的子爬虫
     private List<Crawler> crawlers = new ArrayList<>();
     private HttpConfig httpConfig = new HttpConfig();
+    //错误信息
+    private String errorMessage;
 
     public Crawler(String url) {
         this.url = url;

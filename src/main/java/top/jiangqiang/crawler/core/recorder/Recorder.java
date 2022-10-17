@@ -173,7 +173,16 @@ public interface Recorder {
     /**
      * 将正在进行的任务状态修改为失败
      *
+     * @param crawler 失败的种子
      * @return
      */
     Crawler activeToError(Crawler crawler);
+
+    /**
+     * 获取错误信息，用于持久化
+     *
+     * @param exception
+     * @return
+     */
+    String getErrorMessage(Exception exception);
 }

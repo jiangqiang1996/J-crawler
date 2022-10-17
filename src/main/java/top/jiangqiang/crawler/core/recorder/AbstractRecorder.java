@@ -1,6 +1,7 @@
 package top.jiangqiang.crawler.core.recorder;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.exceptions.ExceptionUtil;
 import lombok.Getter;
 import lombok.Setter;
 import top.jiangqiang.crawler.core.config.CrawlerGlobalConfig;
@@ -62,5 +63,10 @@ public abstract class AbstractRecorder implements Recorder {
         addError(crawler);
         removeActive(crawler);
         return crawler;
+    }
+
+    @Override
+    public String getErrorMessage(Exception exception) {
+        return ExceptionUtil.stacktraceToString(exception);
     }
 }

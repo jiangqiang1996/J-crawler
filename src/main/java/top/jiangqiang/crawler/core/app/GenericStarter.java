@@ -127,6 +127,7 @@ public class GenericStarter extends AbstractStarter {
         public void run() {
             Call call = okHttpService.request(crawler);
             if (call == null) {
+                crawler.setErrorMessage("okhttp客户端出错，请检查请求相关配置");
                 getRecorder().activeToError(crawler);
                 return;
             }
@@ -135,9 +136,9 @@ public class GenericStarter extends AbstractStarter {
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     try {
                         getResultHandler().doFailure(getRecorder(), crawler, e);
-                    } catch (Exception ignored) {
-                        log.info(ignored.getMessage());
-                    } finally {
+                    } catch (Exception exception) {
+                        log.info(exception.getMessage());
+                        crawler.setErrorMessage("请求出错：" + recorder.getErrorMessage(exception));
                         //处理完成，加入失败结果集
                         getRecorder().activeToError(crawler);
                     }
@@ -145,20 +146,15 @@ public class GenericStarter extends AbstractStarter {
 
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) {
-                    boolean isSuccess = true;
                     try {
                         doSuccess(crawler, response);
-                    } catch (Exception ignored) {
-                        isSuccess = false;
-                        log.info(ignored.getMessage());
-                    } finally {
-                        if (isSuccess) {
-                            //处理完成，加入成功结果集
-                            getRecorder().activeToSuccess(crawler);
-                        } else {
-                            //处理完成，加入失败结果集
-                            getRecorder().activeToError(crawler);
-                        }
+                        //处理完成，加入成功结果集
+                        getRecorder().activeToSuccess(crawler);
+                    } catch (Exception exception) {
+                        log.info(exception.getMessage());
+                        crawler.setErrorMessage("数据处理出错：" + recorder.getErrorMessage(exception));
+                        //处理完成，加入失败结果集
+                        getRecorder().activeToError(crawler);
                     }
                 }
             });

@@ -114,4 +114,14 @@ public class RamRecorder extends AbstractRecorder {
         return crawlerBlockingQueue.contains(crawler) || errorList.contains(crawler) || successList.contains(crawler) || activeList.contains(crawler);
     }
 
+    /**
+     * 内存资源有限，只获取主要错误提示
+     *
+     * @param exception
+     * @return
+     */
+    @Override
+    public String getErrorMessage(Exception exception) {
+        return exception.getMessage();
+    }
 }
