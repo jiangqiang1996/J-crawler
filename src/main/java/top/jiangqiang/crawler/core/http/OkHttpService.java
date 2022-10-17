@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
 import okhttp3.Interceptor;
@@ -31,9 +32,11 @@ public class OkHttpService {
     private final OkHttpClient client;
     private final Interceptor[] interceptors;
     private final CrawlerGlobalConfig globalConfig;
+    @Getter
+    private final HttpLoggingInterceptor.Level httpLogLevel;
 
     public OkHttpService(CrawlerGlobalConfig globalConfig, Interceptor... interceptors) {
-        initLogLevel(globalConfig);
+        httpLogLevel = initLogLevel(globalConfig);
         //拦截器;
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(globalConfig.getLogLevel()));
         Boolean useProxy = globalConfig.getUseProxy();
@@ -57,9 +60,11 @@ public class OkHttpService {
      * 设置报文的日志级别
      *
      * @param globalConfig
+     * @return
      */
-    void initLogLevel(CrawlerGlobalConfig globalConfig) {
-        if (globalConfig.getLogLevel() == null) {
+    HttpLoggingInterceptor.Level initLogLevel(CrawlerGlobalConfig globalConfig) {
+        HttpLoggingInterceptor.Level httpLogLevel = globalConfig.getLogLevel();
+        if (httpLogLevel == null) {
             String packageName = OkHttpService.class.getPackageName();
             Level level = ((Logger) LoggerFactory.getLogger(packageName)).getLevel();
             while (level == null) {
@@ -76,12 +81,22 @@ public class OkHttpService {
                 }
             }
             switch (level.levelStr) {
-                case "OFF", "ERROR" -> globalConfig.setLogLevel(HttpLoggingInterceptor.Level.NONE);
-                case "INFO" -> globalConfig.setLogLevel(HttpLoggingInterceptor.Level.HEADERS);
-                case "DEBUG", "TRACE", "ALL" -> globalConfig.setLogLevel(HttpLoggingInterceptor.Level.BODY);
-                default -> globalConfig.setLogLevel(HttpLoggingInterceptor.Level.BASIC);
+                case "OFF", "ERROR" -> {
+                    httpLogLevel = HttpLoggingInterceptor.Level.NONE;
+                }
+                case "INFO" -> {
+                    httpLogLevel = HttpLoggingInterceptor.Level.HEADERS;
+                }
+                case "DEBUG", "TRACE", "ALL" -> {
+                    httpLogLevel = HttpLoggingInterceptor.Level.BODY;
+                }
+                default -> {
+                    httpLogLevel = HttpLoggingInterceptor.Level.BASIC;
+                }
             }
         }
+        globalConfig.setLogLevel(httpLogLevel);
+        return httpLogLevel;
     }
 
     public Call request(Crawler crawler) {

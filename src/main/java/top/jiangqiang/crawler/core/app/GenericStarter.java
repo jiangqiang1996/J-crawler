@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import top.jiangqiang.crawler.core.config.CrawlerGlobalConfig;
+import top.jiangqiang.crawler.core.config.LoginConfig;
 import top.jiangqiang.crawler.core.entities.Crawler;
 import top.jiangqiang.crawler.core.entities.Page;
 import top.jiangqiang.crawler.core.handler.DefaultResultHandler;
@@ -33,6 +34,15 @@ public class GenericStarter extends AbstractStarter {
     private final ResultHandler resultHandler;
     private final OkHttpService okHttpService;
 
+    public GenericStarter(CrawlerGlobalConfig globalConfig, Recorder recorder, ResultHandler resultHandler, LoginConfig loginConfig, Interceptor... interceptors) {
+        this.globalConfig = Objects.requireNonNullElseGet(globalConfig, CrawlerGlobalConfig::new);
+        this.recorder = Objects.requireNonNullElseGet(recorder, RamRecorder::new);
+        this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
+        this.recorder.setConfig(this.globalConfig);
+        this.setLoginConfig(loginConfig);
+        this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
+    }
+
     public GenericStarter(CrawlerGlobalConfig globalConfig, Recorder recorder, ResultHandler resultHandler, Interceptor... interceptors) {
         this.globalConfig = Objects.requireNonNullElseGet(globalConfig, CrawlerGlobalConfig::new);
         this.recorder = Objects.requireNonNullElseGet(recorder, RamRecorder::new);
@@ -41,11 +51,29 @@ public class GenericStarter extends AbstractStarter {
         this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
     }
 
+    public GenericStarter(Recorder recorder, ResultHandler resultHandler, LoginConfig loginConfig, Interceptor... interceptors) {
+        this.globalConfig = new CrawlerGlobalConfig();
+        this.recorder = Objects.requireNonNullElseGet(recorder, RamRecorder::new);
+        this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
+        this.recorder.setConfig(this.globalConfig);
+        this.setLoginConfig(loginConfig);
+        this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
+    }
+
     public GenericStarter(Recorder recorder, ResultHandler resultHandler, Interceptor... interceptors) {
         this.globalConfig = new CrawlerGlobalConfig();
         this.recorder = Objects.requireNonNullElseGet(recorder, RamRecorder::new);
         this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
         this.recorder.setConfig(this.globalConfig);
+        this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
+    }
+
+    public GenericStarter(ResultHandler resultHandler, LoginConfig loginConfig, Interceptor... interceptors) {
+        this.globalConfig = new CrawlerGlobalConfig();
+        this.recorder = new RamRecorder();
+        this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
+        this.recorder.setConfig(this.globalConfig);
+        this.setLoginConfig(loginConfig);
         this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
     }
 

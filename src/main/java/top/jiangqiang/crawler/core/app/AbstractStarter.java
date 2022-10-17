@@ -1,11 +1,18 @@
 package top.jiangqiang.crawler.core.app;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ReUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Headers;
+import okhttp3.Response;
+import top.jiangqiang.crawler.core.config.CrawlerGlobalConfig;
+import top.jiangqiang.crawler.core.config.LoginConfig;
 import top.jiangqiang.crawler.core.entities.Crawler;
+import top.jiangqiang.crawler.core.util.HttpUtil;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
@@ -21,6 +28,7 @@ public abstract class AbstractStarter implements Starter {
      * 线程池
      */
     private static volatile ExecutorService executor;
+    private LoginConfig loginConfig;
 
     public final ExecutorService getExecutor() {
         //双重检测，为了减少竞争锁的次数
@@ -32,6 +40,29 @@ public abstract class AbstractStarter implements Starter {
             }
         }
         return executor;
+    }
+
+    @Override
+    public void init(CrawlerGlobalConfig config) {
+        if (loginConfig != null) {
+            try {
+                Response response = HttpUtil.buildCall(loginConfig.getUrl(), loginConfig.getLines(),
+                        loginConfig.getHeaders(), loginConfig.getBody(), loginConfig.getProxyConfig(),
+                        getOkHttpService().getHttpLogLevel()).execute();
+                Headers headers = filterHeaders(response.headers());
+                CrawlerGlobalConfig globalConfig = getGlobalConfig();
+                if (CollUtil.isNotEmpty(headers)) {
+                    headers.forEach(pair -> globalConfig.addHeader(pair.getFirst(), pair.getSecond()));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public Headers filterHeaders(Headers headers) {
+        return headers;
     }
 
     /**
@@ -53,7 +84,7 @@ public abstract class AbstractStarter implements Starter {
          * 配置身份验证信息
          * 配置初始爬取地址，或者从持久化数据中读取爬取地址，实现续爬功能
          */
-        init(getRecorder());
+        init(getGlobalConfig());
         getRecorder().initBeforeStart();
         Boolean allowEnd = getGlobalConfig().getAllowEnd();
         Boolean forceEnd = getGlobalConfig().getForceEnd();
