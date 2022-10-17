@@ -33,4 +33,8 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 
 **如果运行报错，注意jdk版本，最低17**
 
+[GitHub地址](https://github.com/jiangqiang1996/J-crawler)
+[Gitee地址](https://gitee.com/qianyi-community/J-crawler)
+
+
 **本项目仅学习使用，切勿用在非法用途。否则后果自负，技术无罪。**
