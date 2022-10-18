@@ -31,6 +31,11 @@ public class HttpUtil {
      * 全局配置代理，如果没有手动传入时，使用此配置
      */
     private static final Map<String, String> proxyConfig = new HashMap<>();
+    private static final Map<String, String> headers = new HashMap<>();
+
+    static {
+        addHeader("Accept-Encoding", "identity");
+    }
 
     /**
      * post请求，提交文件参数
@@ -231,6 +236,9 @@ public class HttpUtil {
                 method = method.toUpperCase();
             }
         }
+        if (CollUtil.isEmpty(headers)) {
+            headers = HttpUtil.headers;
+        }
         if (CollUtil.isNotEmpty(headers)) {
             //添加请求头
             Set<Map.Entry<String, String>> headerEntrySet = headers.entrySet();
@@ -379,5 +387,9 @@ public class HttpUtil {
 
     public static void setProxyPassword(String password) {
         proxyConfig.put("password", password);
+    }
+
+    public static void addHeader(String key, String value) {
+        headers.put(key, value);
     }
 }

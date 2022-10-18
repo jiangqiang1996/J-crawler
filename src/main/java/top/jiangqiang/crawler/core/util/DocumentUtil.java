@@ -1,8 +1,10 @@
 package top.jiangqiang.crawler.core.util;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class DocumentUtil {
     public static List<String> getAllUrl(String html, String baseUri, Boolean strong) {
         if (StrUtil.isBlank(html)) {
@@ -23,31 +26,35 @@ public class DocumentUtil {
         if (baseUri == null) {
             baseUri = "";
         }
-        Document doc = Jsoup.parse(html, baseUri);
-        Elements links = doc.select("a[href]");
-        Elements media = doc.select("[src]");
-        Elements imports = doc.select("link[href]");
-        for (Element src : media) {
-            String url = src.attr("abs:src");
-            if (!baseUri.contains(url)) {
-                urls.add(url);
+        try {
+            Document doc = Jsoup.parse(html, baseUri);
+            Elements links = doc.select("a[href]");
+            Elements media = doc.select("[src]");
+            Elements imports = doc.select("link[href]");
+            for (Element src : media) {
+                String url = src.attr("abs:src");
+                if (!baseUri.contains(url)) {
+                    urls.add(url);
+                }
             }
-        }
-        for (Element link : imports) {
-            String url = link.attr("abs:href");
-            if (!baseUri.contains(url)) {
-                urls.add(url);
+            for (Element link : imports) {
+                String url = link.attr("abs:href");
+                if (!baseUri.contains(url)) {
+                    urls.add(url);
+                }
             }
-        }
-        for (Element link : links) {
-            String url = link.attr("abs:href");
-            if (!baseUri.contains(url)) {
-                urls.add(url);
+            for (Element link : links) {
+                String url = link.attr("abs:href");
+                if (!baseUri.contains(url)) {
+                    urls.add(url);
+                }
             }
+        } catch (Exception e) {
+            log.error(ExceptionUtil.stacktraceToString(e));
         }
         if (BooleanUtil.isTrue(strong)) {
             String regEx = """
-                    (=)("|')(\\./|/|//|http://|https://)([\\S]){1,}('|")
+                    ('|")(\\./|/|//|http://|https://)[\\w\\./-]+('|")
                     """;
             List<String> allGroups = ReUtil.findAllGroup0(Pattern.compile(regEx.trim(), Pattern.DOTALL), html);
             for (String str : allGroups) {
@@ -62,29 +69,38 @@ public class DocumentUtil {
 
     public static String generateUrl(String baseUri, String str) {
         baseUri = baseUri.trim();
-        str = str.trim();
-        if (str.length() < 5) {
-            return null;
-        }
-        //去掉引号和最前面的等号
-        str = str.substring(2, str.length() - 2);
-        if (str.startsWith("//")) {
-            String before = StrUtil.subBefore(baseUri, "//", false);
-            return before + str;
-        } else if (str.startsWith("http://") || str.startsWith("https://")) {
+        str = str.substring(1, str.length() - 1);
+        if (str.startsWith("http://") || str.startsWith("https://")) {
             return str;
-        } else if (str.startsWith("./")) {
-            String regEx = """
-                    (http://|https://)(.*){1,}(/)
-                     """;
-            String group0 = ReUtil.getGroup0(regEx.trim(), baseUri);
-            return group0 + str.substring(2);
-        } else if (str.startsWith("/")) {
-            String regEx = """
-                          (?=^.{3,255}$)(http(s)?:\\/\\/)?(www\\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\\d+)*(\\/\\w+\\.\\w+)*
-                    """;
-            String group0 = ReUtil.getGroup0(regEx.trim(), baseUri);
-            return group0 + str;
+        } else if (str.startsWith("//")) {
+            //双斜线开头，需要拼接协议
+            if (StrUtil.startWith(baseUri, "https://")) {
+                return "https:" + str;
+            } else {
+                return "http:" + str;
+            }
+        } else {
+            if (StrUtil.isBlank(baseUri)) {
+                return null;
+            }
+            if (str.startsWith("./")) {
+                if (baseUri.endsWith("/")) {
+                    baseUri = baseUri.substring(0, baseUri.length() - 1);
+                }
+                String before = StrUtil.subBefore(baseUri, "/", true);
+                if (StrUtil.isNotBlank(before)) {
+                    return before + "/" + str.substring(2);
+                }
+            } else if (str.startsWith("/")) {
+                String regEx = """
+                        (http://|https://|)[\\w\\.-]+
+                         """;
+                //基础部分，协议+域名部分
+                String group0 = ReUtil.getGroup0(regEx.trim(), baseUri);
+                if (StrUtil.isNotBlank(group0)) {
+                    return group0 + str;
+                }
+            }
         }
         return null;
     }
