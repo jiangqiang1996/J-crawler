@@ -5,6 +5,8 @@
 ![JAVA](https://img.shields.io/badge/JAVA-17+-green.svg)
 [![star](https://gitee.com/qianyi-community/J-crawler/badge/star.svg?theme=dark)](https://gitee.com/qianyi-community/J-crawler/stargazers)
 [![fork](https://gitee.com/qianyi-community/J-crawler/badge/fork.svg?theme=dark)](https://gitee.com/qianyi-community/J-crawler/members)
+[![star](https://img.shields.io/github/stars/jiangqiang1996/J-crawler?style=social)](https://github.com/jiangqiang1996/J-crawler/stargazers)
+[![fork](https://img.shields.io/github/forks/jiangqiang1996/J-crawler?style=social)](https://github.com/jiangqiang1996/J-crawler/network/members)
 [![千异社区/J-crawler](https://gitee.com/qianyi-community/J-crawler/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/qianyi-community/J-crawler)
 
 ### 特色功能
