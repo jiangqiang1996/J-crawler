@@ -15,6 +15,7 @@ import top.jiangqiang.crawler.core.util.HttpUtil;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -45,24 +46,21 @@ public abstract class AbstractStarter implements Starter {
     @Override
     public void init(CrawlerGlobalConfig config) {
         if (loginConfig != null) {
-            try {
-                Response response = HttpUtil.buildCall(loginConfig.getUrl(), loginConfig.getLines(),
-                        loginConfig.getHeaders(), loginConfig.getBody(), loginConfig.getProxyConfig(),
-                        getOkHttpService().getHttpLogLevel()).execute();
-                Headers headers = filterHeaders(response.headers());
-                CrawlerGlobalConfig globalConfig = getGlobalConfig();
-                if (CollUtil.isNotEmpty(headers)) {
-                    headers.forEach(pair -> globalConfig.addHeader(pair.getFirst(), pair.getSecond()));
+            try (Response response = HttpUtil.buildCall(loginConfig.getUrl(), loginConfig.getLines(),
+                    loginConfig.getHeaders(), loginConfig.getBody(), loginConfig.getProxyConfig(),
+                    getOkHttpService().getHttpLogLevel()).execute()) {
+                Function<Headers, Headers> filter = loginConfig.getFilter();
+                if (filter != null) {
+                    Headers headers = filter.apply(response.headers());
+                    CrawlerGlobalConfig globalConfig = getGlobalConfig();
+                    if (CollUtil.isNotEmpty(headers)) {
+                        headers.forEach(pair -> globalConfig.addHeader(pair.getFirst(), pair.getSecond()));
+                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    @Override
-    public Headers filterHeaders(Headers headers) {
-        return headers;
     }
 
     /**

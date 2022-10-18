@@ -42,7 +42,7 @@
     </developers>
 
     <properties>
-        <revision>4.0.8</revision><!--项目版本-->
+        <revision>4.0.9</revision><!--项目版本-->
         <java.version>17</java.version><!--JAVA版本-->
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>

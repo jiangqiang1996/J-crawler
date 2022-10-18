@@ -1,6 +1,8 @@
 package top.jiangqiang.crawler.core.app;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,7 @@ public class GenericStarter extends AbstractStarter {
     private final ResultHandler resultHandler;
     private final OkHttpService okHttpService;
 
-    public GenericStarter(CrawlerGlobalConfig globalConfig, Recorder recorder, ResultHandler resultHandler, LoginConfig loginConfig, Interceptor... interceptors) {
+    public GenericStarter(CrawlerGlobalConfig globalConfig, Recorder recorder, LoginConfig loginConfig, ResultHandler resultHandler, Interceptor... interceptors) {
         this.globalConfig = Objects.requireNonNullElseGet(globalConfig, CrawlerGlobalConfig::new);
         this.recorder = Objects.requireNonNullElseGet(recorder, RamRecorder::new);
         this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
@@ -51,7 +53,7 @@ public class GenericStarter extends AbstractStarter {
         this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
     }
 
-    public GenericStarter(Recorder recorder, ResultHandler resultHandler, LoginConfig loginConfig, Interceptor... interceptors) {
+    public GenericStarter(Recorder recorder, LoginConfig loginConfig, ResultHandler resultHandler, Interceptor... interceptors) {
         this.globalConfig = new CrawlerGlobalConfig();
         this.recorder = Objects.requireNonNullElseGet(recorder, RamRecorder::new);
         this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
@@ -68,7 +70,7 @@ public class GenericStarter extends AbstractStarter {
         this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
     }
 
-    public GenericStarter(ResultHandler resultHandler, LoginConfig loginConfig, Interceptor... interceptors) {
+    public GenericStarter(LoginConfig loginConfig, ResultHandler resultHandler, Interceptor... interceptors) {
         this.globalConfig = new CrawlerGlobalConfig();
         this.recorder = new RamRecorder();
         this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
@@ -144,12 +146,9 @@ public class GenericStarter extends AbstractStarter {
     }
 
     @Data
+    @AllArgsConstructor
     protected class Task implements Runnable {
         Crawler crawler;
-
-        public Task(Crawler crawler) {
-            this.crawler = crawler;
-        }
 
         @Override
         public void run() {
@@ -164,6 +163,7 @@ public class GenericStarter extends AbstractStarter {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException ioException) {
                     try {
+                        log.info(ExceptionUtil.stacktraceToString(ioException));
                         getResultHandler().doFailure(getRecorder(), crawler, ioException);
                     } catch (Exception exception) {
                         log.info(exception.getMessage());

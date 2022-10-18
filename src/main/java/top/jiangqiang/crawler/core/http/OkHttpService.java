@@ -18,6 +18,7 @@ import top.jiangqiang.crawler.core.entities.Crawler;
 import top.jiangqiang.crawler.core.util.HttpUtil;
 import top.jiangqiang.crawler.core.util.JSONUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -119,18 +120,12 @@ public class OkHttpService {
             } else {
                 tmpClient = HttpUtil.useProxy(proxyConfig, okHttpClientBuilder);
             }
-            Map<String, String> lines = crawler.getLines();
-            Map<String, String> headers = crawler.getHeaders();
-            Map<String, String> body = crawler.getBody();
-            if (CollUtil.isEmpty(lines)) {
-                lines = globalConfig.getLines();
-            }
-            if (CollUtil.isEmpty(headers)) {
-                headers = globalConfig.getHeaders();
-            }
-            if (CollUtil.isEmpty(body)) {
-                body = globalConfig.getBody();
-            }
+            Map<String, String> lines = new HashMap<>(globalConfig.getLines());
+            lines.putAll(crawler.getLines());
+            Map<String, String> headers = new HashMap<>(globalConfig.getHeaders());
+            headers.putAll(crawler.getHeaders());
+            Map<String, String> body = new HashMap<>(globalConfig.getBody());
+            body.putAll(crawler.getBody());
             Request request = HttpUtil.processRequestParam(crawler.getUrl(), lines, headers, JSONUtil.toJsonStr(body));
             return tmpClient.newCall(request);
         } catch (Exception e) {

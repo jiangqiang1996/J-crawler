@@ -208,6 +208,9 @@ public class HttpUtil {
             throw new BaseException("请求链接不能为空");
         }
         url = url.trim();
+        if ((!url.startsWith("http://")) && (!url.startsWith("https://"))) {
+            url = "http://" + url;
+        }
         HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
         String method;
         //请求行中获取请求方式

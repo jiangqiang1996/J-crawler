@@ -26,14 +26,6 @@ public interface Starter {
     OkHttpService getOkHttpService();
 
     /**
-     * 过滤掉某些header，返回的header将被加入全局配置中的header中
-     *
-     * @param headers
-     * @return
-     */
-    Headers filterHeaders(Headers headers);
-
-    /**
      * 登录配置
      *
      * @return
