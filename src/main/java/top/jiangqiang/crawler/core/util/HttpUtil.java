@@ -27,6 +27,10 @@ public class HttpUtil {
      * 日志级别，如果没有传入日志级别，则使用此值，如果此字段没有值，则默认HEADERS
      */
     public static HttpLoggingInterceptor.Level level = null;
+    /**
+     * 全局配置代理，如果没有手动传入时，使用此配置
+     */
+    private static final Map<String, String> proxyConfig = new HashMap<>();
 
     /**
      * post请求，提交文件参数
@@ -184,6 +188,9 @@ public class HttpUtil {
         }
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder().addNetworkInterceptor(new HttpLoggingInterceptor(new HttpLogger()).setLevel(level));
         OkHttpClient okHttpClient;
+        if (CollUtil.isEmpty(proxyConfig)) {
+            proxyConfig = HttpUtil.proxyConfig;
+        }
         if (CollUtil.isNotEmpty(proxyConfig)) {
             okHttpClient = useProxy(proxyConfig, okHttpClientBuilder);
         } else {
@@ -353,4 +360,24 @@ public class HttpUtil {
         return Proxy.Type.HTTP;
     }
 
+    public static void setProxyProtocol(String protocol) {
+        proxyConfig.put("protocol", protocol);
+    }
+
+    public static void setProxyIp(String ip) {
+        proxyConfig.put("IP", ip);
+    }
+
+    public static void setProxyPort(String port) {
+        proxyConfig.put("port", port);
+
+    }
+
+    public static void setProxyUsername(String username) {
+        proxyConfig.put("username", username);
+    }
+
+    public static void setProxyPassword(String password) {
+        proxyConfig.put("password", password);
+    }
 }

@@ -1,4 +1,4 @@
-# java爬虫框架4.0
+# java爬虫框架
 [![Fork me on Gitee](https://gitee.com/qianyi-community/J-crawler/widgets/widget_4.svg)](https://gitee.com/qianyi-community/J-crawler)
 
 ![Maven Central](https://img.shields.io/maven-central/v/top.jiangqiang.crawler/J-crawler)
