@@ -20,6 +20,7 @@
 8. 错误原因持久化
 9. 封装了完善的http请求工具类，支持各种常见请求
 10. 支持配置登录接口，在所有任务开始前进行登录
+11. 自定义去重逻辑
 
 注意:
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.不支持form-data。
@@ -31,7 +32,7 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 <dependency>
     <groupId>top.jiangqiang.crawler</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>4.1.0</version>
+    <version>4.1.1</version>
 </dependency>
 ```
 
