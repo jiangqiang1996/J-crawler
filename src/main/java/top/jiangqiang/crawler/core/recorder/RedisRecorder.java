@@ -60,7 +60,7 @@ public class RedisRecorder extends AbstractRecorder {
     public synchronized void add(Crawler crawler) {
         if (!exist(crawler)) {
             redisTemplate.opsForList().rightPush(RedisConstants.CRAWLER_WAITING_LIST, crawler);
-            redisTemplate.opsForHash().put(RedisConstants.CRAWLER_HISTORY_HASH, crawler.getUrl(), crawler);
+            redisTemplate.opsForHash().put(RedisConstants.CRAWLER_HISTORY_HASH, crawler.getId(), crawler);
         }
     }
 
@@ -85,7 +85,7 @@ public class RedisRecorder extends AbstractRecorder {
 
     @Override
     public void addSuccess(Crawler crawler) {
-        hashOperations.put(RedisConstants.CRAWLER_SUCCESS_HASH, crawler.getUrl(), crawler);
+        hashOperations.put(RedisConstants.CRAWLER_SUCCESS_HASH, crawler.getId(), crawler);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class RedisRecorder extends AbstractRecorder {
 
     @Override
     public void addError(Crawler crawler) {
-        hashOperations.put(RedisConstants.CRAWLER_ERROR_HASH, crawler.getUrl(), crawler);
+        hashOperations.put(RedisConstants.CRAWLER_ERROR_HASH, crawler.getId(), crawler);
     }
 
     @Override
@@ -115,12 +115,12 @@ public class RedisRecorder extends AbstractRecorder {
 
     @Override
     public void addActive(Crawler crawler) {
-        hashOperations.put(RedisConstants.CRAWLER_ACTIVE_HASH, crawler.getUrl(), crawler);
+        hashOperations.put(RedisConstants.CRAWLER_ACTIVE_HASH, crawler.getId(), crawler);
     }
 
     @Override
     public void removeActive(Crawler crawler) {
-        hashOperations.delete(RedisConstants.CRAWLER_ACTIVE_HASH, crawler.getUrl());
+        hashOperations.delete(RedisConstants.CRAWLER_ACTIVE_HASH, crawler.getId());
     }
 
     @Override
@@ -135,6 +135,6 @@ public class RedisRecorder extends AbstractRecorder {
 
     @Override
     public synchronized Boolean exist(Crawler crawler) {
-        return redisTemplate.opsForHash().get(RedisConstants.CRAWLER_HISTORY_HASH, crawler.getUrl()) != null;
+        return redisTemplate.opsForHash().get(RedisConstants.CRAWLER_HISTORY_HASH, crawler.getId()) != null;
     }
 }

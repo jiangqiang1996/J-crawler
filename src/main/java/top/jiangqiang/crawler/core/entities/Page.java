@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 @Slf4j
 @Data
 @Accessors(chain = true)
-@NoArgsConstructor
+@ToString(callSuper = true)
 public class Page extends Crawler {
     //html或json
     private String content = "";
@@ -82,6 +82,7 @@ public class Page extends Crawler {
         page.setSourceList(crawler.getSourceList());
         page.setDepth(crawler.getDepth());
         page.setUrl(crawler.getUrl());
+        page.setId(crawler.getId());
         page.setCrawlers(crawler.getCrawlers());
         page.setHttpConfig(crawler.getHttpConfig());
         page.setMetaData(crawler.getMetaData());
@@ -89,16 +90,6 @@ public class Page extends Crawler {
         page.setContentType(contentType);
         page.setContentLength(contentLength);
         return page;
-    }
-
-    @Override
-    public String toString() {
-        return "Page{" +
-                "content='" + content + '\'' +
-                ", document=" + document +
-                ", responseCode=" + responseCode +
-                ", contentType='" + contentType + '\'' +
-                '}';
     }
 
 }
