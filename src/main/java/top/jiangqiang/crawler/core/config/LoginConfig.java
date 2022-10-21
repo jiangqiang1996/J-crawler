@@ -2,9 +2,11 @@ package top.jiangqiang.crawler.core.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import okhttp3.Headers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @author jiangqiang
@@ -24,6 +26,11 @@ public class LoginConfig {
      */
     private final Map<String, String> body = new HashMap<>();
     private final Map<String, String> proxyConfig = new HashMap<>();
+    /**
+     * 过滤掉某些header，返回的header将被加入全局配置中的header中
+     */
+    @Setter
+    private Function<Headers, Headers> filter = headers -> headers;
 
     public LoginConfig(String url) {
         this.url = url;
@@ -74,4 +81,11 @@ public class LoginConfig {
         return this;
     }
 
+    public void setContentType(String contentType) {
+        headers.put("Content-Type", contentType);
+    }
+
+    public static String APPLICATION_JSON_UTF8 = "application/json;charset=utf-8";
+    public static String APPLICATION_XML_UTF8 = "application/xml;charset=utf-8";
+    public static String FORM_URLENCODED = "application/x-www-form-urlencoded";
 }

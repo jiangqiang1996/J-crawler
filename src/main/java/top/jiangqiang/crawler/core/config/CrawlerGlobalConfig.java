@@ -125,7 +125,6 @@ public class CrawlerGlobalConfig implements Serializable {
         }
     }
 
-
     /**
      * 加号开头，去掉加号放正正则列表
      * 减号开头，去掉减号放逆正则列表

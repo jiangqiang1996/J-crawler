@@ -10,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import top.jiangqiang.crawler.core.config.HttpConfig;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author: JiangQiang
@@ -24,27 +21,34 @@ import java.util.Map;
 @Slf4j
 @NoArgsConstructor
 public class Crawler implements Serializable {
-    public List<String> sourceList = new ArrayList<>();
+    protected List<String> sourceList = new ArrayList<>();
     //深度，初始种子作为第1层
-    private Integer depth = 1;
+    protected Integer depth = 1;
     //当前的URL
-    private String url;
+    protected String url;
     //当前URL中提取出来的子爬虫
-    private List<Crawler> crawlers = new ArrayList<>();
-    private HttpConfig httpConfig = new HttpConfig();
+    protected List<Crawler> crawlers = new ArrayList<>();
+    protected HttpConfig httpConfig = new HttpConfig();
     //错误信息
-    private String errorMessage;
+    protected String errorMessage;
     //错误码，根据错误码进行分类，可以自定义设置是否需要重新爬取
-    private Integer errorCode;
+    protected Integer errorCode;
 
     public Crawler(String url) {
         this.url = url;
+        this.id = url;
     }
 
     /**
      * 存储一些额外的数据，例如给同一批来源的种子做个相同的标记，用于分类等等。
      */
-    public Map<String, Object> metaData = new HashMap<>();
+    protected Map<String, Object> metaData = new HashMap<>();
+
+    /**
+     * 种子唯一标识，默认与url相同，用于比较是否为同一个种子，方便去重。
+     * 因为某些情况下，同一个URL在不同时间请求时返回的数据是不一样的，所以不能简单的根据URL进行去重。
+     */
+    protected String id;
 
     /**
      * 创建时子类爬虫深度会自动+1
@@ -58,6 +62,7 @@ public class Crawler implements Serializable {
             //this是当前爬虫，crawler是子爬虫
             Crawler crawler = new Crawler();
             crawler.setUrl(url);
+            crawler.setId(url);
             crawler.setDepth(this.depth + 1);
             crawler.setHttpConfig(this.httpConfig.clone());
             List<String> subSourceList = new ArrayList<>(this.sourceList);
@@ -77,7 +82,6 @@ public class Crawler implements Serializable {
         }
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -87,12 +91,12 @@ public class Crawler implements Serializable {
             return false;
         }
         Crawler crawler = (Crawler) o;
-        return url.equals(crawler.url);
+        return id.equals(crawler.id);
     }
 
     @Override
     public int hashCode() {
-        return url.hashCode();
+        return Objects.hash(id);
     }
 
     @JSONField(serialize = false, deserialize = false)

@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 @Slf4j
 @Data
 @Accessors(chain = true)
-@NoArgsConstructor
+@ToString(callSuper = true)
 public class Page extends Crawler {
     //html或json
     private String content = "";
@@ -37,18 +37,22 @@ public class Page extends Crawler {
      * okhttp请求之后通过crawler创建page
      * page和crawler的其余属性一致
      *
-     * @param crawler      需要继承属性的crawler
-     * @param responseCode 响应码
-     * @param contentType  响应mimeType类型
-     * @param bodyBytes    页面的字节数组
-     * @param charset      编码
+     * @param crawler       需要继承属性的crawler
+     * @param responseCode  响应码
+     * @param contentType   响应mimeType类型
+     * @param contentLength 响应大小，没有取到为-1
+     * @param bodyBytes     页面的字节数组
+     * @param charset       编码
      * @return 返回一个page
      */
     @JSONField(serialize = false, deserialize = false)
-    public static Page getPage(Crawler crawler, Integer responseCode, String contentType, byte[] bodyBytes, Charset charset) {
-        Page page = getPage(crawler, responseCode, contentType);
+    public static Page getPage(Crawler crawler, Integer responseCode, String contentType, Long contentLength, byte[] bodyBytes, Charset charset) {
+        Page page = getPage(crawler, responseCode, contentType, contentLength);
         if (bodyBytes == null) {
             bodyBytes = new byte[0];
+        }
+        if (contentLength == -1) {
+            page.setContentLength((long) bodyBytes.length);
         }
         page.setBodyBytes(bodyBytes);
         if (page.getContentType().contains("application/json")) {
@@ -73,26 +77,19 @@ public class Page extends Crawler {
     }
 
     @JSONField(serialize = false, deserialize = false)
-    public static Page getPage(Crawler crawler, Integer responseCode, String contentType) {
+    public static Page getPage(Crawler crawler, Integer responseCode, String contentType, Long contentLength) {
         Page page = new Page();
         page.setSourceList(crawler.getSourceList());
-        page.setMetaData(crawler.getMetaData());
-        page.setUrl(crawler.getUrl());
         page.setDepth(crawler.getDepth());
+        page.setUrl(crawler.getUrl());
+        page.setId(crawler.getId());
+        page.setCrawlers(crawler.getCrawlers());
         page.setHttpConfig(crawler.getHttpConfig());
+        page.setMetaData(crawler.getMetaData());
         page.setResponseCode(responseCode);
         page.setContentType(contentType);
+        page.setContentLength(contentLength);
         return page;
-    }
-
-    @Override
-    public String toString() {
-        return "Page{" +
-                "content='" + content + '\'' +
-                ", document=" + document +
-                ", responseCode=" + responseCode +
-                ", contentType='" + contentType + '\'' +
-                '}';
     }
 
 }

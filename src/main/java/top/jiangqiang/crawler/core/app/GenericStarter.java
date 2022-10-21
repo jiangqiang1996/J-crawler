@@ -1,6 +1,9 @@
 package top.jiangqiang.crawler.core.app;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +37,7 @@ public class GenericStarter extends AbstractStarter {
     private final ResultHandler resultHandler;
     private final OkHttpService okHttpService;
 
-    public GenericStarter(CrawlerGlobalConfig globalConfig, Recorder recorder, ResultHandler resultHandler, LoginConfig loginConfig, Interceptor... interceptors) {
+    public GenericStarter(CrawlerGlobalConfig globalConfig, Recorder recorder, LoginConfig loginConfig, ResultHandler resultHandler, Interceptor... interceptors) {
         this.globalConfig = Objects.requireNonNullElseGet(globalConfig, CrawlerGlobalConfig::new);
         this.recorder = Objects.requireNonNullElseGet(recorder, RamRecorder::new);
         this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
@@ -51,7 +54,7 @@ public class GenericStarter extends AbstractStarter {
         this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
     }
 
-    public GenericStarter(Recorder recorder, ResultHandler resultHandler, LoginConfig loginConfig, Interceptor... interceptors) {
+    public GenericStarter(Recorder recorder, LoginConfig loginConfig, ResultHandler resultHandler, Interceptor... interceptors) {
         this.globalConfig = new CrawlerGlobalConfig();
         this.recorder = Objects.requireNonNullElseGet(recorder, RamRecorder::new);
         this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
@@ -68,7 +71,7 @@ public class GenericStarter extends AbstractStarter {
         this.okHttpService = new OkHttpService(this.globalConfig, interceptors);
     }
 
-    public GenericStarter(ResultHandler resultHandler, LoginConfig loginConfig, Interceptor... interceptors) {
+    public GenericStarter(LoginConfig loginConfig, ResultHandler resultHandler, Interceptor... interceptors) {
         this.globalConfig = new CrawlerGlobalConfig();
         this.recorder = new RamRecorder();
         this.resultHandler = Objects.requireNonNullElseGet(resultHandler, DefaultResultHandler::new);
@@ -108,7 +111,8 @@ public class GenericStarter extends AbstractStarter {
         if (mediaType != null) {
             contentType = mediaType.toString();
         }
-        long contentLength = body.contentLength();
+        //没有获取到时，为-1
+        Long contentLength = body.contentLength();
         if (StrUtil.isNotBlank(contentType)) {
             String contentTypeNoCharset = FileUtil.subMimeType(contentType);
             List<String> mimeTypeList = globalConfig.getMimeTypeList();
@@ -119,7 +123,7 @@ public class GenericStarter extends AbstractStarter {
                 } catch (IOException e) {
                     log.debug(e.getMessage());
                 }
-                Page page = Page.getPage(crawler, code, contentType, bodyBytes, getGlobalConfig().getCharset());
+                Page page = Page.getPage(crawler, code, contentType, contentLength, bodyBytes, getGlobalConfig().getCharset());
                 //如果正正则或反正则列表有一个有值，就会抽取所有URL
                 if (getGlobalConfig().getRegExs().size() != 0 || getGlobalConfig().getReverseRegExs().size() != 0) {
                     //此处用于抓取所有URL
@@ -128,7 +132,6 @@ public class GenericStarter extends AbstractStarter {
                     urls = getMatchUrls(urls);
                     page.addSeeds(urls);
                 }
-                page.setContentLength(contentLength);
                 List<Crawler> crawlers = getResultHandler().doSuccess(recorder, crawler, page, response);
                 //当前爬虫深度没有达到设置的级别，加入爬虫任务列表
                 if (page.getDepth() < (getGlobalConfig().getDepth())) {
@@ -138,24 +141,21 @@ public class GenericStarter extends AbstractStarter {
                 return;
             }
         }
-        Page page = Page.getPage(crawler, code, contentType);
-        page.setContentLength(contentLength);
+        Page page = Page.getPage(crawler, code, contentType, contentLength);
         getResultHandler().doSuccess(recorder, crawler, page, response);
     }
 
     @Data
+    @AllArgsConstructor
     protected class Task implements Runnable {
         Crawler crawler;
-
-        public Task(Crawler crawler) {
-            this.crawler = crawler;
-        }
 
         @Override
         public void run() {
             Call call = okHttpService.request(crawler);
             if (call == null) {
                 crawler.setErrorMessage("okhttp客户端出错，请检查请求相关配置");
+                //请求配置出错
                 crawler.setErrorCode(1);
                 getRecorder().activeToError(crawler);
                 return;
@@ -164,11 +164,13 @@ public class GenericStarter extends AbstractStarter {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException ioException) {
                     try {
+                        log.info(ExceptionUtil.stacktraceToString(ioException));
                         getResultHandler().doFailure(getRecorder(), crawler, ioException);
                     } catch (Exception exception) {
                         log.info(exception.getMessage());
                     } finally {
                         crawler.setErrorMessage("请求出错：" + recorder.getErrorMessage(ioException));
+                        //可能是网络错误
                         crawler.setErrorCode(2);
                         //处理完成，加入失败结果集
                         getRecorder().activeToError(crawler);
@@ -178,6 +180,17 @@ public class GenericStarter extends AbstractStarter {
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) {
                     try {
+                        if (response.code() != 200) {
+                            //请求参数不对，导致没有权限，或者请求路径不对
+                            crawler.setErrorCode(response.code());
+                            ResponseBody body = response.body();
+                            if (body != null) {
+                                crawler.setErrorMessage(body.string());
+                            }
+                            log.debug(response.code() + "  " + crawler.getErrorMessage());
+                            getRecorder().activeToError(crawler);
+                            return;
+                        }
                         doSuccess(crawler, response);
                         //处理完成，加入成功结果集
                         getRecorder().activeToSuccess(crawler);
@@ -187,6 +200,8 @@ public class GenericStarter extends AbstractStarter {
                         crawler.setErrorCode(3);
                         //处理完成，加入失败结果集
                         getRecorder().activeToError(crawler);
+                    } finally {
+                        IoUtil.close(response);
                     }
                 }
             });

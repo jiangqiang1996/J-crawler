@@ -1,10 +1,12 @@
-# java爬虫框架4.0
+# java爬虫框架
 [![Fork me on Gitee](https://gitee.com/qianyi-community/J-crawler/widgets/widget_4.svg)](https://gitee.com/qianyi-community/J-crawler)
 
 ![Maven Central](https://img.shields.io/maven-central/v/top.jiangqiang.crawler/J-crawler)
 ![JAVA](https://img.shields.io/badge/JAVA-17+-green.svg)
 [![star](https://gitee.com/qianyi-community/J-crawler/badge/star.svg?theme=dark)](https://gitee.com/qianyi-community/J-crawler/stargazers)
 [![fork](https://gitee.com/qianyi-community/J-crawler/badge/fork.svg?theme=dark)](https://gitee.com/qianyi-community/J-crawler/members)
+[![star](https://img.shields.io/github/stars/jiangqiang1996/J-crawler?style=social)](https://github.com/jiangqiang1996/J-crawler/stargazers)
+[![fork](https://img.shields.io/github/forks/jiangqiang1996/J-crawler?style=social)](https://github.com/jiangqiang1996/J-crawler/network/members)
 [![千异社区/J-crawler](https://gitee.com/qianyi-community/J-crawler/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/qianyi-community/J-crawler)
 
 ### 特色功能
@@ -18,6 +20,7 @@
 8. 错误原因持久化
 9. 封装了完善的http请求工具类，支持各种常见请求
 10. 支持配置登录接口，在所有任务开始前进行登录
+11. 自定义去重逻辑
 
 注意:
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.不支持form-data。
@@ -29,7 +32,7 @@ Content-Type只能为application/x-www-form-urlencoded提交和application/json�
 <dependency>
     <groupId>top.jiangqiang.crawler</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>4.0.8</version>
+    <version>4.1.1</version>
 </dependency>
 ```
 
