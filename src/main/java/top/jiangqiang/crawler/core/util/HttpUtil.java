@@ -44,7 +44,7 @@ public class HttpUtil {
      * @param file
      * @return
      */
-    private static Response post(String url, File file) {
+    public static Response post(String url, File file) {
         Map<String, String> lines = new HashMap<>();
         lines.put("method", "POST");
         Map<String, String> headers = new HashMap<>();
@@ -64,7 +64,7 @@ public class HttpUtil {
      * @param body
      * @return
      */
-    private static Response post(String url, String body) {
+    public static Response post(String url, String body) {
         Map<String, String> lines = new HashMap<>();
         lines.put("method", "POST");
         Map<String, String> headers = new HashMap<>();
