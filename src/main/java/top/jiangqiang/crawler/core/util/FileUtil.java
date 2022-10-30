@@ -16,6 +16,7 @@ import top.jiangqiang.crawler.core.entities.Page;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 
@@ -42,39 +43,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
     }
 
     /**
-     * 将两个字符串按照一定规则混合，防止信息泄露
+     * page中没有数据时，从response中下载
      *
-     * @param str1
-     * @param str2
-     * @return
-     */
-    public static String mixinStr(String str1, String str2) {
-        if (StrUtil.isBlank(str1)) {
-            return str2;
-        }
-        if (StrUtil.isBlank(str2)) {
-            return str2;
-        }
-        String longStr;
-        String shortStr;
-        if (str1.length() > str2.length()) {
-            longStr = str1;
-            shortStr = str2;
-        } else {
-            longStr = str2;
-            shortStr = str1;
-        }
-        int i = longStr.length() / shortStr.length();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int index = 0; index < shortStr.length(); index++) {
-            stringBuilder.append(shortStr.charAt(index)).append(longStr, index * i, index * i + i);
-        }
-        stringBuilder.append(longStr.substring(shortStr.length() * i));
-        return stringBuilder.toString();
-    }
-
-
-    /**
      * @param page     需要下载的文件来源
      * @param response okhttp响应
      * @param dirPath  文件下载到指定目录
@@ -90,6 +60,12 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         }
     }
 
+    /**
+     * 从mimeType中获取文件后缀
+     *
+     * @param contentType
+     * @return
+     */
     public static String getTypeFromMimeType(String contentType) {
         if (StrUtil.isBlank(contentType)) {
             return null;
@@ -109,6 +85,14 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         }
     }
 
+    /**
+     * 从page中保存文件到指定目录
+     *
+     * @param page
+     * @param type
+     * @param dirPath
+     * @return
+     */
     public static String saveFileFromPage(Page page, String type, String dirPath) {
         if (page == null) {
             return null;
@@ -132,7 +116,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
     }
 
     /**
-     * okhttp使用
+     * okhttp使用，保存文件到指定目录
      *
      * @param response
      * @param type
@@ -145,6 +129,39 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
             return null;
         }
         return downloadFile(responseBody.byteStream(), type, dirPath);
+    }
+
+    public static String downloadFile(Response response, String destFilePath) {
+        return downloadFile(response, FileUtil.file(destFilePath));
+    }
+
+    /**
+     * 下载文件到指定file对象
+     *
+     * @param response
+     * @param destFile
+     * @return
+     */
+    public static String downloadFile(Response response, File destFile) {
+        ResponseBody responseBody = response.body();
+        if (responseBody == null) {
+            return null;
+        }
+        FileUtil.writeFromStream(responseBody.byteStream(), destFile);
+        return destFile.getAbsolutePath();
+    }
+
+    public static String downloadFile(Page page, Response response, File destFile) {
+        if (ArrayUtil.isNotEmpty(page.getBodyBytes())) {
+            return saveFileFromPage(page, destFile);
+        } else {
+            return downloadFile(response, destFile);
+        }
+    }
+
+    private static String saveFileFromPage(Page page, File destFile) {
+        FileUtil.writeBytes(page.getBodyBytes(), destFile);
+        return destFile.getAbsolutePath();
     }
 
     public static String downloadFile(InputStream inputStream, String type, String dirPath) {

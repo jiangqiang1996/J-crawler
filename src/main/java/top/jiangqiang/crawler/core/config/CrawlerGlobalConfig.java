@@ -86,7 +86,7 @@ public class CrawlerGlobalConfig implements Serializable {
      */
     private Boolean allowEnd = true;
     /**
-     * 满足此正则表达式列表的URL会被提取
+     * 满足此正则表达式列表的URL会被保留，配置此选项时，会尽可能自带提取dom中所有链接，然后通过此正则进行过滤。
      */
     @Setter(AccessLevel.NONE)
     private List<String> regExs = new ArrayList<>();
@@ -115,6 +115,10 @@ public class CrawlerGlobalConfig implements Serializable {
         defaultReverseRegExs.add(".*\\.(js|css).*");
         mimeTypeList.add("text");
         mimeTypeList.add("application/json");
+    }
+
+    public void addMimeType(String mimeType) {
+        mimeTypeList.add(mimeType);
     }
 
     public void setThreads(Integer threads) {
