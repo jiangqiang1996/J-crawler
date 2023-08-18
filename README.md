@@ -9,6 +9,16 @@
 [![fork](https://img.shields.io/github/forks/jiangqiang1996/J-crawler?style=social)](https://github.com/jiangqiang1996/J-crawler/network/members)
 [![千异社区/J-crawler](https://gitee.com/qianyi-community/J-crawler/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/qianyi-community/J-crawler)
 
+此工具自从2020年12月17日第一版发布到现在，前后经历了四个版本，侧重点也在发生各种各样的变化。
+至今为止，第二版仍然是功能最强大的版本，支持爬取基于Vue之类的js框架编写的网站。
+但是从第三版开始，直接剔除了爬取单页面网站相关的功能，转而侧重于此工具的易用性，虽然功能上虽然弱了一些，但是爬取某些静态网站却更加方便快捷，同时增加了防盗链解决方案等功能。
+目前打算完全重构为第五版本，功能上主要侧重于爬虫服务的通用架构编写，目前大概构思如下：
+1. 设置种子，种子来源可以来自数据库，或者上次爬取的结果，此步骤可以交给开发者自行编写。
+2. 定制请求，此步骤主要负责控制请求参数，包括请求代理相关配置，还包括请求时间间隔相关配置。
+3. 处理响应，根据响应类型进行自动归类。
+
+此外，开发者还可以针对请求工具的线程池进行相应的定制。
+
 ### 特色功能
 
 1. 支持统计爬取的任务，默认实现内存记录器，只需要实现Recorder接口，即可轻松定义一个基于数据库的记录器，重写对应的方法即可实现断点续爬等功能。

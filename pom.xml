@@ -42,7 +42,7 @@
     </developers>
 
     <properties>
-        <revision>4.1.1</revision><!--项目版本-->
+        <revision>5.0.0</revision><!--项目版本-->
         <java.version>17</java.version><!--JAVA版本-->
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -54,15 +54,21 @@
         <fastjson2.version>2.0.14</fastjson2.version>
         <hutool.version>5.8.8</hutool.version>
         <jsoup.version>1.15.3</jsoup.version>
-        <okhttp.version>4.10.0</okhttp.version>
+        <okhttp.version>4.11.0</okhttp.version>
         <lombok.version>1.18.24</lombok.version>
-        <playwright.version>1.26.0</playwright.version>
         <slf4j.version>2.0.3</slf4j.version>
         <logback.version>1.4.3</logback.version>
         <spring-data-redis.version>2.7.3</spring-data-redis.version>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.15.2</version>
+            </dependency>
+
             <!--hutool模块版本管理-->
             <dependency>
                 <groupId>cn.hutool</groupId>
@@ -93,6 +99,12 @@
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>logging-interceptor</artifactId>
                 <version>${okhttp.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-stdlib-jdk8</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -154,10 +166,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.playwright</groupId>
-            <artifactId>playwright</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
