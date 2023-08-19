@@ -1,4 +1,4 @@
-package top.jiangqiang.crawler.core.http;
+package top.jiangqiang.crawler.log;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.logging.HttpLoggingInterceptor;

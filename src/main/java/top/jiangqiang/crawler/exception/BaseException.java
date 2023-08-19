@@ -1,4 +1,4 @@
-package top.jiangqiang.crawler.core.base;
+package top.jiangqiang.crawler.exception;
 
 /**
  * @author jiangqiang

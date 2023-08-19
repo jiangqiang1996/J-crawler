@@ -1,4 +1,4 @@
-package top.jiangqiang.crawler.core.util;
+package top.jiangqiang.crawler.util;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONReader;

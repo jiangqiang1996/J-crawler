@@ -36,13 +36,13 @@
 Content-Type只能为application/x-www-form-urlencoded提交和application/json提交两种,如果没有参数可以不写,否则必须写此header.不支持form-data。
 
 ### 使用方式
-1. 拉取本框架代码，具体参考top.jiangqiang.crawler.sample包下示例，可以重写top.jiangqiang.crawler.core.app.GenericStarter类，实现自己的启动类。
+1. 拉取本框架代码，具体参考top.jiangqiang.crawler.sample包下示例。
 2. 使用maven构建项目，引入下面依赖：
 ```XML
 <dependency>
     <groupId>top.jiangqiang.crawler</groupId>
     <artifactId>J-crawler</artifactId>
-    <version>4.1.1</version>
+    <version>5.0.0</version>
 </dependency>
 ```
 

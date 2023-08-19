@@ -84,13 +84,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
      表示当前logger的appender-ref和rootLogger的appender-ref都有效-->
 
     <!-- 使用root的appender-ref -->
-    <logger name="top.jiangqiang.crawler.core.http" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT"/>
-    </logger>
-    <logger name="top.jiangqiang.crawler.core.app" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT"/>
-    </logger>
-    <logger name="top.jiangqiang.crawler" level="INFO" additivity="false">
+    <logger name="top.jiangqiang.crawler" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 
