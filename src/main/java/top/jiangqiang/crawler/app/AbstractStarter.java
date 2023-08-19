@@ -70,8 +70,13 @@ public abstract class AbstractStarter<T extends BaseCrawler> implements Starter<
     }
 
     @Override
-    public Call doRequest(OkHttpClient client, BaseCrawler crawler) {
-        return client.newCall(new RequestEntity(crawler.getUrl()).buildRequest());
+    public Call doRequest(OkHttpClient client, T crawler) {
+        RequestEntity requestEntity = new RequestEntity(crawler.getUrl());
+        BaseCrawler sourceCrawler = crawler.getSourceCrawler();
+        if (sourceCrawler != null) {
+            requestEntity.addHeaders("Referer", sourceCrawler.getUrl());
+        }
+        return client.newCall(requestEntity.buildRequest());
     }
 
     @Override
