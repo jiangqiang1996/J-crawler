@@ -1,22 +1,42 @@
 package top.jiangqiang.crawler.util;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONReader;
-import com.alibaba.fastjson2.JSONWriter;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
+import top.jiangqiang.crawler.exception.BaseException;
 
 /**
  * @author Jiangqiang
  * @version 1.0
- * @description fastjson2实现的json解析工具类
+ * @description jackson实现的json解析工具类
  * @date 2022/8/25 10:12
  */
 @Slf4j
 public class JSONUtil {
+    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private final static ObjectMapper OBJECT_MAPPER_WITH_CLASS = new ObjectMapper();
+
+    static {
+        init(OBJECT_MAPPER);
+        init(OBJECT_MAPPER_WITH_CLASS);
+        //序列化和反序列化带类型信息
+        OBJECT_MAPPER_WITH_CLASS.activateDefaultTyping(OBJECT_MAPPER_WITH_CLASS.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.WRAPPER_ARRAY);
+    }
+
+    /**
+     * 初始化ObjectMapper通用配置
+     *
+     * @param objectMapper ObjectMapper
+     */
+    private static void init(ObjectMapper objectMapper) {
+        //忽略未知属性
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        //忽略null的属性
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
 
     /**
      * 转为JSON字符串，格式化输出
@@ -24,10 +44,12 @@ public class JSONUtil {
      * @param object
      * @return JSON字符串
      */
-    public static String toJsonPrettyStr(Object object, JSONWriter.Feature... features) {
-        ArrayList<JSONWriter.Feature> tmpFeatures = new ArrayList<>(Arrays.stream(features).toList());
-        tmpFeatures.add(JSONWriter.Feature.PrettyFormat);
-        return JSON.toJSONString(object, tmpFeatures.toArray(new JSONWriter.Feature[0]));
+    public static String toJsonPrettyStr(Object object) {
+        try {
+            return OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new BaseException(e);
+        }
     }
 
     /**
@@ -36,59 +58,54 @@ public class JSONUtil {
      * @param object
      * @return JSON字符串
      */
-    public static String toJsonStr(Object object, JSONWriter.Feature... features) {
-        return JSON.toJSONString(object, features);
+    public static String toJsonStr(Object object) {
+        try {
+            return OBJECT_MAPPER.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new BaseException(e);
+        }
+    }
+
+
+    /**
+     * @param jsonStr json字符串
+     * @param tClass  class
+     * @param <T>     指定类型
+     * @return json转对象
+     */
+    public static <T> T parse(String jsonStr, Class<T> tClass) {
+        try {
+            return OBJECT_MAPPER.readValue(jsonStr, tClass);
+        } catch (JsonProcessingException e) {
+            throw new BaseException(e);
+        }
     }
 
     /**
-     * 转换为json字符串，带类型
+     * 序列化时保留类型信息
      *
      * @param object
-     * @param features
      * @return
      */
-    public static String toJsonStrWithClass(Object object, JSONWriter.Feature... features) {
-        ArrayList<JSONWriter.Feature> tmpFeatures = new ArrayList<>(Arrays.stream(features).toList());
-        tmpFeatures.add(JSONWriter.Feature.WriteClassName);
-        return JSON.toJSONString(object, tmpFeatures.toArray(new JSONWriter.Feature[0]));
+    public static String toJsonStrWithClass(Object object) {
+        try {
+            return OBJECT_MAPPER_WITH_CLASS.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new BaseException(e);
+        }
     }
 
     /**
-     * 解析为指定的类型，如果解析为集合，并且json字符串不附带类型信息时，集合内部全是JSONObject
+     * 如果序列化时保留了类型信息，反序列化时可以直接使用此方法，然后强转
      *
-     * @param jsonStr 字符串
-     * @param tClass  类型
+     * @param jsonStr json
      * @return
      */
-    public static <T> T parse(String jsonStr, Class<T> tClass, JSONReader.Feature... features) {
-        ArrayList<JSONReader.Feature> tmpFeatures = new ArrayList<>(Arrays.stream(features).toList());
-        tmpFeatures.add(JSONReader.Feature.SupportAutoType);
-        return JSON.parseObject(jsonStr, (Type) tClass, tmpFeatures.toArray(JSONReader.Feature[]::new));
-    }
-
-    /**
-     * 解析为指定的类型，如果解析为集合，并且json字符串不附带类型信息时，集合内部全是JSONObject
-     *
-     * @param jsonStr
-     * @param features
-     * @return
-     */
-    public static <T> T parse(String jsonStr, T t, JSONReader.Feature... features) {
-        ArrayList<JSONReader.Feature> tmpFeatures = new ArrayList<>(Arrays.stream(features).toList());
-        tmpFeatures.add(JSONReader.Feature.SupportAutoType);
-        return JSON.parseObject(jsonStr, (Type) t.getClass(), tmpFeatures.toArray(JSONReader.Feature[]::new));
-    }
-
-    /**
-     * 解析为JSONObject或JSONArray，如果原本附带类型时会转换为具体类型
-     *
-     * @param jsonStr
-     * @param features
-     * @return
-     */
-    public static Object parse(String jsonStr, JSONReader.Feature... features) {
-        ArrayList<JSONReader.Feature> tmpFeatures = new ArrayList<>(Arrays.stream(features).toList());
-        tmpFeatures.add(JSONReader.Feature.SupportAutoType);
-        return JSON.parseObject(jsonStr, Object.class, tmpFeatures.toArray(JSONReader.Feature[]::new));
+    public static Object parse(String jsonStr) {
+        try {
+            return OBJECT_MAPPER_WITH_CLASS.readValue(jsonStr, Object.class);
+        } catch (JsonProcessingException e) {
+            throw new BaseException(e);
+        }
     }
 }

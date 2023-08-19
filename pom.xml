@@ -51,7 +51,7 @@
 <!--        <maven.test.skip>true</maven.test.skip>-->
 <!--        <maven.javadoc.skip>true</maven.javadoc.skip>-->
 
-        <fastjson2.version>2.0.14</fastjson2.version>
+        <jackson.version>2.15.2</jackson.version>
         <hutool.version>5.8.8</hutool.version>
         <jsoup.version>1.15.3</jsoup.version>
         <okhttp.version>4.11.0</okhttp.version>
@@ -62,13 +62,6 @@
     </properties>
     <dependencyManagement>
         <dependencies>
-            <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.15.2</version>
-            </dependency>
-
             <!--hutool模块版本管理-->
             <dependency>
                 <groupId>cn.hutool</groupId>
@@ -78,10 +71,11 @@
                 <!-- 注意这里是import -->
                 <scope>import</scope>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
             <dependency>
-                <groupId>com.alibaba.fastjson2</groupId>
-                <artifactId>fastjson2</artifactId>
-                <version>${fastjson2.version}</version>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
             <dependency>
@@ -110,11 +104,6 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.microsoft.playwright</groupId>
-                <artifactId>playwright</artifactId>
-                <version>${playwright.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -168,11 +157,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <optional>true</optional>
@@ -181,6 +165,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <optional>true</optional>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
