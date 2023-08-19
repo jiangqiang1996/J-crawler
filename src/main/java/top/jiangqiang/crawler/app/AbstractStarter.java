@@ -80,14 +80,6 @@ public abstract class AbstractStarter<T extends BaseCrawler> implements Starter<
             //1.线程池中没有正在执行的任务并且队列中也没有任务 2.存在空闲线程
             if ((executorService.getQueue().isEmpty() && executorService.getActiveCount() == 0) || executorService.getActiveCount() < executorService.getCorePoolSize()) {
                 List<T> crawlers = getCrawlers();
-                //线程池中没有正在执行的任务并且队列中也没有任务
-                if (executorService.getQueue().isEmpty() && executorService.getActiveCount() == 0) {
-                    if (crawlers == null) {
-                        //退出程序
-                        executorService.shutdown();
-                        break;
-                    }
-                }
                 if (CollUtil.isNotEmpty(crawlers)) {
                     for (T crawler : crawlers) {
                         //发送请求
@@ -124,6 +116,20 @@ public abstract class AbstractStarter<T extends BaseCrawler> implements Starter<
                                 }
                             }
                         }
+                    }
+
+                }
+                //线程池中没有正在执行的任务并且队列中也没有任务
+                if (executorService.getQueue().isEmpty() && executorService.getActiveCount() == 0 && crawlers == null) {
+                    try {
+                        Thread.sleep(1000L);
+                        if (executorService.getQueue().isEmpty() && executorService.getActiveCount() == 0) {
+                            //退出程序
+                            executorService.shutdown();
+                            break;
+                        }
+                    } catch (InterruptedException e) {
+                        log.debug(e.getMessage());
                     }
                 }
             }

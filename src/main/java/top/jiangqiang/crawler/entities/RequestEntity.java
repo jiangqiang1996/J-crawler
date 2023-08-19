@@ -5,13 +5,12 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.XmlUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import top.jiangqiang.crawler.util.JSONUtil;
 import top.jiangqiang.crawler.exception.BaseException;
+import top.jiangqiang.crawler.util.JSONUtil;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 @Slf4j
@@ -52,11 +51,13 @@ public class RequestEntity {
         for (Map.Entry<String, String> entry : headerEntrySet) {
             builder.addHeader(entry.getKey(), entry.getValue());
         }
-        HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
+        HttpUrl parse = HttpUrl.parse(url);
+        if (parse == null) {
+            throw new BaseException("url无效： " + url);
+        }
+        HttpUrl.Builder urlBuilder = parse.newBuilder();
         switch (method) {
-            case "POST":
-            case "PUT":
-            case "PATCH":
+            case "POST", "PUT", "PATCH" -> {
                 if (CollUtil.isEmpty(bodyMap)) {
                     String contentType = headersMap.get("Content-Type");
                     if (StrUtil.isBlank(contentType)) {
@@ -93,11 +94,8 @@ public class RequestEntity {
                     //没有参数
                     builder.method(method, RequestBody.Companion.create(new byte[0]));
                 }
-                break;
-            case "GET":
-            case "HEAD":
-            case "DELETE":
-            default:
+            }
+            default -> {
                 //GET或HEAD请求添加请求参数
                 Set<String> keySet = bodyMap.keySet();
                 for (String key : keySet) {
@@ -105,6 +103,7 @@ public class RequestEntity {
                     urlBuilder.addQueryParameter(key, value);
                 }
                 builder.method(method, null);
+            }
         }
         builder.setUrl$okhttp(urlBuilder.build());
         return builder.build();
